@@ -1,20 +1,46 @@
-# Game Design Document — Index
+# CivCraft Reborn — Game Design Document Index
 
-Each topic must have complete rules before design freeze.
+**Status: PROPOSED / NOT FROZEN (2026-11-18).** G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
 
-1. First spawn, exploration and role changes
-2. Worldgen, seeds and initial civilizations
-3. Camps, towns, secession, formation and collapse — [GDD-01: lifecycle of camp, settlement, province and independent civilization](./SETTLEMENT_PROVINCE_CIVILIZATION_LIFECYCLE_GDD_01.md) (**PROPOSED**, pending owner approval and G0 completion)
-4. Claims, culture, permissions and contested land
-5. Blueprints, buildings, construction and roads
-6. Citizens, households, professions and population — [GDD-02: NPC identities, needs, housing, jobs, migration and Loaded/Virtual simulation](./NPC_POPULATION_AND_BEHAVIOR_GDD_02.md) (**PROPOSED**, 16 owner decisions outstanding)
-7. Production, currency, trading, logistics and taxation
-8. Research, technologies and eras — [interbranch dependencies, D-015](./TECHNOLOGY_PROGRESSION_RULES.md)
-9. Politics, diplomacy, treaties and alliances
-10. Recruitment, army supply, combat, sieges and captures
-11. Civilization / settlement / citizen AI
-12. Player interface, maps and notifications
-13. Single-player, multiplayer, configurable rules and victory — [world session modes](./WORLD_SESSION_MODES.md): finite victory or endless sandbox
-14. Edge cases, anti-griefing and recovery
+## Main document
 
-Each rule needs triggers, inputs, algorithm, output, persistence, authority, feedback and tests.
+**[CIVCRAFT REBORN — MASTER GDD](./CIVCRAFT_REBORN_MASTER_GDD.md)** — vision, gameplay loops, 13 sections, intersystem dependencies, sources, acceptance and signoff rules.
+
+## Complete GDD section library
+
+| ID | Document | Status |
+|---|---|---|
+| GDD-01 | [Settlement, province, civilization lifecycle](./SETTLEMENT_PROVINCE_CIVILIZATION_LIFECYCLE_GDD_01.md) | PROPOSED |
+| GDD-02 | [NPC population, needs, work and migration](./NPC_POPULATION_AND_BEHAVIOR_GDD_02.md) | PROPOSED |
+| GDD-03 | [Production, economy, taxes, logistics](./GDD_03_ECONOMY_PRODUCTION_LOGISTICS.md) | PROPOSED |
+| GDD-04 | [World generation, claims, culture and construction](./GDD_04_WORLDGEN_TERRITORY_CONSTRUCTION.md) | PROPOSED |
+| GDD-05 | [Technologies, eras and wonders](./GDD_05_TECHNOLOGIES_WONDERS_ERAS.md) | PROPOSED |
+| GDD-06 | [Government, rights and culture](./GDD_06_GOVERNMENT_LAW_CULTURE.md) | PROPOSED |
+| GDD-07 | [Diplomacy, wars, occupation and restoration](./GDD_07_DIPLOMACY_WAR_CONQUEST.md) | PROPOSED |
+| GDD-08 | [Autonomous civilization AI](./GDD_08_AUTONOMOUS_CIVILIZATION_AI.md) | PROPOSED |
+| GDD-09 | [Victory, religion and events](./GDD_09_VICTORY_RELIGION_EVENTS_ENDGAME.md) | PROPOSED |
+| GDD-10 | [Player experience, UI and multiplayer](./GDD_10_PLAYER_EXPERIENCE_UI_MULTIPLAYER.md) | PROPOSED |
+| GDD-11 | [Quality, persistence, LOD and acceptance contracts](./GDD_11_QUALITY_SYSTEM_CONTRACTS.md) | PROPOSED |
+| GDD-12 | [Nations, espionage, ruins and special mechanics](./GDD_12_ESPIONAGE_NATIONS_EXPLORATION.md) | PROPOSED |
+| GDD-13 | [Feature provenance and scope traceability](./GDD_13_SCOPE_TRACEABILITY_MATRIX.md) | PROPOSED |
+
+## Supporting design constraints and source catalogs
+
+- [33 unresolved owner decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md)
+- [D-015 interbranch technology research](./TECHNOLOGY_PROGRESSION_RULES.md)
+- [D-014 finite victory vs endless sandbox](./WORLD_SESSION_MODES.md)
+- [D-013 world size presets](../04-architecture/WORLD_SIZE_PRESETS.md)
+- [G0 source audit](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md)
+- [Sequential release process](../05-roadmap/RELEASE_STRATEGY.md)
+
+## Completion disclaimer
+
+**Document coverage is not game design freeze.** All 13 system sections are written at design/draft level, but numerical balance, precise mechanics for historically undocumented items and 33 owner choices remain open. The old CivCraft/VimeWorld sources contain contradictions, and the modern source/asset rights have not been resolved. G2/G3 contracts, architecture and G4 signoff must be completed prior to mod coding.
+
+## Review sequence
+
+1. Owner reviews master GDD and groups of open decisions.
+2. Update all 13 sections based on approved selections; every frozen rule has a source/design decision and acceptance test.
+3. Reconcile critical G0 gaps or explicitly approve restricted scope without missing core prerequisites.
+4. Formalize G2 system contracts and G3 tech architecture.
+5. G4 final review, patch decomposition, test plans and explicit implementation approval.
