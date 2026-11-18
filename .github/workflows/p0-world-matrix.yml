@@ -18,6 +18,8 @@ jobs:
     timeout-minutes: 25
     strategy:
       fail-fast: false
+      # Avoid Maven Central 429 rate limits from six cold Gradle downloads at once.
+      max-parallel: 2
       matrix:
         size: [10000, 15000, 25000]
         mode: [ENDLESS_SANDBOX, FINITE_VICTORY]
@@ -30,8 +32,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.8.0'
-      - name: Compile P0
-        run: gradle build --no-daemon
+      - name: Compile P0 (retry transient dependency rate limits)
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if gradle build --no-daemon; then exit 0; fi
+            if [[ "$attempt" == 3 ]]; then exit 1; fi
+            sleep $((attempt * 30))
+          done
       - name: Two boots of one real world with changed defaults
         run: python3 scripts/p0_world_restart_smoke.py --size ${{ matrix.size }} --mode ${{ matrix.mode }}
       - name: Upload logs even on failure
