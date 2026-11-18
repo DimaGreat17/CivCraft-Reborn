@@ -24,6 +24,10 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 [Pass 14](../01-legacy-audit/G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) now distinguishes **42/73 wiki building articles retrievable** versus **31 currently inaccessible**, without claiming the 42 have complete effects audits. Bank-interest wiki table/formula conflict `BANK-CONFLICT-001` registered. G0 remains OPEN.
 
+## GDD review Round C (2026-11-18)
+
+[Round C seven-decision proposal](../02-game-design/GDD_REVIEW_ROUND_C_VICTORY_CONTENT_UX.md) is prepared. **NOT APPROVED**; no victory timer, historic game mode, nation/religion bonus, spy mission probability, building exclusion or release claim has been finalized. Existing 23 APPROVED_CONCEPT / 10 OPEN stays unchanged.
+
 ## GDD review Round B (2026-11-18)
 
 Owner explicitly approved all nine **conceptual** Round B options: [approved Round B](../02-game-design/GDD_REVIEW_ROUND_B_STATE_AND_TECH.md), [D-030…D-038](../../DECISIONS.md). **23 of 33 GDD questions APPROVED_CONCEPT; ten OPEN; zero FROZEN.** The principle that province promotion and all required early research ship together as a complete feature is approved, but **actual P2/P3 content and numbering have not changed and await G4**. Source-graph incompleteness and WAR-CONFLICT-001 remain blockers. No numeric balance was approved.
