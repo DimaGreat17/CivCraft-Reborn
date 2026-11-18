@@ -22,12 +22,13 @@
 
 - [Run 44279950983](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44279950983): successful compile, JUnit and **one** dedicated server startup to `Done`.
 - [Run 44291344239](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44291344239): successful compile, tests and single-server smoke on earlier UI changes, as inspected through workflow jobs. Later commits require independent CI evidence.
-- Neither run is the full six-case save/restart matrix or an actual graphical `runClient` user interaction.
+- [Run 44292882057](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44292882057) **PASS 6/6**: six isolated dedicated worlds created and cleanly restarted after altering global defaults; original size/mode remained authoritative. This does not validate the actual client GUI, border-edge behaviour or failure injection.
+- A strengthened follow-up matrix additionally compares persistent WorldId/seed across restarts; its result requires separate CI evidence.
 
 ## Known technical/release blockers
 
 1. Confirm new screen controls in **real client** (position, click behavior, resizing, integrated-world first save, correct defaults for new world, not previous saves). The current file-based handoff is transitional, needs end-to-end testing for world isolation, cancellation and error handling.
-2. Run all six real worlds through save/stop/restart/rejoin; confirm their mode/size and physical border. Optional matrix harness may require adjusting stdin forwarding depending on Loom `runServer`; failure should remain visible rather than be ignored.
+2. Six dedicated save/restart matrix cases **PASS** on run 44292882057. Still verify graphical singleplayer matrix, actual border-edge behaviour, per-world UUID/seed consistency in the strengthened run and malformed save/recovery. The script is now proven to forward stdin cleanly in the tested GitHub Actions environment.
 3. Dedicated and singleplayer spawn/border-edge, client spoof and actual server persistence tests, not just JUnit.
 4. Crash/corrupt `SavedData` recovery that never silently resets an existing world; schema migration/backup path.
 5. Validate persisted WorldId/seed through actual save/restart, copied-world, corrupt-data and schema-migration scenarios; the new UUID/seed SavedData is implemented but not yet proven safe under failure injection.
