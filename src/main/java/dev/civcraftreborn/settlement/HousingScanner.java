@@ -98,6 +98,25 @@ public final class HousingScanner {
                 complete ? capacity : 0, complete);
     }
 
+    /** Finds real, individually reachable bed anchors for existing villagers to use. */
+    public static List<BlockPos> verifiedBedHeads(ServerLevel level, CampRecord camp) {
+        BlockPos center = new BlockPos(camp.x(), camp.y(), camp.z());
+        List<BlockPos> beds = new ArrayList<>();
+        for (BlockPos candidate : BlockPos.betweenClosed(
+                center.offset(-CampRules.CAMP_RADIUS, -5, -CampRules.CAMP_RADIUS),
+                center.offset(CampRules.CAMP_RADIUS, 5, CampRules.CAMP_RADIUS))) {
+            if (!level.hasChunkAt(candidate)) continue;
+            BlockState state = level.getBlockState(candidate);
+            if (!(state.getBlock() instanceof BedBlock)
+                    || state.getValue(BedBlock.PART) != BedPart.HEAD) continue;
+            BlockPos head = candidate.immutable();
+            Room room = investigate(level, head, center);
+            if (room.completelyVerified() && room.capacity() >= 1) beds.add(head);
+            if (beds.size() >= MAX_BEDS_PER_CAMP) break;
+        }
+        return List.copyOf(beds);
+    }
+
     private static boolean disjoint(Set<BlockPos> a, Set<BlockPos> b) {
         for (BlockPos pos : a) if (b.contains(pos)) return false;
         return true;
