@@ -71,4 +71,6 @@ The project owner supplied a readable 2048×1057 VimeWorld technology tree graph
 
 **User-approved design requirement D-015:** [preserve cross-branch AND prerequisites](../02-game-design/TECHNOLOGY_PROGRESSION_RULES.md). That applies to the eventual target graph but does not make each visually inferred edge a verified source fact.
 
-**Visual-label transcription:** [Pass 02 — 66 ordinary labels and 22 wonder labels](./VIME_TECH_GRAPH_VISUAL_TRANSCRIPTION_02.md), based on owner-supplied diagram. Primary-color tracks, possible AND-joins and source limitations are recorded. Exact directed adjacency still requires a full trace. **G0-A partial progress, GAP-002 still OPEN. No mod code changed.**
+**Visual-label transcription:** [Pass 02 — 66 ordinary labels and 22 wonder labels](./VIME_TECH_GRAPH_VISUAL_TRANSCRIPTION_02.md), based on owner-supplied diagram. Primary-color tracks, possible AND-joins and source limitations are recorded. Exact directed adjacency still requires a full trace. **Directed edge candidates:** [Pass 03 — 49 image-traced same-track relationships](./VIME_TECH_GRAPH_EDGES_PASS_03.md). This is not a validated full DAG: mandatory cross-color AND sets at white rings, costs and wonder requirements still need explicit tracing.
+
+**G0-A partial progress, GAP-002 still OPEN. No mod code changed.**
