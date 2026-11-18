@@ -19,7 +19,7 @@
 
 **G0-A structure parity:** [27 original IDs ↔ 73 later navigation entries](./STRUCTURE_PARITY_27_VS_VIME.md) — exact-name matches vs unresolved possible successors, not implementation equivalence.
 
-**G0-A later tech recovery:** [verified technology-to-unlock gates](./VIME_TECH_GRAPH_RECOVERY_01.md) — full late prerequisite graph is image-only and still blocked.
+**G0-A later tech recovery:** [verified technology-to-unlock gates](./VIME_TECH_GRAPH_RECOVERY_01.md) and [visual transcription pass 02](./VIME_TECH_GRAPH_VISUAL_TRANSCRIPTION_02.md) — source image acquired, 66 ordinary labels and 22 wonder labels transcribed; exact directed prerequisites and costs still require validation.
 
 ## 1. Provenance and scope
 
