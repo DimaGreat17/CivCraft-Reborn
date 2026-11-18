@@ -141,6 +141,10 @@
 | G2-N11 | Нападение на переносимый груз NPC | Единственный учтённый исход груза и работы |
 | G2-N12 | Долгий кризис и восстановление | Город постепенно перестраивает задания; не удаляет историю |
 
+## D-053 — ROOM housing concept approval (2026-11-18)
+
+Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CONCEPT** as an automatic, server-authoritative room check: a usable bed, shelter, physical accessibility and safety. This is a recognition prerequisite, **not** a free NPC spawn or an approved numerical score. One physical bed must not become multiple slots through duplicate discovery events; actual occupancy policy, room geometry, allocation rights, danger thresholds, and unloaded-chunk processing remain DRAFT. New housing design: [P1 ROOM recognition](../05-roadmap/P1_ROOM_HOUSING_RECOGNITION_CONTRACT.md). G2-01 housing reservations, migrations and Loaded/Virtual conservation remain in force.
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
