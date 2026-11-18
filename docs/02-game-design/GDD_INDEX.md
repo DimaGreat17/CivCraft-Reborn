@@ -7,7 +7,7 @@ Each topic must have complete rules before design freeze.
 3. Camps, towns, secession, formation and collapse — [GDD-01: lifecycle of camp, settlement, province and independent civilization](./SETTLEMENT_PROVINCE_CIVILIZATION_LIFECYCLE_GDD_01.md) (**PROPOSED**, pending owner approval and G0 completion)
 4. Claims, culture, permissions and contested land
 5. Blueprints, buildings, construction and roads
-6. Citizens, households, professions and population
+6. Citizens, households, professions and population — [GDD-02: NPC identities, needs, housing, jobs, migration and Loaded/Virtual simulation](./NPC_POPULATION_AND_BEHAVIOR_GDD_02.md) (**PROPOSED**, 16 owner decisions outstanding)
 7. Production, currency, trading, logistics and taxation
 8. Research, technologies and eras — [interbranch dependencies, D-015](./TECHNOLOGY_PROGRESSION_RULES.md)
 9. Politics, diplomacy, treaties and alliances
