@@ -74,6 +74,20 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 - The dedicated-server build does **not** require Litematica/MaLiLib. Their separate resolution task `verifySchematicTestProfile -PschematicTest=true` is checked by its own workflow; this run alone does **not** prove the reference-mod test has passed.
 - Visual client GPU test and correct color/alpha behavior still require actual Minecraft runtime confirmation.
 
+## Stage-gated blueprints, manual placement and resource bill (2026-11-18)
+
+**Implementation branch:** `feat/p1-living-settlement`, pending CI and in-client acceptance.
+
+- On every right-click of a physical Camp Core the client asks the server for the **stage of that exact core** via `BlueprintStatusRequest`. The server verifies actual core block, near-player distance, CivCraft world flag, registration and owner, then replies with `BlueprintStatusResponse`. Unknown/invalid responses keep the catalog fail-closed. A client cannot grant itself a real settlement stage by picking an advanced menu item.
+- Unlocks: **before founding:** only HEART. **CAMP:** HEART, STORAGE, WORKSHOP, FARM, BEDROOM, SMALL_HOUSE. **SETTLEMENT:** all six base + BARRACKS, GRANARY, SMITHY, WATCHTOWER, WELL. The initial CAMP tier does **not** offer the developed storage, forge, longhouse or tower.
+- `CivCraftBlueprintScreen` shows only allowed plans, with async waiting text until the server responds. Other vanilla building remains possible; restricting the blueprint catalog does not magically prohibit all physical blocks in the vanilla game.
+- `CivCraftPlacementScreen` allows the selected plan to **move one block N/S/E/W**, **rotate ±90°**, and then render it into the game. Every position is transformed around its normalised footprint and checked against the actual camp radius. HEART does not move away from the physical core. The player chooses placement before manually laying any blocks.
+- `CivCraftMaterialsScreen` lists each material's **total required / already placed / inventory stock / still to obtain**. Inventory is an advisory local snapshot, not a resource reservation, and `FARMLAND` reports dirt + need for hoe; bed matches any vanilla bed block. There is no automatic crafting, free grant or automatic construction.
+- `BlueprintTransform` has independent JUnit tests for 90°/180°/270° footprints and boundary conditions; `BlueprintAccessTest` covers pre-camp/CAMP/SETTLEMENT unlocks. Interaction/screen layout still requires graphical Minecraft testing.
+- These are development-level stage tiers, **not final technology tree**. Gameplay benefits and the legitimacy of physical structures continue to be server-validated, irrespective of the client ghost preview.
+
+**Known limits:** client holograms are whole translucent cubes, not textured actual BlockState shapes. Item material estimate ignores crafting recipes, block orientation and items in public warehouse containers. Selected move/rotation currently lasts until the client hides or changes the core, not a persisted/server-owned construction order. The catalog stage is refreshed on clicking the center core; it does not dynamically push a promotion event to currently open menus.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
