@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
 
 /**
  * Move/rotate a ghost plan without changing physical Minecraft blocks.
@@ -68,8 +69,36 @@ public final class CivCraftPlacementScreen extends Screen {
                 b -> Minecraft.getInstance().gui.setScreen(null))
                 .bounds(x,y+150,310,20).build());
 
+        Button order = addRenderableWidget(Button.builder(
+                Component.literal("Поручить строительство NPC"),
+                b -> sendBuildingCommand(false))
+                .bounds(x,y+176,310,20).build());
+        Button register = addRenderableWidget(Button.builder(
+                Component.literal("Принять готовое здание"),
+                b -> sendBuildingCommand(true))
+                .bounds(x,y+201,310,20).build());
+
+        boolean functional = plan != CampBlueprintProjection.Plan.HEART;
+        try { FunctionalBuildingTemplates.Type.valueOf(plan.name()); }
+        catch(IllegalArgumentException e) { functional=false; }
+        order.active=functional;
+        register.active=functional;
+
         addRenderableWidget(Button.builder(Component.literal("Назад к каталогу"),
-                b -> onClose()).bounds(x,y+175,310,20).build());
+                b -> onClose()).bounds(x,y+226,310,20).build());
+    }
+
+    private void sendBuildingCommand(boolean register) {
+        CampBlueprintProjection.Plan plan=CampBlueprintProjection.selected();
+        var origin=CampBlueprintProjection.placedOrigin();
+        Minecraft game=Minecraft.getInstance();
+        if(plan==null||origin==null||game.getConnection()==null)return;
+        int quarterTurns=CampBlueprintProjection.rotationDegrees()/90;
+        String action=register?"building register":"construction order";
+        game.getConnection().sendCommand("civcraft camp "+action+" "+
+                plan.name()+" "+quarterTurns+" "+origin.getX()+" "+
+                origin.getY()+" "+origin.getZ());
+        game.gui.setScreen(null); // Let owner read real server result.
     }
 
     private String positionLabel() {
