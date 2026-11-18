@@ -26,7 +26,7 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 ## GDD review Round B (2026-11-18)
 
-[Round B proposal: nine state/technology/war/AI decisions](../02-game-design/GDD_REVIEW_ROUND_B_STATE_AND_TECH.md) prepared. **NOT APPROVED**; proposed solution to the P2/P3 province-research dependency is explicitly **not** a changed release scope until owner approval and G4 freeze. Round A remains approved, 19 overall questions still open.
+Owner explicitly approved all nine **conceptual** Round B options: [approved Round B](../02-game-design/GDD_REVIEW_ROUND_B_STATE_AND_TECH.md), [D-030…D-038](../../DECISIONS.md). **23 of 33 GDD questions APPROVED_CONCEPT; ten OPEN; zero FROZEN.** The principle that province promotion and all required early research ship together as a complete feature is approved, but **actual P2/P3 content and numbering have not changed and await G4**. Source-graph incompleteness and WAR-CONFLICT-001 remain blockers. No numeric balance was approved.
 
 ## GDD owner approval — Round A (2026-11-18)
 
