@@ -1,6 +1,8 @@
 package dev.civcraftreborn.settlement;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -12,6 +14,9 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 
@@ -32,6 +37,7 @@ import net.minecraft.world.level.block.CropBlock;
  */
 public final class CampWorkerSystem {
     private static long tick;
+    private static final Map<String,Long> LAST_ALARM = new HashMap<>();
     private static final int RADIUS=12;
     private CampWorkerSystem() {}
 
@@ -72,6 +78,8 @@ public final class CampWorkerSystem {
                     case FARMER -> farm(level,camp,workplace,villager);
                     case CRAFTSMAN -> craft(level,camp,workplace,villager);
                     case STOREKEEPER -> store(level,camp,workplace,villager,buildings.atCamp(camp));
+                    case WATCHMAN -> watch(level,camp,workplace,villager);
+                    case WATER_CARRIER -> water(level,camp,workplace,villager);
                     case BUILDER -> {}
                 }
                 break;
@@ -115,7 +123,8 @@ public final class CampWorkerSystem {
 
     private static void craft(ServerLevel level,CampRecord camp,
             BuildingRecord workshop,Villager villager) {
-        BlockPos furnacePos=target(workshop,4,0,2);
+        BlockPos furnacePos=workshop.type()==FunctionalBuildingTemplates.Type.SMITHY
+                ?target(workshop,5,0,3):target(workshop,4,0,2);
         if(!level.hasChunkAt(furnacePos)
                 ||!(level.getBlockEntity(furnacePos) instanceof Container furnace))return;
         if(!approach(villager,furnacePos))return;
@@ -160,11 +169,13 @@ public final class CampWorkerSystem {
         }
 
         for(BuildingRecord building:buildings) {
-            if(building.type()!=FunctionalBuildingTemplates.Type.WORKSHOP)continue;
+            if(building.type()!=FunctionalBuildingTemplates.Type.WORKSHOP
+                    &&building.type()!=FunctionalBuildingTemplates.Type.SMITHY)continue;
             if(!FunctionalBuildingTemplates.inspect(level,
                     new BlockPos(building.x(),building.y(),building.z()),
                     building.type(),building.rotation()).complete())continue;
-            BlockPos furnacePos=target(building,4,0,2);
+            BlockPos furnacePos=building.type()==FunctionalBuildingTemplates.Type.SMITHY
+                    ?target(building,5,0,3):target(building,4,0,2);
             if(!level.hasChunkAt(furnacePos)
                     ||!(level.getBlockEntity(furnacePos) instanceof Container furnace))continue;
             ItemStack output=furnace.getItem(2);
@@ -175,6 +186,84 @@ public final class CampWorkerSystem {
             }
             return;
         }
+    }
+
+    /**
+     * Watchtower has a real defensive purpose: a recruited, stationed watchman
+     * inspects loaded hostiles near the tower and warns actual camp players.
+     * No monster is spawned/removed and no free guard/goolem is generated.
+     */
+    private static void watch(ServerLevel level,CampRecord camp,
+            BuildingRecord tower,Villager villager) {
+        BlockPos post=target(tower,2,0,2);
+        if(!approach(villager,post))return;
+        if(level.getEntitiesOfClass(Monster.class,new AABB(post).inflate(20.0),
+                hostile->hostile.isAlive()).isEmpty())return;
+        long now=level.getGameTime();
+        long previous=LAST_ALARM.getOrDefault(camp.id(),-10000L);
+        if(now-previous<600)return;
+        LAST_ALARM.put(camp.id(),now);
+        for(var player:level.players()) {
+            if(player.blockPosition().distSqr(post)<48*48) {
+                player.sendSystemMessage(Component.literal(
+                        "CivCraft: watchman at "+camp.name()+" spotted hostile creatures!"));
+            }
+        }
+    }
+
+    /**
+     * Real water-carrier loop: picks one stored empty bucket, walks to the
+     * physical water source in a verified WELL, fills it, returns it to storage.
+     * Water itself follows normal vanilla source-water behavior.
+     */
+    private static void water(ServerLevel level,CampRecord camp,
+            BuildingRecord well,Villager villager) {
+        var bag=villager.getInventory();
+        for(int slot=0;slot<bag.getContainerSize();slot++) {
+            ItemStack stack=bag.getItem(slot);
+            if(stack.is(Items.WATER_BUCKET)) {
+                Located destination=findStorage(level,camp);
+                if(destination==null)return;
+                if(!approach(villager,destination.pos()))return;
+                if(insert(destination.container(),stack)) {
+                    bag.setChanged();
+                    destination.container().setChanged();
+                }
+                return;
+            }
+        }
+        for(int slot=0;slot<bag.getContainerSize();slot++) {
+            if(!bag.getItem(slot).is(Items.BUCKET))continue;
+            BlockPos source=target(well,2,-1,2);
+            if(!level.hasChunkAt(source)||!level.getBlockState(source).is(Blocks.WATER))
+                return;
+            if(!approach(villager,source.above()))return;
+            bag.setItem(slot,new ItemStack(Items.WATER_BUCKET,1));
+            bag.setChanged();
+            return;
+        }
+        Located empty=findStock(level,camp,Items.BUCKET);
+        if(empty==null)return;
+        if(!approach(villager,empty.pos()))return;
+        ItemStack one=new ItemStack(Items.BUCKET,1);
+        if(insert(bag,one)) {
+            empty.stack().shrink(1);
+            bag.setChanged();
+            empty.container().setChanged();
+        }
+    }
+
+    private static Located findStorage(ServerLevel level,CampRecord camp) {
+        BlockPos core=new BlockPos(camp.x(),camp.y(),camp.z());
+        for(BlockPos p:BlockPos.betweenClosed(core.offset(-RADIUS,-3,-RADIUS),
+                core.offset(RADIUS,3,RADIUS))) {
+            if(!level.hasChunkAt(p))continue;
+            var block=level.getBlockState(p);
+            if(!block.is(Blocks.CHEST)&&!block.is(Blocks.BARREL))continue;
+            if(level.getBlockEntity(p) instanceof Container container)
+                return new Located(p.immutable(),container,ItemStack.EMPTY);
+        }
+        return null;
     }
 
     private static boolean isWorkshopOutput(Item item) {
@@ -211,7 +300,7 @@ public final class CampWorkerSystem {
         return false;
     }
 
-    private record Located(Container container,ItemStack stack) {}
+    private record Located(BlockPos pos,Container container,ItemStack stack) {}
 
     /** Stock only from actually loaded camp containers, no virtual inventory. */
     private static Located findStock(ServerLevel level,CampRecord camp,Item item) {
@@ -222,7 +311,7 @@ public final class CampWorkerSystem {
             if(!(level.getBlockEntity(p) instanceof Container chest))continue;
             for(int slot=0;slot<chest.getContainerSize();slot++) {
                 ItemStack stack=chest.getItem(slot);
-                if(stack.is(item)&&!stack.isEmpty())return new Located(chest,stack);
+                if(stack.is(item)&&!stack.isEmpty())return new Located(p.immutable(),chest,stack);
             }
         }
         return null;
