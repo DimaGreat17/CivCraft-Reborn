@@ -77,4 +77,6 @@ The project owner supplied a readable 2048×1057 VimeWorld technology tree graph
 
 [Pass 05 — 19 named interbranch parent candidates](./VIME_TECH_GRAPH_INTERBRANCH_EDGES_PASS_05.md): 15 visually high-confidence, 4 likely; combined 68-edge subset has no detected cycles, **but full DAG is still not validated**.
 
+[Wonder branch pass 06](./VIME_WONDER_TECH_BRANCH_PASS_06.md) transcribes all 22 C5 wonder labels and printed ordinary technology gates from the owner-supplied diagram. The yellow dotted track is **nonsequential** per its legend; no preceding-wonder dependency should be invented. Several costs and special conditions still require cross-verification.
+
 **G0-A partial progress, GAP-002 still OPEN. No mod code changed.**
