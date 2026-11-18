@@ -3,7 +3,8 @@
   "package": "dev.civcraftreborn.client.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "CreateWorldWorldTabMixin"
+    "CreateWorldWorldTabMixin",
+    "CivCraftGhostRendererCleanupMixin"
   ],
   "injectors": {
     "defaultRequire": 1
