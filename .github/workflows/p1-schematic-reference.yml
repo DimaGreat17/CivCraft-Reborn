@@ -1,0 +1,30 @@
+name: P1 Litematica reference test dependencies
+
+on:
+  push:
+    branches: [feat/p1-living-settlement]
+    paths:
+      - 'build.gradle'
+      - '.github/workflows/p1-schematic-reference.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-required-reference-mods:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.8.0'
+      - name: Resolve BOTH reference mods for Minecraft 26.3
+        run: gradle verifySchematicTestProfile -PschematicTest=true --no-daemon
+      - name: Build CivCraft without reference mods
+        run: gradle build --no-daemon
