@@ -1,6 +1,6 @@
 # CivCraft Reborn — Game Design Document Index
 
-**Status: PROPOSED / NOT FROZEN (2026-11-18).** G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
+**Status: PARTIALLY APPROVED_CONCEPT / NOT FROZEN (2026-11-18).** The owner approved all 14 Round A concept choices (D-016…D-029). 19 other decisions remain OPEN; G0 and G2–G4 remain incomplete. G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
 
 ## Main document
 
