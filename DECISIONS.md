@@ -86,6 +86,12 @@ The owner approved **hybrid option C** for the camp founding interaction. See [P
 
 D-050 extends D-049 without replacing it: the central camp block establishes a candidate camp, blueprints define functional infrastructure, and ordinary houses/decorations remain freely buildable. No vanilla construction is silently converted into a paid blueprint; functional bonuses require actual validated structures. This concept approval does not authorize P1 implementation before P0 acceptance and P1 freeze.
 
+| D-051 | MODULES blueprint system: functional buildings are modular constructions with mandatory physical functional components; permitted geometry, size and appearance may vary within validated constraints | APPROVED_CONCEPT | Owner selected MODULES on 2026-11-18. Exact module catalog, mandatory block types, dimensions, rotations, material substitutions, thresholds and UI remain PROPOSED; see P1_MODULAR_BLUEPRINT_CONTRACT.md |
+
+## P1 modular blueprint approval (2026-11-18)
+
+D-051 refines D-050: no requirement that every building reproduce one rigid schematic, and no permission to activate a function from an arbitrary standalone block without the required module checks. Server-authoritative validation, physical Minecraft blocks and accounting still apply. No P1 code authorization or release signoff is implied.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
