@@ -26,7 +26,8 @@
 
 ## Owner approval rounds
 
-- **[Round A — living world: 14 design choices](./GDD_REVIEW_ROUND_A_LIVING_WORLD.md)** — variants, recommendations, dependencies; **AWAITING OWNER APPROVAL**.
+- **[Round A — living world: 14 concept choices](./GDD_REVIEW_ROUND_A_LIVING_WORLD.md)** — **APPROVED_CONCEPT by owner**; numerical tuning remains open.
+- **[Round B — technologies, government, war and AI: 9 choices](./GDD_REVIEW_ROUND_B_STATE_AND_TECH.md)** — recommendations, variants and source conflicts; **AWAITING OWNER APPROVAL**.
 - [All 33 outstanding decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md) — no decisions silently accepted.
 
 ## Supporting design constraints and source catalogs
