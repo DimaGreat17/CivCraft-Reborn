@@ -9,6 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
 
@@ -21,7 +23,8 @@ public final class CampCommands {
                 .then(Commands.literal("found").executes(ctx -> found(ctx.getSource())))
                 .then(Commands.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(Commands.literal("inspect").executes(ctx -> inspect(ctx.getSource())))
-                .then(Commands.literal("promote").executes(ctx -> promote(ctx.getSource())));
+                .then(Commands.literal("promote").executes(ctx -> promote(ctx.getSource())))
+                .then(Commands.literal("recruit").executes(ctx -> recruit(ctx.getSource())));
     }
 
     private static int found(CommandSourceStack source) {
@@ -66,6 +69,62 @@ public final class CampCommands {
             return 1;
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source, "Only a player can found a camp.");
+        }
+    }
+
+    private static int recruit(CommandSourceStack source) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            CampSavedData store = CampSavedData.get(source.getServer());
+            CampRecord camp = store.ownedBy(player.getUUID()).orElse(null);
+            if (camp == null) return fail(source, "Found your camp first.");
+            if (!player.serverLevel().dimension().identifier().toString().equals(camp.dimension())) {
+                return fail(source, "You must be in the camp's dimension.");
+            }
+            BlockPos center = new BlockPos(camp.x(), camp.y(), camp.z());
+            if (player.blockPosition().distSqr(center) > 24 * 24) {
+                return fail(source, "Return to your camp to recruit.");
+            }
+            var housing = HousingScanner.scan(player.serverLevel(), camp);
+            if (!housing.complete()) return fail(source, "Housing is pending full verification.");
+            CitizenSavedData citizens = CitizenSavedData.get(source.getServer());
+            int registered = citizens.atCamp(camp).size();
+            if (housing.capacity() <= registered) {
+                return fail(source, "No free, verified housing capacity (4 real floor cells/NPC).");
+            }
+            if (!has(player, Items.BREAD, 4)) {
+                return fail(source, "Each recruited resident requires 4 real bread in your inventory.");
+            }
+
+            var candidates = player.serverLevel().getEntitiesOfClass(Villager.class,
+                    new AABB(center).inflate(12.0),
+                    villager -> villager.isAlive() && citizens.byEntity(villager.getUUID()).isEmpty());
+            if (candidates.isEmpty()) {
+                return fail(source, "No unregistered living villager nearby. NPCs are never spawned for free.");
+            }
+            var freeBed = HousingScanner.verifiedBedHeads(player.serverLevel(), camp).stream()
+                    .filter(bed -> !citizens.claimedBed(camp,
+                            bed.getX(), bed.getY(), bed.getZ()))
+                    .findFirst();
+            if (freeBed.isEmpty()) {
+                return fail(source, "No unassigned, reachable, sheltered bed available.");
+            }
+
+            Villager villager = candidates.getFirst();
+            BlockPos bed = freeBed.get();
+            CitizenRecord record = CitizenRecord.recruit(villager.getUUID(), camp,
+                    bed.getX(), bed.getY(), bed.getZ(), player.level().getGameTime());
+            // No world entity creation, no duplicate population and no virtual free items.
+            remove(player, Items.BREAD, 4);
+            citizens.add(record);
+            villager.getNavigation().moveTo(bed.getX() + 0.5, bed.getY() + 1,
+                    bed.getZ() + 0.5, 0.9);
+            source.sendSuccess(() -> Component.literal(
+                    "Registered physical villager as citizen " + record.id()
+                    + " with a real bed. This villager keeps vanilla AI and needs."), false);
+            return 1;
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            return fail(source, "Only players can recruit existing villagers.");
         }
     }
 
