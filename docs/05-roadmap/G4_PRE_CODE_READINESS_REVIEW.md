@@ -56,6 +56,10 @@
 | PRE-13 | HIGH | Historical numbers previously described in GDD can be mistaken for accepted thresholds | Every number tagged SOURCE_REFERENCE vs BALANCE_APPROVED |
 | PRE-14 | HIGH | Conflicting source dates/versions (old Java, Vime 1.0.9 visual, later 1.9.2 wiki) | Store SOURCE_VERSION and confidence, no silent merge |
 
+## P0-focused follow-up (2026-11-18)
+
+Prepared [P0 0.1 exact scope proposal](./P0_0_1_SCOPE_AND_SIGNOFF_PROPOSAL.md) and [G3 P0 Fabric feasibility checklist](../04-architecture/G3_P0_TOOLCHAIN_FEASIBILITY_PLAN.md). They **reduce the number of G0 legacy mechanics needed for the first patch** by excluding tech, civs, NPC and late-game assets, but **do not close** P0-D01…07 or demonstrate actual compatibility, save recovery, permissions and launch. **Verdict remains G4 NO-GO** until bounded P0 owner signoff plus feasibility/testing and explicit code permission. The legacy G0 graph and catalog are postponed *from P0 scope*, not marked audited or waived for later patches.
+
 ## 4. Pre-code readiness verdict
 
 **NO-GO for implementation of CivCraft Reborn gameplay.** Это не означает, что проект не спроектирован. Все основные подсистемы описаны и 33 концептуальных решения приняты, но **полная проектная готовность отличается от документного покрытия**. Реализация может начаться только по отдельному прямому разрешению владельца **после** проверки указанного выбранного патча и gates.
