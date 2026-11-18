@@ -20,6 +20,14 @@ P0 0.1 Foundation → P1 0.2 Living Settlement → P2 0.3 Civilization Systems �
 
 The sequence is preliminary and can be revised *during design* based on dependencies and the legacy feature-parity audit. Once frozen, it is governed by the change-control policy.
 
+## G0 comprehensive review (2026-11-18)
+
+- [Full source coverage and gate verdict](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md): **G0 still IN PROGRESS**, all 18 gaps classified.
+- [73 late building evidence ledger](../01-legacy-audit/G0_73_BUILDING_COVERAGE_LEDGER.md): 19 selectively article-described, 54 index-only; not complete parity.
+- [Late tech graph validation](../01-legacy-audit/G0_TECH_GRAPH_VALIDATION_PASS_13.md): 66 labels, 68 partial edge candidates, 7 isolated; DAG incomplete.
+- [28 wonders construction audit](../01-legacy-audit/G0_WONDER_CONSTRUCTION_MATRIX_PASS_11.md): 22 accessible article cards, 6 unavailable.
+- [World mechanics and runtime risk passes](../01-legacy-audit/G0_WORLD_SYSTEMS_LATE_PASS_12.md), [source risks](../01-legacy-audit/G0_SOURCE_RUNTIME_AND_RISKS_PASS_10.md).
+
 ## Current priority
 
 Finish G0 rather than writing mod code. See [G0 completeness / 18-gap closure register](../01-legacy-audit/G0_COMPLETENESS_GAP_REGISTER.md), [original audit](../01-legacy-audit/LEGACY_AUDIT.md) and [later VimeWorld wiki audit](../01-legacy-audit/VIMEWORLD_WIKI_AUDIT.md). G0-A identity mapping of all 27 old building IDs is done but behavioral parity remains open; partial later technology-to-building gates verified, research-tree image now user-supplied; 66 ordinary labels and 22 wonder entries visually transcribed, but 49 same-track edge candidates recorded; 8 interbranch visual gate groups logged; 19 named cross-branch candidate edges added (15 high confidence, 4 tentative), and combined 68-edge subset checked without cycles; remaining white-ring inputs and costs still require verification. Next: detailed per-feature effects/tech graph source retrieval, worldgen/NPC/permissions/license blockers.
