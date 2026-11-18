@@ -95,3 +95,5 @@ Nation selection and governments are different systems. Talents chosen upon capi
 - [Taxation, governance and revolution: pass 05](./TAXATION_REVOLUTION_GOVERNANCE_PASS_05.md): legacy Java trace of taxable deposits, science allocation, daily upkeep and revolution; VimeWorld occupation rights, tax commands and government timing differences.
 
 - [Diplomacy, war and sovereignty: pass 06](./DIPLOMACY_WAR_CONSEQUENCES_PASS_06.md): five source-confirmed diplomacy states, peace/treaty requests, war windows, casual-mode distinction, conquest and liberation; **WAR-CONFLICT-001** records old-code vs later-wiki capital liberation divergence.
+
+- [Victory conditions: pass 07](./VICTORY_CONDITIONS_PASS_07.md): four old-code win conditions plus VimeWorld economic/religious/endgame changes; verified conquest fraction counts **civilizations**, not percentage of physical map area; D-014 finite/endless comparison.
