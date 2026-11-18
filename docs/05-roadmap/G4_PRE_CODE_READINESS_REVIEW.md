@@ -2,6 +2,8 @@
 
 **2026-11-18 · REVIEW COMPLETE AS DOCUMENT / G4 NO-GO FOR CODE.** Проверка проектной готовности: [DECISIONS](../../DECISIONS.md), [Master GDD](../02-game-design/CIVCRAFT_REBORN_MASTER_GDD.md), [G2 index](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md), [G3 architecture](../04-architecture/G3_00_ARCHITECTURE_BLUEPRINT.md), [G0 audit](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md).
 
+**Интеграционные проверки:** [20 planned cross-system tests](./PRE_CODE_INTEGRATION_VERIFICATION_MATRIX.md) — это тест-план, не запуск проверок.
+
 ## 1. Что действительно завершено
 
 | Артефакт | Доказательство | Verdict |
