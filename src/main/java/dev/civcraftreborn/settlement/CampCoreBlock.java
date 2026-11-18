@@ -35,7 +35,7 @@ public final class CampCoreBlock extends Block {
             return;
         }
 
-        StarterGrantSavedData grants = StarterGrantSavedData.get(player.getServer());
+        StarterGrantSavedData grants = StarterGrantSavedData.get(player.level().getServer());
         if (!grants.registerPlacement(player.getUUID())) return;
 
         ItemStack obsidian = new ItemStack(Items.OBSIDIAN, STARTER_OBSIDIAN);
