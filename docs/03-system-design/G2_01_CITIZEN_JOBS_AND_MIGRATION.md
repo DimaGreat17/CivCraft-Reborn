@@ -173,6 +173,10 @@ Design candidate: [Housing Regions and Shared Space](../05-roadmap/P1_HOUSING_RE
 
 Comfort is an independent qualitative assessment of verified housing and informs only **housing-related resident satisfaction** through NeedsEvaluator. D-054 still forbids extra capacity; D-017 FOOD/REST/SAFETY remain separate real needs. GDD-02 NPC-D12 treats city happiness separately — do not silently create continuous individual morale or city-wide happiness bonuses. Incomplete world/Loaded↔Virtual state never awards new positive comfort; changes are event-driven, bounded and versioned. Actual thresholds, gameplay consequences and timing remain NOT FROZEN. [P1 Housing Comfort & Needs](../05-roadmap/P1_HOUSING_COMFORT_AND_NEEDS_DESIGN.md).
 
+## P1 integrated Housing + Diagnostics (draft addendum, 2026-11-18)
+
+The existing HOME-01 and needs contracts remain authoritative. The [integrated P1 housing domain contract](G2_P1_HOUSING_INTEGRATED_DOMAIN_CONTRACT.md) consolidates the approved D-053…D-059 and delegated D-060…D-066 into one proposed validation/assignment pipeline. [Housing diagnostics and acceptance](../05-roadmap/P1_HOUSING_DIAGNOSTICS_AND_ACCEPTANCE_MATRIX.md) and [G3 Fabric feasibility spikes](../04-architecture/G3_P1_HOUSING_FABRIC_FEASIBILITY_AND_SPIKE_PLAN.md) are design/test plans, **not passed test evidence**. No new P1 coding permission.
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
