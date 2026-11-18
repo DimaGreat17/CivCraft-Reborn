@@ -1,8 +1,8 @@
 # GDD Round C — Победы, религии, нации, шпионаж, события и интерфейс
 
-**Дата:** 2026-11-18. **Статус:** `READY_FOR_OWNER_REVIEW / NOT APPROVED`. Предложение подготовлено на основе [GDD-09](./GDD_09_VICTORY_RELIGION_EVENTS_ENDGAME.md), [GDD-10](./GDD_10_PLAYER_EXPERIENCE_UI_MULTIPLAYER.md), [GDD-12](./GDD_12_ESPIONAGE_NATIONS_EXPLORATION.md), [GDD-13](./GDD_13_SCOPE_TRACEABILITY_MATRIX.md) и [реестра 33 решений](./GDD_APPROVAL_AND_OPEN_DECISIONS.md). Утверждённые Round A/B сохраняют силу; **Round C владелец пока не утверждал**.
+**Дата:** 2026-11-18. **Статус:** `APPROVED_CONCEPT / NOT FROZEN`. Владелец явно утвердил все семь рекомендованных вариантов A ([D-039…D-045](../../DECISIONS.md)); предложение подготовлено на основе [GDD-09](./GDD_09_VICTORY_RELIGION_EVENTS_ENDGAME.md), [GDD-10](./GDD_10_PLAYER_EXPERIENCE_UI_MULTIPLAYER.md), [GDD-12](./GDD_12_ESPIONAGE_NATIONS_EXPLORATION.md), [GDD-13](./GDD_13_SCOPE_TRACEABILITY_MATRIX.md) и [реестра 33 решений](./GDD_APPROVAL_AND_OPEN_DECISIONS.md). Утверждённые Round A/B сохраняют силу; **Round C утверждён владельцем на концептуальном уровне; содержимое чисел и G4 остаётся открытым**.
 
-## Семь вариантов на согласование
+## Семь утверждённых концептуальных вариантов A
 
 | ID | Область | A — рекомендованный вариант | B — альтернатива | Рекомендация | Основание |
 |---|---|---|---|---|---|
@@ -43,13 +43,13 @@
 5. **D-002/D-037:** NPC соперничают по тем же условиям побед, снабжения, исследований и чудес, что и игрок.
 6. **D-012:** каждый выпущенный крупный патч полностью работает внутри заявленной границы; не выдавать пустой экран исследования или недействующую победу за готовый контент.
 
-## Приёмка решения Round C
+## Результат решения Round C
 
-Если владелец примет все семь вариантов A:
+**2026-11-18: владелец утвердил все семь вариантов A.**
 - только GDD-021…025, GDD-028 и GDD-030 переходят в `APPROVED_CONCEPT`;
 - реестр DECISIONS.md получает D-039…D-045;
 - разделы GDD-09/10/12/13, Master, Roadmap обновляются;
 - GDD-027, GDD-031, GDD-033 остаются **OPEN**;
 - численные ставки, часы, формулы, рецепты, недоступные материалы и фактические границы P0/P7 остаются **не утверждёнными**.
 
-**G0 OPEN; GDD NOT FROZEN; gameplay code NOT STARTED.**
+**Round C: 7/7 APPROVED_CONCEPT. G0 OPEN; GDD NOT FROZEN; gameplay code NOT STARTED.**
