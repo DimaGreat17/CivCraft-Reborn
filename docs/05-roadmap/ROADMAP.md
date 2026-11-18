@@ -20,6 +20,6 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 ## Current priority
 
-Finish G0 rather than writing mod code. See [G0 completeness / 18-gap closure register](../01-legacy-audit/G0_COMPLETENESS_GAP_REGISTER.md), [original audit](../01-legacy-audit/LEGACY_AUDIT.md) and [later VimeWorld wiki audit](../01-legacy-audit/VIMEWORLD_WIKI_AUDIT.md). Focus next on exhaustive feature parity and later-era technology prerequisite graph, plus worldgen/NPC/permissions/license blockers.
+Finish G0 rather than writing mod code. See [G0 completeness / 18-gap closure register](../01-legacy-audit/G0_COMPLETENESS_GAP_REGISTER.md), [original audit](../01-legacy-audit/LEGACY_AUDIT.md) and [later VimeWorld wiki audit](../01-legacy-audit/VIMEWORLD_WIKI_AUDIT.md). G0-A identity mapping of all 27 old building IDs is done but behavioral parity remains open; partial later technology-to-building gates verified, complete research tree image not accessible. Next: detailed per-feature effects/tech graph source retrieval, worldgen/NPC/permissions/license blockers.
 
 Never mark a gate or patch complete without reproducible evidence and owner approval.
