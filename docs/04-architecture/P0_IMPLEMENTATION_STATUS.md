@@ -13,7 +13,8 @@
 - Dedicated server retains pre-world defaults file for first creation.
 - Typed P0 model with three sizes, two session modes, schema validation and Codec; no victory evaluator.
 - WorldBorder centered explicitly at (0,0) and sized by the selected **side length**.
-- Read-only server-side `/civcraft worldinfo` command for saved mode, border, schema and victory unavailability.
+- Separate `FoundationWorldIdentitySavedData` stores stable per-world UUID and vanilla seed with a fail-closed seed mismatch check. This still needs real persistence and corruption tests.
+- Read-only server-side `/civcraft worldinfo` command for saved mode, world UUID/seed, border, schema and victory unavailability.
 - Unit tests for config parsing, all six atomic write/read paths, Codec roundtrips and unknown schema.
 - `scripts/p0_world_restart_smoke.py`: non-destructive dedicated-world create/stop/restart check. Optional `.github/workflows/p0-world-matrix.yml` generates all six cases. **Not yet executed or confirmed green**.
 
@@ -29,7 +30,7 @@
 2. Run all six real worlds through save/stop/restart/rejoin; confirm their mode/size and physical border. Optional matrix harness may require adjusting stdin forwarding depending on Loom `runServer`; failure should remain visible rather than be ignored.
 3. Dedicated and singleplayer spawn/border-edge, client spoof and actual server persistence tests, not just JUnit.
 4. Crash/corrupt `SavedData` recovery that never silently resets an existing world; schema migration/backup path.
-5. Define/reuse stable `WorldId` and seed from vanilla authoritative world metadata with documented validation; no accidental reassignment.
+5. Validate persisted WorldId/seed through actual save/restart, copied-world, corrupt-data and schema-migration scenarios; the new UUID/seed SavedData is implemented but not yet proven safe under failure injection.
 6. Reproducible Gradle wrapper and dependency/licensing review (the CI currently installs Gradle 9.8 itself).
 7. Rebase/merge up-to-date `main`, rerun CI, get explicit owner release acceptance.
 
