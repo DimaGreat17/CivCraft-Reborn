@@ -7,6 +7,10 @@
 
 [D-045](../../DECISIONS.md) keeps the world-creation FINITE/SANDBOX selection in the approved concept, but **P0 must not advertise an unimplemented victory as working**. If the completion functionality is not yet available, clearly indicate its inactive status and decide at G4 whether creating a usable FINITE world must be postponed. No actual major-patch release boundaries, victory dates, success conditions, or deployment were approved.
 
+## Round D concept approval (2026-11-18)
+
+[D-046–D-048](../../DECISIONS.md) approve Minecraft Java + Fabric as a **target concept without a pinned stable version**, complete player/NPC private-enterprise and guild systems as eventual scoped features, and original implementation/assets with file-level rights review before external reuse. **These do not change P0–P7 patch scopes or completion statuses.** Detailed versions, dependencies, contract terms, benchmarks and license permissions remain open to G0/G2/G3/G4.
+
 ## Non-negotiable rule
 
 **Only one development stage may be active at a time. A later major patch cannot enter implementation until the preceding patch is feature-complete, integrated, tested, documented, released and explicitly accepted.**
