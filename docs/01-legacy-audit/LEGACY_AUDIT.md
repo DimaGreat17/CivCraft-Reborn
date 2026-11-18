@@ -1,7 +1,7 @@
 # CivCraft Legacy Audit — Phase 1: Source and configuration reconnaissance
 
 **Date:** 2026-11-18  
-**State:** IN PROGRESS — initial config inventory completed, source-code behavioral audit pending  
+**State:** IN PROGRESS — config inventory and targeted Java/wiki behavioral audit passes completed; exhaustive per-feature parity, runtime behavior and licensing remain open  
 **Upstream:** [netizen539/civcraft](https://github.com/netizen539/civcraft), default branch `master`  
 **Config inventory:** [CONFIG_INVENTORY.md](./CONFIG_INVENTORY.md)
 
@@ -14,6 +14,8 @@
 **Later version (wiki-only):** [VimeWorld wiki audit](./VIMEWORLD_WIKI_AUDIT.md) — separate source, not equivalent to verified old source code.
 
 **Cross-generation comparison:** [Old code ↔ VimeWorld wiki matrix](./GENERATION_COMPARISON_MATRIX.md) — source-by-source comparison, proposals not approved.
+
+**G0 closure review:** [Completeness, Gap Register and Exit Criteria](./G0_COMPLETENESS_GAP_REGISTER.md) — 18 prioritized gaps, contradictions and evidence-based exit checklist; G0 NOT closed.
 
 ## 1. Provenance and scope
 
@@ -83,7 +85,7 @@ Values might be historical, disabled or overridden in other builds. Their semant
 
 No subsystem should be marked fully audited based only on its YAML file.
 
-## 6. Outstanding source-code audit tasks
+## 6. Outstanding source-code audit tasks (initial plan; see updated gap register above)
 
 1. Inspect `civcraft/src/` Java packages for the configuration loaders, town and civ models, commands and permissions.
 2. Cross-reference each building, technology, wonder and trade good ID with runtime classes and handlers.
