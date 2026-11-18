@@ -12,6 +12,9 @@ Status: `APPROVED_CONCEPT` / `PROPOSED` / `FROZEN` / `NEEDS_AUDIT`.
 | D-006 | Latest stable Minecraft + Fabric | PROPOSED | Pin only after toolchain audit |
 | D-007 | Autonomous village vertical slice | PROPOSED | Implementation milestone, not final scope |
 | D-008 | Complete GDD and system specs before core coding | APPROVED_CONCEPT | Design-first workflow |
+| D-009 | Code must prioritize readability, extensibility, testability and measured optimization | APPROVED_CONCEPT | Engineering standards documented; technical choices remain proposed |
+| D-010 | Separate domain rules from Fabric/Minecraft APIs and persistence | PROPOSED | Architecture gate review required |
+| D-011 | Do not copy legacy code/assets before file-level rights review | PROPOSED | Root GPL-2.0 conflicts with notices in inspected Java files; clarify |
 
 ## Change control
 
