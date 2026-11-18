@@ -7,10 +7,10 @@
 | Gate | Deliverable | Exit criteria | Status |
 |---|---|---|---|
 | G0 | Original CivCraft code audit + VimeWorld wiki audit | Verified, provenance-labelled feature inventory and comparison | IN PROGRESS |
-| G1 | Game Design Document | Full approved mechanics, options, edge cases | NOT STARTED |
-| G2 | System Design Documents | Contracts, data, transitions, tests and dependencies | NOT STARTED |
-| G3 | Technical architecture | Storage, LOD, scheduler, networking, perf budgets | NOT STARTED |
-| G4 | Design freeze | Contradiction audit, scope lock, explicit approval | NOT STARTED |
+| G1 | Game Design Document | Full approved mechanics, options, edge cases | CONCEPT APPROVED 33/33; NOT FROZEN |
+| G2 | System Design Documents | Contracts, data, transitions, tests and dependencies | 12/12 DRAFT DOCS; NOT VERIFIED OR FROZEN |
+| G3 | Technical architecture | Storage, LOD, scheduler, networking, perf budgets | ARCHITECTURE DRAFT; FEASIBILITY/BENCHMARKS NOT TESTED |
+| G4 | Design freeze | Contradiction audit, scope lock, explicit approval | PRE-CODE AUDIT CONDUCTED; NO-GO / NOT FROZEN |
 
 **New G0-A wonder evidence:** [22 wonder technologies and their source-image gates](../01-legacy-audit/VIME_WONDER_TECH_BRANCH_PASS_06.md). The C5 branch is nonsequential; wonder research, construction and victory prerequisites remain separate for GDD approval.
 
@@ -19,6 +19,10 @@
 P0 0.1 Foundation → P1 0.2 Living Settlement → P2 0.3 Civilization Systems → P3 0.4 Research & Culture → P4 0.5 Independent Rivals → P5 0.6 Diplomacy & Warfare → P6 0.7–0.9 Legacy Completion → P7 1.0 Stable.
 
 The sequence is preliminary and can be revised *during design* based on dependencies and the legacy feature-parity audit. Once frozen, it is governed by the change-control policy.
+
+## Pre-code documentation handoff (2026-11-18)
+
+Owner requested the **full documentation process through the stage immediately before code**. Generated all [G2 contracts 01–12](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md), [G3 architectural outline](../04-architecture/G3_00_ARCHITECTURE_BLUEPRINT.md), [G3 recovery](../04-architecture/G3_01_PERSISTENCE_TRANSACTION_RECOVERY.md), [simulation/performance](../04-architecture/G3_02_SIMULATION_SCHEDULER_PERFORMANCE.md) and [network, content and rights](../04-architecture/G3_03_NETWORK_SECURITY_CONTENT_PROVENANCE.md). Draft [dependency-safe patch plan](./PATCH_DEPENDENCY_AND_ACCEPTANCE_PLAN.md) and [parameter register](./BALANCE_AND_SOURCE_PARAMETER_REGISTER.md). [G4 final readiness review](./G4_PRE_CODE_READINESS_REVIEW.md) produced **NO-GO for gameplay code** because G0 source gaps, detailed approved balances, Fabric toolchain feasibility, crash-safe storage and benchmarks are unresolved. G2 and G3 have **document coverage, not implementation-ready validation**. No code has been modified.
 
 ## G0 source retrieval follow-up
 
