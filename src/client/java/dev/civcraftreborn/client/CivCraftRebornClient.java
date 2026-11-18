@@ -20,11 +20,10 @@ public final class CivCraftRebornClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(BlueprintStatusResponse.TYPE,
                 (payload, context) -> context.client().execute(() ->
                         CampBlueprintProjection.setServerStage(payload.core(), payload.stage())));
-        // Unverified custom Renderpearl GPU pass can crash real clients on first ghost.
-        // Keep it opt-in for reproduction, default to safe vanilla particle outlines.
-        if (Boolean.getBoolean("civcraft.experimentalFullBlockGhosts")) {
-            CivCraftGhostBlockRenderer.register();
-        }
+        // The original Renderpearl upload during an existing render pass is
+        // CONFIRMED to crash 26.3 clients (2026-11-18 crash report, line 116).
+        // Do not register the experimental GPU handler until its lifecycle
+        // is redesigned and verified in a real graphical client.
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (!world.isClientSide() ||
                     !world.getBlockState(hit.getBlockPos()).is(CampBlocks.CAMP_CORE)) {
