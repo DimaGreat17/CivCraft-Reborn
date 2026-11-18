@@ -12,6 +12,12 @@
 - `simulation`: scheduling, LOD, persistence
 - `client`: visualization and UI
 
+## World-bound simulation
+
+- New-world size presets: **10k×10k**, **15k×15k**, **25k×25k** Overworld blocks. See [world size presets](./WORLD_SIZE_PRESETS.md).
+- World border is server-authoritative; settlement generation, claim, planning and movement stay in bounds.
+- Borders do not remove the need for active-entity, pathfinding, chunk generation and background AI budgets.
+
 ## Hard invariants
 
 1. One authoritative citizen record per resident.
