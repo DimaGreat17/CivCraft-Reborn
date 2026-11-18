@@ -29,7 +29,7 @@
 
 **P1 player-founded camp detail:** [P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md](./P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md) (D-049 approved concept; further details proposed). 
 
-**P1 construction design:** [P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md](./P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md) (D-050 concept approved). **Modular blueprint format:** [P1_MODULAR_BLUEPRINT_CONTRACT.md](./P1_MODULAR_BLUEPRINT_CONTRACT.md) (MODULES D-051 concept approved; geometry, catalogue and balancing proposed). P1 freeze and P0 acceptance remain mandatory.
+**P1 construction design:** [P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md](./P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md) (D-050 concept approved). **Modular blueprint format:** [P1_MODULAR_BLUEPRINT_CONTRACT.md](./P1_MODULAR_BLUEPRINT_CONTRACT.md) (MODULES D-051 concept approved; geometry, catalogue and balancing proposed). **HYBRID material choice:** [P1_HYBRID_MATERIALS_AND_FUNCTIONAL_BLOCKS.md](./P1_HYBRID_MATERIALS_AND_FUNCTIONAL_BLOCKS.md) (D-052 concept approved; exact functional blocks and recipes proposed). P1 freeze and P0 acceptance remain mandatory.
 
 ## Definition of Done per patch
 
