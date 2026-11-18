@@ -1,6 +1,6 @@
 # CivCraft Reborn — Game Design Document Index
 
-**Status: PARTIALLY APPROVED_CONCEPT / NOT FROZEN (2026-11-18).** The owner approved all 14 Round A concept choices (D-016…D-029). 19 other decisions remain OPEN; G0 and G2–G4 remain incomplete. G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
+**Status: PARTIALLY APPROVED_CONCEPT / NOT FROZEN (2026-11-18).** The owner approved 14 Round A (D-016…D-029) and nine Round B (D-030…D-038) concept choices. Ten other decisions remain OPEN; G0 and G2–G4 remain incomplete. G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
 
 ## Main document
 
@@ -27,12 +27,12 @@
 ## Owner approval rounds
 
 - **[Round A — living world: 14 concept choices](./GDD_REVIEW_ROUND_A_LIVING_WORLD.md)** — **APPROVED_CONCEPT by owner**; numerical tuning remains open.
-- **[Round B — technologies, government, war and AI: 9 choices](./GDD_REVIEW_ROUND_B_STATE_AND_TECH.md)** — recommendations, variants and source conflicts; **AWAITING OWNER APPROVAL**.
+- **[Round B — technologies, government, war and AI: 9 concept choices](./GDD_REVIEW_ROUND_B_STATE_AND_TECH.md)** — **APPROVED_CONCEPT** by owner; costs, contested historical details and patch numbering remain open.
 - [All 33 outstanding decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md) — no decisions silently accepted.
 
 ## Supporting design constraints and source catalogs
 
-- [33 unresolved owner decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md)
+- [33 owner decisions: 23 APPROVED_CONCEPT, 10 OPEN](./GDD_APPROVAL_AND_OPEN_DECISIONS.md)
 - [D-015 interbranch technology research](./TECHNOLOGY_PROGRESSION_RULES.md)
 - [D-014 finite victory vs endless sandbox](./WORLD_SESSION_MODES.md)
 - [D-013 world size presets](../04-architecture/WORLD_SIZE_PRESETS.md)
