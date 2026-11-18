@@ -12,6 +12,10 @@
 
 [Read P0/0.1 scope and exit criteria](./P0_0_1_SCOPE_AND_SIGNOFF_PROPOSAL.md). First patch deliberately excludes citizen/game economy/claims; all enabled functions (world choices, server border and state persistence) must work completely. This is a **candidate for explicit owner review**, not a changed approved release freeze. Minecraft 26.3 is a [toolchain verification candidate](../04-architecture/G3_P0_TOOLCHAIN_FEASIBILITY_PLAN.md), not a confirmed build. Session mode selection is stored and non-working FINITE outcomes must be truthfully disclosed per D-045.
 
+## P0 implementation audit (2026-11-18)
+
+[Independent P0/0.1 implementation audit](./P0_0_1_IMPLEMENTATION_AUDIT_2026-11-18.md) reviewed PR #6 and real code on `feat/p0-foundation-compatibility`. **Verdict: P0 release blocked.** An earlier dedicated-server CI run passed, but world-creation GUI, six real save/restart scenarios, full border and client security verification, and crash recovery remain open. Feature branch is diverged from `main`; avoid merge/release until tested and owner accepts. P1 remains blocked.
+
 ## Предлагаемые релизные контрольные пакеты
 
 | Patch candidate | Scope | Gate/tests |
