@@ -156,8 +156,7 @@ public final class CampBlueprintProjection {
     private static List<Step> buildSteps(Plan plan) {
         // Full structural layouts for starter functional facilities are shared
         // with the server. No decorative two-block fake facility previews.
-        if (plan == Plan.STORAGE || plan == Plan.WORKSHOP || plan == Plan.FARM
-                || plan == Plan.BEDROOM || plan == Plan.SMALL_HOUSE) {
+        if (plan != Plan.HEART) {
             FunctionalBuildingTemplates.Type type =
                     FunctionalBuildingTemplates.Type.valueOf(plan.name());
             return FunctionalBuildingTemplates.cells(type).stream()
