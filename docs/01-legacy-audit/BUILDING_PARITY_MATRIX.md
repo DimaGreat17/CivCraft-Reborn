@@ -25,9 +25,9 @@
 | `ti_trade_outpost` | Trade Outpost | 25000 | 2000 | `tech_trade` | [TradeOutpost](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/TradeOutpost.java) | bonus trade-good handling | CODE-METHODS |
 | `ti_fishing_boat` | Fishing Boat | 25000 | 2000 | `tech_trade` | [FishingBoat](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/FishingBoat.java) | trade outpost-style construction | CODE-METHODS |
 | `ti_farm` | Farm | 2500 | 800 | `tech_agriculture` | [Farm](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/Farm.java) | farm growth and regeneration | CODE-METHODS |
-| `ti_pasture` | Pasture | 2500 | 1000 | `tech_hunting` | not yet mapped | requires class mapping | CONFIG |
-| `ti_wall` | Wall | 50 | 300 | `tech_advanced_masonry` | not yet mapped | special per-segment tile; no generic schematic | CONFIG |
-| `ti_road` | Road | 300 | 500 | `tech_masonry` | not yet mapped | special per-segment tile; no generic schematic | CONFIG |
+| `ti_pasture` | Pasture | 2500 | 1000 | `tech_hunting` | [Pasture](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/Pasture.java) | pasture chunk and breed-cap/entity tracking; deeper runtime effects pending | CODE-METHODS |
+| `ti_wall` | Wall | 50 | 300 | `tech_advanced_masonry` | [Wall](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/Wall.java) | procedural segments, preview, protected-block restrictions, repair/undo | CODE-METHODS |
+| `ti_road` | Road | 300 | 500 | `tech_masonry` | [Road](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/road/Road.java) | variable-length segments, geometry, costs, protected-block checks and undo | CODE-METHODS |
 | `s_arrowtower` | Arrow Tower | 50000 | 2500 | `tech_artillery` | [ArrowTower](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/ArrowTower.java) | projectile defensive stats | CODE-METHODS |
 | `s_cannontower` | Cannon Tower | 250000 | 5000 | `tech_advanced_artillery` | [CannonTower](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/CannonTower.java) | cannon projectile component | CODE-IDENTIFIED |
 | `s_scouttower` | Scout Tower | 15000 | 1500 | `tech_masonry` | [ScoutTower](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/structure/ScoutTower.java) | scout/report periodic processing | CODE-METHODS |
@@ -51,8 +51,8 @@
 
 ## Completeness gaps
 
-- The rows show the base configured cost and hammer cost only; upkeep, hitpoints, levels, limits, biome effects, item lists and other fields require a second extraction pass.
-- `Shipyard`, `Pasture`, `Road`, `Wall` have not yet been mapped to exact gameplay class paths in this audit.
+- The rows show the base configured cost and hammer cost only; upkeep, hitpoints, levels, limits, biome effects, item lists and other fields require a second extraction pass. NOTE 2026-11-18: Road/Wall/Pasture class mapping was subsequently completed; generic Shipyard mapping still needs confirmation.
+- `Pasture`, `Road` and `Wall` now have directly identified Java class paths; see [runtime audit pass 10](./G0_SOURCE_RUNTIME_AND_RISKS_PASS_10.md). `Shipyard` remains class-mapping-uncertain: `class Shipyard` did not appear in code search, but its construction may be handled by generic Structure/Buildable (not proven absent).
 - `Granary`, `Monument`, `Store`, tower logic and the detailed `Temple` effect require more than method listing.
 - Wonder structures are tracked separately from the 27 rows; see `wonders.yml`.
 - No keep/adapt/exclude conclusion is final before the design review and applicable license clarification.
