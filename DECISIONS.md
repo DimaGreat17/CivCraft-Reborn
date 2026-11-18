@@ -104,6 +104,12 @@ D-052 extends D-049 through D-051 without replacing them. Functionality requires
 
 D-053 extends D-050/D-052: building a vanilla home remains free-form, while **assigning NPC housing requires objective server validation**, not just the presence of an arbitrary bed. Validation must account for shelter, usable bed, traversable access and safety. No automatic NPC spawning, arbitrary claims, money, or extra slots from decorative interiors. The numeric rules, integration, and implementation remain unapproved.
 
+| D-054 | COMBINED NPC housing capacity: actual usable beds AND sufficient habitable space constrain occupancy, while comfort is a separate quality metric affecting NPC satisfaction; comfort does not generate extra housing slots | APPROVED_CONCEPT | Owner selected COMBINED on 2026-11-18. Area/volume per occupant, room boundaries, comfort inputs/weights, satisfaction effects and timing remain PROPOSED; see P1_COMBINED_HOUSING_CAPACITY_AND_COMFORT.md |
+
+## P1 COMBINED capacity and comfort approval (2026-11-18)
+
+D-054 extends D-053 (ROOM), D-050 (free-built houses) and D-017 (needs). A usable bed alone is insufficient for an additional occupant if required habitable space is lacking. Comfort is measured independently; it influences satisfaction under future approved rules and cannot create extra beds or override safety/access/ownership. No numeric balance or P1 implementation is approved.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
