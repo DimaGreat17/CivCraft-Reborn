@@ -2,6 +2,9 @@ package dev.civcraftreborn.foundation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.mojang.serialization.JsonOps;
+import com.google.gson.JsonObject;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -121,6 +124,29 @@ final class WorldSettingsTest {
         assertThrows(IllegalArgumentException.class, () -> FoundationDefaults.toFile(config, null));
         assertEquals(before, Files.readString(config));
         assertEquals(selected, FoundationDefaults.fromFile(config));
+    }
+
+
+    @Test
+    void allSixChoicesRoundTripThroughTheActualSaveCodec() {
+        for (WorldPreset preset : WorldPreset.values()) {
+            for (SessionMode mode : SessionMode.values()) {
+                WorldSettings original = new WorldSettings(WorldSettings.CURRENT_SCHEMA, preset, mode);
+                var encoded = WorldSettings.CODEC.encodeStart(JsonOps.INSTANCE, original).getOrThrow();
+                var decoded = WorldSettings.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+                assertEquals(original, decoded);
+            }
+        }
+    }
+
+    @Test
+    void futureSchemaIsNotSilentlyReplacedByDefaultsDuringDecode() {
+        JsonObject encoded = new JsonObject();
+        encoded.addProperty("schema_version", 99);
+        encoded.addProperty("overworld_side_blocks", 10000);
+        encoded.addProperty("session_mode", "ENDLESS_SANDBOX");
+        assertThrows(RuntimeException.class, () ->
+                WorldSettings.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow());
     }
 
 
