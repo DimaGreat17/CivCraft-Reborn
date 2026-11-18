@@ -14,18 +14,18 @@
 | Victory | Config/class | Prerequisite | Hold | Extra final test / cancellation |
 |---|---|---|---|---|
 | Cultural | `end_culture`, [EndConditionCulture](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/endgame/EndConditionCulture.java) | 3 eligible native towns at culture level >=10; 1 wonder | 21 days | Not conquered; war defeat resets |
-| Conquest | `end_conquest`, [EndConditionConquest](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/endgame/EndConditionConquest.java) | Captures >=75% of world town metric, or >=50% if active Chichen Itza; at least 28 days after source-defined start date | 21 days | Cannot be conquered; defeat resets |
+| Conquest | `end_conquest`, [EndConditionConquest](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/endgame/EndConditionConquest.java) | Controls >=75% of counted civilizations (including own), or >=50% if active Chichen Itza; at least 28 days after source-defined start date | 21 days | Cannot be conquered; defeat resets |
 | Scientific | `end_science`, [EndConditionScience](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/endgame/EndConditionScience.java) | Research `tech_enlightenment`, active Great Library in eligible native city | 21 days | Have most *accumulated extra beakers* at final check; defeat removes enlightenment and accumulated winning beakers |
 | Diplomatic | `end_diplomacy`, [EndConditionDiplomacy](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/endgame/EndConditionDiplomacy.java) | Active Council of Eight in eligible native city | 21 days | Most votes at final check; each registered Resident has vote cooldown configured 24h; war defeat destroys wonder, clears votes and resets |
 
-**Precision note:** `EndConditionConquest` compares `Civilization.getPercentageConquered()` to 0.75/0.50. It does **not** directly compute fraction of traversable blocks in this class. Need inspect that method before claiming denominator represents world area, claims, or number of civilization towns.
+**Direct trace resolved:** [Civilization.getPercentageConquered at lines 1635–1656](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/object/Civilization.java#L1635-L1656) counts **civilizations**, not block area or towns: denominator = active + conquered civilizations (less conquered ones whose capital cannot be found); numerator = the evaluating civilization itself plus conquered civilizations whose capital is now owned by it. This makes an entirely different conquest goal from controlling 75% of bounded map area.
 
 ### Original shared victory processing
 
 [EndGameCondition.java](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/endgame/EndGameCondition.java):
 - Config loads class names, conditions, `days_held`, starts and failures into session database.
 - Holding/progress check increments a days-held counter on repeated calls; exact scheduler cadence must be traced. Not every invocation is automatically one real day.
-- On completion, calls `Civilization.declareAsWinner`. This file does not itself describe automated world deletion.
+- On completion, calls `Civilization.declareAsWinner`. [Civilization.java lines 1625–1629](https://github.com/netizen539/civcraft/blob/b64fe5b99da7c531fcdb5799217bf1aac2d760e0/civcraft/src/com/avrgaming/civcraft/object/Civilization.java#L1625-L1629) shows it records a winning-civilization message in session storage and broadcasts it. **No automated map deletion is shown in this method**; do not infer the server wipe from this code alone.
 - On failure, removes active progress for appropriate civ. Specific subclasses reset other resources (votes, science, wonders) on war defeat.
 - Old code `isActive(civ)` checks whether the shared session key has entries; source likely has a multi-civ attribution hazard, as noted by internal code comments. Treat as a code review question, not proven runtime bug.
 - Original `getDaysLeft` reads the first session entry's value as an integer even though `getSessionData` saves `id:daysHeld`; potential serialization mismatch. Verify the caller and actual session DB behavior before claiming failure.
@@ -87,7 +87,7 @@ Proposed typed evaluator interface: `VictoryRule` takes immutable snapshot with 
 - P0 foundation may define/persist mode, but **must not advertise fully functional finite victory before supported victory rules ship**; patch dependency resolution is required in G1–G4 due sequential complete-patch policy.
 
 ## Open research
-- Trace source `getPercentageConquered` and `declareAsWinner` and scheduler to establish precise victory domain.
+- Trace scheduler call frequency, winner announcement handling and any external server reset process; both `getPercentageConquered` and `declareAsWinner` have now been source-traced.
 - Retrieve historical VimeWorld victory article for a specific post-V1.4 snapshot, if available; wiki changelog suggests conflicting versions.
 - Audit economic and religious victory pages independently, and Space Mission page in detail.
 - Decide whether 'Military Victory' differs from Conquest/Domination in late wiki.
