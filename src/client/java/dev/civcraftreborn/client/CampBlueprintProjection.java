@@ -1,32 +1,40 @@
 package dev.civcraftreborn.client;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import dev.civcraftreborn.settlement.BlueprintAccess;
+import dev.civcraftreborn.settlement.CampRules;
+import dev.civcraftreborn.settlement.SettlementStage;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * Opt-in client-only 3D hologram prototype. It never sets blocks and grants
- * no inventory. Native translucent full-voxel ghosts show missing blocks and disappear
- * when the corresponding real block is built. The server remains authoritative.
+ * Client-only visual projection. The server owns all permissions, settlement
+ * progression, resource spending, actual buildings and citizens.
+ *
+ * Non-heart templates can be placed anywhere within the 24-block camp radius,
+ * rotated in 90-degree increments and previewed without placing any blocks.
  */
 public final class CampBlueprintProjection {
     public enum Plan {
         HEART("Сердце лагеря"),
-        STORAGE("Склад"),
+        STORAGE("Простой склад"),
         WORKSHOP("Мастерская"),
         FARM("Ферма"),
         BEDROOM("Жилая комната"),
         SMALL_HOUSE("Дом поселенца"),
         BARRACKS("Общий барак"),
-        GRANARY("Амбар и склад"),
+        GRANARY("Амбар"),
         SMITHY("Кузница"),
         WATCHTOWER("Сторожевая башня"),
         WELL("Колодец");
@@ -40,21 +48,31 @@ public final class CampBlueprintProjection {
         public Step(int dx, int dy, int dz, Block block) {
             this(dx, dy, dz, block, false);
         }
+        /** Legacy raw-template coordinate. Use worldPosition(plan,step) for previews. */
         public BlockPos position(BlockPos anchor) {
             return anchor.offset(dx, dy, dz);
         }
-        public boolean matches(net.minecraft.world.level.Level level, BlockPos anchor) {
-            BlockPos pos = position(anchor);
+        public boolean matches(Level level, BlockPos anchor) {
+            return matchesAt(level, position(anchor));
+        }
+        public boolean matchesAt(Level level, BlockPos pos) {
             if (!level.hasChunkAt(pos)) return false;
             var state = level.getBlockState(pos);
             return anyBed ? state.getBlock() instanceof BedBlock : state.is(block);
         }
     }
 
+    public record MaterialLine(String title, int required, int alreadyBuilt,
+            int inInventory, int stillNeeded) {}
 
     private static BlockPos coreAnchor;
     private static String dimension;
     private static Plan activePlan;
+    // -2 pending response, -1 no owned camp, 0 CAMP, 1 SETTLEMENT.
+    private static int serverStage = -2;
+    private static int offsetX = 3;
+    private static int offsetZ = 3;
+    private static int rotation = 0;
 
     private CampBlueprintProjection() {}
 
@@ -63,24 +81,49 @@ public final class CampBlueprintProjection {
     }
 
     public static void useCore(BlockPos core, String dimensionId) {
-        if (coreAnchor == null || !coreAnchor.equals(core) || !dimensionId.equals(dimension)) {
-            activePlan = null;
-        }
+        // Never reuse old authorization for another core or another world.
         coreAnchor = core.immutable();
         dimension = dimensionId;
-    }
-
-    public static void show(Plan plan) {
-        if (coreAnchor != null) activePlan = plan;
-    }
-
-    public static void hide() {
         activePlan = null;
+        serverStage = -2;
+        offsetX = 3;
+        offsetZ = 3;
+        rotation = 0;
     }
 
-    public static Plan selected() { return activePlan; }
+    public static void setServerStage(BlockPos core, int stage) {
+        if (coreAnchor == null || !coreAnchor.equals(core)) return;
+        serverStage = stage >= -1 && stage <= 1 ? stage : -1;
+        if (activePlan != null && !unlocked(activePlan)) hide();
+    }
 
+    public static int serverStage() { return serverStage; }
+
+    public static boolean unlocked(Plan plan) {
+        if (serverStage == -2) return false;
+        return serverStage == -1
+                ? BlueprintAccess.allowedBeforeFounding(plan.name())
+                : BlueprintAccess.allowed(plan.name(),
+                        serverStage == 1 ? SettlementStage.SETTLEMENT : SettlementStage.CAMP);
+    }
+
+    public static boolean show(Plan plan) {
+        if (coreAnchor == null || !unlocked(plan)) return false;
+        if (activePlan != plan) {
+            offsetX = 3;
+            offsetZ = 3;
+            rotation = 0;
+        }
+        activePlan = plan;
+        return true;
+    }
+
+    public static void hide() { activePlan = null; }
+    public static Plan selected() { return activePlan; }
     public static BlockPos anchor() { return coreAnchor; }
+    public static int rotationDegrees() { return rotation * 90; }
+    public static int offsetX() { return offsetX; }
+    public static int offsetZ() { return offsetZ; }
 
     public static List<Step> steps(Plan plan) {
         List<Step> parts = new ArrayList<>();
@@ -96,12 +139,11 @@ public final class CampBlueprintProjection {
             parts.add(new Step(-4, 0, 0, Blocks.CRAFTING_TABLE));
             parts.add(new Step(-4, 0, 1, Blocks.FURNACE));
         } else if (plan == Plan.FARM) {
-            for (int x = -1; x <= 0; x++) {
-                for (int z = 5; z <= 6; z++) parts.add(new Step(x, -1, z, Blocks.FARMLAND));
-            }
+            for (int x = -1; x <= 0; x++)
+                for (int z = 5; z <= 6; z++)
+                    parts.add(new Step(x, -1, z, Blocks.FARMLAND));
             parts.add(new Step(1, 0, 5, Blocks.COMPOSTER));
         } else if (plan == Plan.BEDROOM) {
-            // Illustrative voluntary room template, not mandatory shape under ROOM.
             for (int x = 4; x <= 6; x++) for (int z = 4; z <= 6; z++) {
                 parts.add(new Step(x, -1, z, Blocks.OAK_PLANKS));
                 parts.add(new Step(x, 3, z, Blocks.OAK_PLANKS));
@@ -113,38 +155,131 @@ public final class CampBlueprintProjection {
                 parts.add(new Step(6, y, t, Blocks.OAK_PLANKS));
             }
             parts.add(new Step(5, 0, 5, Blocks.AIR, true));
-        }
-        // New original starter plans are geometry-defined, not redistributed .schem files.
-        if (plan.ordinal() >= Plan.SMALL_HOUSE.ordinal()) {
+        } else {
             return CampBuildingTemplates.forPlan(plan);
         }
-        // Corner walls from orthogonal faces can overlap. One world cell = one step.
         Map<String, Step> unique = new LinkedHashMap<>();
-        for (Step step : parts) {
+        for (Step step : parts)
             unique.put(step.dx() + ":" + step.dy() + ":" + step.dz(), step);
-        }
         return List.copyOf(unique.values());
     }
 
-    public static int completed(Plan plan) {
+    /**
+     * Rotate the complete footprint about its top-left corner; all dimensions
+     * remain non-negative after rotation. Heart is anchored to the real core.
+     */
+    public static BlockPos worldPosition(Plan plan, Step step) {
+        if (coreAnchor == null) return null;
+        if (plan == Plan.HEART) return step.position(coreAnchor);
+        List<Step> template = steps(plan);
+        int minX = template.stream().mapToInt(Step::dx).min().orElse(0);
+        int maxX = template.stream().mapToInt(Step::dx).max().orElse(0);
+        int minZ = template.stream().mapToInt(Step::dz).min().orElse(0);
+        int maxZ = template.stream().mapToInt(Step::dz).max().orElse(0);
+        int x = step.dx() - minX, z = step.dz() - minZ;
+        int w = maxX - minX + 1, h = maxZ - minZ + 1;
+        int rx, rz;
+        switch (rotation) {
+            case 1 -> { rx = h - 1 - z; rz = x; }
+            case 2 -> { rx = w - 1 - x; rz = h - 1 - z; }
+            case 3 -> { rx = z; rz = w - 1 - x; }
+            default -> { rx = x; rz = z; }
+        }
+        return coreAnchor.offset(offsetX + rx, step.dy(), offsetZ + rz);
+    }
+
+    private static boolean validPlacement() {
+        if (activePlan == null || coreAnchor == null) return false;
+        for (Step step : steps(activePlan)) {
+            BlockPos pos = worldPosition(activePlan, step);
+            if (Math.abs(pos.getX()-coreAnchor.getX()) > CampRules.CAMP_RADIUS
+                    || Math.abs(pos.getZ()-coreAnchor.getZ()) > CampRules.CAMP_RADIUS
+                    || pos.equals(coreAnchor)) return false;
+        }
+        return true;
+    }
+
+    public static boolean move(int dx, int dz) {
+        if (activePlan == null || activePlan == Plan.HEART) return false;
+        offsetX += dx;
+        offsetZ += dz;
+        if (validPlacement()) return true;
+        offsetX -= dx;
+        offsetZ -= dz;
+        return false;
+    }
+
+    public static boolean rotate(int quarterTurns) {
+        if (activePlan == null || activePlan == Plan.HEART) return false;
+        int previous = rotation;
+        rotation = Math.floorMod(rotation + quarterTurns, 4);
+        if (validPlacement()) return true;
+        rotation = previous;
+        return false;
+    }
+
+    public static boolean matches(Plan plan, Step step) {
         Minecraft client = Minecraft.getInstance();
-        if (client.level == null || coreAnchor == null) return 0;
+        if (client.level == null || coreAnchor == null) return false;
+        BlockPos pos = worldPosition(plan, step);
+        return pos != null && step.matchesAt(client.level, pos);
+    }
+
+    public static int completed(Plan plan) {
         int count = 0;
-        for (Step step : steps(plan)) if (step.matches(client.level, coreAnchor)) count++;
+        for (Step step : steps(plan)) if (matches(plan, step)) count++;
         return count;
     }
 
+    /** Counts every required block; distinguishes already placed from bag stock. */
+    public static List<MaterialLine> materials(Plan plan) {
+        record Count(Block block, boolean bed, String name) {}
+        Map<String, int[]> amounts = new LinkedHashMap<>();
+        Map<String, Count> materials = new LinkedHashMap<>();
+        for (Step step : steps(plan)) {
+            String key = step.anyBed() ? "ANY_BED" : step.block().getName().getString();
+            amounts.computeIfAbsent(key, k -> new int[2])[0]++;
+            materials.putIfAbsent(key, new Count(step.block(), step.anyBed(),
+                    step.anyBed() ? "Любая кровать" : step.block().getName().getString()));
+            if (matches(plan, step)) amounts.get(key)[1]++;
+        }
+        Minecraft client = Minecraft.getInstance();
+        List<MaterialLine> lines = new ArrayList<>();
+        for (var entry : amounts.entrySet()) {
+            Count material = materials.get(entry.getKey());
+            int neededInWorld = entry.getValue()[0] - entry.getValue()[1];
+            int inventory = 0;
+            if (client.player != null) {
+                var inv = client.player.getInventory();
+                for (int slot=0; slot<inv.getContainerSize(); slot++) {
+                    ItemStack stack = inv.getItem(slot);
+                    if (material.bed()) {
+                        if (stack.getItem() instanceof BlockItem blockItem
+                                && blockItem.getBlock() instanceof BedBlock)
+                            inventory += stack.getCount();
+                    } else if (stack.is(material.block().asItem())) {
+                        inventory += stack.getCount();
+                    }
+                }
+            }
+            lines.add(new MaterialLine(material.name(), entry.getValue()[0],
+                    entry.getValue()[1], inventory, Math.max(0, neededInWorld - inventory)));
+        }
+        return List.copyOf(lines);
+    }
+
     private static void tick(Minecraft client) {
-        if (activePlan == null || coreAnchor == null || client.level == null
-                || client.player == null) return;
+        if (coreAnchor == null || client.level == null || client.player == null) {
+            hide();
+            serverStage = -2;
+            return;
+        }
         if (!client.level.dimension().identifier().toString().equals(dimension)) {
             hide();
+            serverStage = -2;
             return;
         }
-        if (client.player.blockPosition().distSqr(coreAnchor) > 28 * 28) {
-            hide();
-            return;
-        }
-
+        if (activePlan != null && (client.player.blockPosition().distSqr(coreAnchor) > 28*28
+                || !unlocked(activePlan))) hide();
     }
 }
