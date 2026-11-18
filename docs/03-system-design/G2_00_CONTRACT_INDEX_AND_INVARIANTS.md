@@ -79,6 +79,8 @@
 
 G2-01…12 задают **проектные системные контракты с открытыми зависимостями**, но **не** финальные рецепты, баланс, все технологии и политические алгоритмы. Не считать готовым релиз P1: нет определения точного входа worldgen, complete ACL / construction, тестов Fabric, migration format и performance budgets.
 
+**P1 housing addendum (not a new numbered G2 system):** [G2-P1 integrated housing contract](G2_P1_HOUSING_INTEGRATED_DOMAIN_CONTRACT.md) consolidates D-053…D-066 and HOME-01. This addendum does **not** change G2 coverage 12/12 or complete/approve P1. Supporting [diagnostics](../05-roadmap/P1_HOUSING_DIAGNOSTICS_AND_ACCEPTANCE_MATRIX.md) and [Fabric test plan](../04-architecture/G3_P1_HOUSING_FABRIC_FEASIBILITY_AND_SPIKE_PLAN.md) are unimplemented DRAFTs.
+
 ## 8. Definition of Done G2
 
 Полный G2 можно предложить к утверждению после покрытия G2-01…12, отсечения/подтверждения всех required G0 деталей для выбранного патча, сквозного согласования операций и тестов, уточнения G3 API/persistence/LOD и explicit owner signoff. Данный индекс — рабочий baseline; статус **G2 DRAFT DOCUMENT COVERAGE 12/12, NOT FROZEN OR TECHNICALLY VALIDATED**.
