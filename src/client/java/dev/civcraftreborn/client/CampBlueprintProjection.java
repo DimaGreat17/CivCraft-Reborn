@@ -139,7 +139,10 @@ public final class CampBlueprintProjection {
             hide();
             return;
         }
-        // Low particle budget even for the larger house preview.
+        // Full translucent voxel faces are rendered by CivCraftGhostBlockRenderer.
+        // The old particle dot preview is no longer emitted.
+        return;
+        /* Low particle budget even for the larger house preview.
         if (++tickCounter % 5 != 0) return;
         int emitted = 0;
         for (Step step : steps(activePlan)) {
@@ -155,6 +158,6 @@ public final class CampBlueprintProjection {
                 client.level.addParticle(particle, x, y, z, 0, 0, 0);
             }
             if (++emitted >= 80) break;
-        }
+        } */
     }
 }
