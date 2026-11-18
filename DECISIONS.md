@@ -1,6 +1,6 @@
 # Decision Register
 
-Status: `APPROVED_CONCEPT` / `PROPOSED` / `FROZEN` / `NEEDS_AUDIT`.
+Status: `APPROVED_CONCEPT` / `APPROVED_PRELIMINARY_BALANCE` / `DESIGN_SELECTED_DELEGATED` / `PROPOSED` / `FROZEN` / `NEEDS_AUDIT`.
 
 | ID | Decision | Status | Notes |
 |---|---|---|---|
@@ -139,6 +139,17 @@ D-058 resolves the accounting unit left open by D-057. **Only fully validated** 
 ## P1 PRIVATE_ONLY shared-space approval (2026-11-18)
 
 D-059 chooses option A from the Housing Regions proposal, superseding the former three-way OPEN question, without turning its example algorithms into approved rules. Every eligible CELL (D-058) may contribute to at most one private residential region. Shared corridors and stairs are evaluated for access only and contribute **zero** housing area to adjacent bedrooms. A genuinely shared single dormitory bedroom is one residential room, not a corridor and not multiple beds multiplied by the full room. Provisional D-056 (4 usable cells/NPC) applies to each independently recognized living region. No P1 implementation, specific segmentation algorithm or balance freeze is approved.
+
+## Delegated P1 housing design authority (2026-11-18)
+
+The owner directed the assistant to **choose remaining design details independently** instead of requiring individual approvals. Scope: decisions within previously chosen P1 housing architecture (room segmentation, region ownership, access, multi-floor/merge-split handling, diagnostics and testing). Record such choices as **DESIGN_SELECTED_DELEGATED**, not as a fictional direct owner approval or release FROZEN. Avoid introducing unrelated gameplay, new resource grants, political mechanics or new patch scope. Owner still accepts major patch releases and any material change to the approved game concept. All P1 code remains blocked by the existing P0 acceptance and G4 freeze gates.
+
+| D-060 | HYBRID_ROOMS segmentation: infer candidate residential rooms from physical enclosures, doors/openings, and a bounded PHYSICAL accessibility graph; a connected open-plan bedroom or dormitory is a single residential region unless reliably partitioned | DESIGN_SELECTED_DELEGATED | Chosen under owner's design delegation on 2026-11-18. Conservative classification of ambiguous spaces; no arbitrary division per bed. Exact Minecraft collision rules and scan budgets require G3 proof |
+| D-061 | Deterministic housing region ownership: assign each verified FloorCellId to at most one living region; shared/ambiguous transit, including common corridors and stairs, contributes zero capacity, while still permitting routes; do not treat corridor width alone as definitive | DESIGN_SELECTED_DELEGATED | Implements owner-approved D-059 PRIVATE_ONLY and D-058 CELL. Region/bed canonical IDs and classification evidence recorded; no cross-room capacity transfer |
+| D-062 | Multi-floor residential access and mixed use: recognize independently enclosed bedrooms on reachable floors; connecting shared stairs and hallways are transit-only; mixed residential and work areas cannot earn the same physical cell for two housing regions; production uses its own blueprint validation | DESIGN_SELECTED_DELEGATED | Preserves D-050/D-051/D-059. Private internal stairs used as transit, no housing-area credit; actual floor walking surfaces may count only if classified residential |
+| D-063 | Safe room topology changes: block edits trigger bounded authoritative revalidation; split/merge preserves CitizenId, canonical bed IDs and reservation history, never duplicates cells; insufficient verified capacity blocks new assignments and flags affected residents for safe reassignment, not deletion | DESIGN_SELECTED_DELEGATED | Exact timers/forced relocation penalties and numeric performance budgets require later tested G3/balance work; no force-loading, no fake NPC spawns |
+
+**Delegated package:** [P1 housing region implementation design](docs/05-roadmap/P1_HOUSING_REGION_SEGMENTATION_AND_RECOVERY_DESIGN.md). These choices select proposed architecture for future review, not completed implementation.
 
 ## Change control
 
