@@ -24,6 +24,10 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 [Pass 14](../01-legacy-audit/G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) now distinguishes **42/73 wiki building articles retrievable** versus **31 currently inaccessible**, without claiming the 42 have complete effects audits. Bank-interest wiki table/formula conflict `BANK-CONFLICT-001` registered. G0 remains OPEN.
 
+## Preliminary GDD work (not a phase-gate signoff)
+
+[GDD-01: settlement → province → independent civilization](../02-game-design/SETTLEMENT_PROVINCE_CIVILIZATION_LIFECYCLE_GDD_01.md) was drafted at project-owner request during outstanding G0 audit. This is **PROPOSED**, not frozen. Early major patches have a dependency conflict: provincial promotion requires technologies, while the tentative patch ladder schedules civilization mechanics before the complete research tree. G4 must resolve prerequisite closure without fake stubs; no gameplay code was added.
+
 ## G0 comprehensive review (2026-11-18)
 
 - [Full source coverage and gate verdict](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md): **G0 still IN PROGRESS**, all 18 gaps classified.
