@@ -27,7 +27,7 @@
 
 **These are dependency-safe candidates, not actual approved P0–P7 numbering.** P2 early tech and P3 selected later tree separation must be verified; if closure impossible, promote province only as part of P3 and move connected scope, no placeholder.
 
-## Definition of Done per patch
+**P1 player-founded camp detail:** [P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md](./P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md) (PROPOSED, requires P1 freeze and P0 acceptance).\n\n## Definition of Done per patch
 
 Requirements traced to GDD/G2; no unavailable stub; both singleplayer/dedicated tests; crash/recovery tests; competitive AI parity; saved world compatibility; metrics measured and accepted; source provenance; full user acceptance and release tag before unlocking next major patch.
 
