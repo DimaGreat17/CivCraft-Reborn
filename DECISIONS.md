@@ -17,6 +17,7 @@ Status: `APPROVED_CONCEPT` / `PROPOSED` / `FROZEN` / `NEEDS_AUDIT`.
 | D-011 | Do not copy legacy code/assets before file-level rights review | PROPOSED | Root GPL-2.0 conflicts with notices in inspected Java files; clarify |
 | D-012 | Release large patches strictly sequentially; finish, test, publish and accept each before developing the next | APPROVED_CONCEPT | [Release strategy](docs/05-roadmap/RELEASE_STRATEGY.md); exact patch scopes are proposed |
 | D-013 | Offer world size at creation: 10,000×10,000, 15,000×15,000, 25,000×25,000 blocks | APPROVED_CONCEPT | [World presets](docs/04-architecture/WORLD_SIZE_PRESETS.md). Border center, dimension handling, default and performance caps remain design-open |
+| D-014 | Let player choose finite victory-based world or endless sandbox at world creation | APPROVED_CONCEPT | [Session modes](docs/02-game-design/WORLD_SESSION_MODES.md); victory types, default, post-victory behavior remain design-open |
 
 ## Change control
 
