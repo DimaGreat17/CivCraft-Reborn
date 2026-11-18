@@ -2,169 +2,109 @@ package dev.civcraftreborn.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
 
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.renderpearl.api.commands.RenderPass;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.renderpearl.api.vertex.VertexFormat;
-
-import dev.civcraftreborn.CivCraftReborn;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.StagedVertexBuffer;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4fc;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 /**
- * Native, independent full-voxel translucent building preview.
+ * Translucent full-volume block previews using Minecraft 26.3's native feature
+ * submission path. In particular, we DO NOT create a nested RenderPass or call
+ * StagedVertexBuffer.upload() from any level-render callback.
  *
- * No Litematica classes are imported or copied. Minecraft's 26.3 rendering
- * pipeline extracts immutable visible positions, then draws alpha-tinted
- * full block faces during the translucent terrain render pass.
+ * Geometry is submitted during COLLECT_SUBMITS and Minecraft uploads/draws it
+ * with its own properly ordered RenderType feature renderer. This resolves the
+ * precise render-pass lifecycle violation in the user's 2026-11-18 crash.
  *
- * This is a whole-block preview: stair, slab and bed silhouettes are still
- * represented by bounding cubes pending block-model render support.
+ * Shapes are intentionally ghosted cubes (all six faces), not yet exact baked
+ * models for stairs, beds, slabs or directional properties.
  */
 public final class CivCraftGhostBlockRenderer {
-    private static final RenderPipeline GHOST_PIPELINE = RenderPipelines.register(
-            RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-                    .withLocation(Identifier.fromNamespaceAndPath(
-                            CivCraftReborn.MOD_ID, "pipeline/camp_ghost_blocks"))
-                    .withDepthStencilState(Optional.empty())
-                    .build());
-
-    private static final StagedVertexBuffer BUFFER =
-            new StagedVertexBuffer(() -> "CivCraft building ghost blocks",
-                    RenderType.SMALL_BUFFER_SIZE);
-    private static final Vector4f COLOR_MODULATOR = new Vector4f(1, 1, 1, 1);
-    private static final Vector3f MODEL_OFFSET = new Vector3f();
-    private static final org.joml.Matrix4f TEXTURE_MATRIX = new org.joml.Matrix4f();
-    private static final int MAX_BLOCKS = 256;
-
-    private static List<BlockPos> visibleBlocks = List.of();
+    private static final int MAX_GHOST_BLOCKS = 256;
+    private static final float INSET = 0.018f;
+    private static final float RED = 0.19f;
+    private static final float GREEN = 0.81f;
+    private static final float BLUE = 1.0f;
+    private static final float ALPHA = 0.30f;
 
     private CivCraftGhostBlockRenderer() {}
 
     public static void register() {
-        LevelExtractionEvents.END_EXTRACTION.register(CivCraftGhostBlockRenderer::extract);
-        LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register(CivCraftGhostBlockRenderer::render);
+        LevelRenderEvents.COLLECT_SUBMITS.register(CivCraftGhostBlockRenderer::submit);
     }
 
-    private static void extract(LevelExtractionContext context) {
+    private static void submit(LevelRenderContext context) {
         Minecraft client = Minecraft.getInstance();
         CampBlueprintProjection.Plan plan = CampBlueprintProjection.selected();
         BlockPos anchor = CampBlueprintProjection.anchor();
-        if (client.level == null || plan == null || anchor == null
-                || client.player == null
+        if (plan == null || anchor == null || client.level == null
+                || client.player == null || !CampBlueprintProjection.unlocked(plan)
                 || client.player.blockPosition().distSqr(anchor) > 28 * 28) {
-            visibleBlocks = List.of();
             return;
         }
 
+        // World data is read while Minecraft is collecting submits, never
+        // from the deferred GPU execution callback.
         List<BlockPos> missing = new ArrayList<>();
         for (CampBlueprintProjection.Step step : CampBlueprintProjection.steps(plan)) {
-            BlockPos pos = CampBlueprintProjection.worldPosition(plan, step);
-            if (!client.level.hasChunkAt(pos) || CampBlueprintProjection.matches(plan, step)) continue;
-            missing.add(pos.immutable());
-            if (missing.size() >= MAX_BLOCKS) break;
+            BlockPos position = CampBlueprintProjection.worldPosition(plan, step);
+            if (position == null || !client.level.hasChunkAt(position)
+                    || CampBlueprintProjection.matches(plan, step)) {
+                continue;
+            }
+            missing.add(position.immutable());
+            if (missing.size() >= MAX_GHOST_BLOCKS) break;
         }
-        // All mutable client-world reads finish in extraction, not the GPU drawing pass.
-        visibleBlocks = List.copyOf(missing);
+        if (missing.isEmpty()) return;
+
+        Vec3 camera = context.levelState().cameraRenderState.pos;
+        PoseStack poseStack = context.poseStack();
+        poseStack.pushPose();
+        poseStack.translate(-camera.x, -camera.y, -camera.z);
+
+        // submitCustomGeometry records the immutable geometry callback. The
+        // vanilla feature dispatcher handles buffer upload and render-pass
+        // lifetime; do NOT upload manually inside COLLECT_SUBMITS or render.
+        List<BlockPos> positions = List.copyOf(missing);
+        context.submitNodeCollector().submitCustomGeometry(
+                poseStack, RenderTypes.debugFilledBox(), (pose, vertices) -> {
+                    Matrix4fc matrix = pose.pose();
+                    for (BlockPos position : positions) {
+                        cube(vertices, matrix, position.getX(), position.getY(), position.getZ());
+                    }
+                });
+        poseStack.popPose();
     }
 
-    private static void render(LevelRenderContext context) {
-        List<BlockPos> blocks = visibleBlocks;
-        if (blocks.isEmpty()) return;
-
-        VertexFormat format = GHOST_PIPELINE.getVertexFormatBinding(0);
-        if (format == null) return;
-
-        PrimitiveTopology topology = GHOST_PIPELINE.getPrimitiveTopology();
-        StagedVertexBuffer.Draw batch = BUFFER.appendDraw(format, topology,
-                topology == PrimitiveTopology.QUADS
-                        ? RenderSystem.getProjectionType().vertexSorting() : null);
-
-        var builder = BUFFER.getVertexBuilder(batch);
-        PoseStack matrices = context.poseStack();
-        Vec3 eye = context.levelState().cameraRenderState.pos;
-
-        matrices.pushPose();
-        matrices.translate(-eye.x, -eye.y, -eye.z);
-        Matrix4fc pose = matrices.last().pose();
-        for (BlockPos pos : blocks) {
-            writeCube(builder, pose, pos.getX(), pos.getY(), pos.getZ());
-        }
-        matrices.popPose();
-
-        BUFFER.upload();
-        StagedVertexBuffer.ExecuteInfo info = BUFFER.getExecuteInfo(batch);
-        if (info != null) draw(Minecraft.getInstance(), info);
-        BUFFER.endFrame();
-    }
-
-    private static void writeCube(VertexConsumer vertices, Matrix4fc pose,
-            int x, int y, int z) {
-        float x0=x+0.02f, y0=y+0.02f, z0=z+0.02f;
-        float x1=x+0.98f, y1=y+0.98f, z1=z+0.98f;
-        float r=0.17f, g=0.8f, b=1f, a=0.27f;
-        // Each block is rendered as six full translucent surfaces, not dots.
-        face(vertices,pose,x0,y0,z1,x1,y0,z1,x1,y1,z1,x0,y1,z1,r,g,b,a);
-        face(vertices,pose,x1,y0,z0,x0,y0,z0,x0,y1,z0,x1,y1,z0,r,g,b,a);
-        face(vertices,pose,x0,y0,z0,x0,y0,z1,x0,y1,z1,x0,y1,z0,r,g,b,a);
-        face(vertices,pose,x1,y0,z1,x1,y0,z0,x1,y1,z0,x1,y1,z1,r,g,b,a);
-        face(vertices,pose,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0,r,g,b,a);
-        face(vertices,pose,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1,r,g,b,a);
+    private static void cube(VertexConsumer vertices, Matrix4fc matrix, int x, int y, int z) {
+        float x0=x+INSET, y0=y+INSET, z0=z+INSET;
+        float x1=x+1-INSET, y1=y+1-INSET, z1=z+1-INSET;
+        // Six complete faces show a full semitransparent 3D block, not points.
+        face(vertices,matrix,x0,y0,z1,x1,y0,z1,x1,y1,z1,x0,y1,z1);
+        face(vertices,matrix,x1,y0,z0,x0,y0,z0,x0,y1,z0,x1,y1,z0);
+        face(vertices,matrix,x0,y0,z0,x0,y0,z1,x0,y1,z1,x0,y1,z0);
+        face(vertices,matrix,x1,y0,z1,x1,y0,z0,x1,y1,z0,x1,y1,z1);
+        face(vertices,matrix,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0);
+        face(vertices,matrix,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1);
     }
 
     private static void face(VertexConsumer vertices, Matrix4fc matrix,
             float ax,float ay,float az,float bx,float by,float bz,
-            float cx,float cy,float cz,float dx,float dy,float dz,
-            float r,float g,float b,float alpha) {
-        vertices.addVertex(matrix,ax,ay,az).setColor(r,g,b,alpha);
-        vertices.addVertex(matrix,bx,by,bz).setColor(r,g,b,alpha);
-        vertices.addVertex(matrix,cx,cy,cz).setColor(r,g,b,alpha);
-        vertices.addVertex(matrix,dx,dy,dz).setColor(r,g,b,alpha);
+            float cx,float cy,float cz,float dx,float dy,float dz) {
+        vertices.addVertex(matrix,ax,ay,az).setColor(RED,GREEN,BLUE,ALPHA);
+        vertices.addVertex(matrix,bx,by,bz).setColor(RED,GREEN,BLUE,ALPHA);
+        vertices.addVertex(matrix,cx,cy,cz).setColor(RED,GREEN,BLUE,ALPHA);
+        vertices.addVertex(matrix,dx,dy,dz).setColor(RED,GREEN,BLUE,ALPHA);
     }
 
-    private static void draw(Minecraft client, StagedVertexBuffer.ExecuteInfo info) {
-        GpuBufferSlice transforms = RenderSystem.getDynamicUniforms()
-                .writeTransform(RenderSystem.getModelViewMatrixCopy(),
-                        COLOR_MODULATOR, MODEL_OFFSET, TEXTURE_MATRIX);
-        RenderTarget target = client.gameRenderer.mainRenderTarget();
-        GpuTextureView color = target.getColorTextureView();
-        if (color == null) return;
-
-        try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
-                .createRenderPass(() -> "CivCraft blueprint projection", color,
-                        Optional.empty(), target.getDepthTextureView(), OptionalDouble.empty())) {
-            pass.setPipeline(RenderSystem.getCompiledPipeline(GHOST_PIPELINE));
-            RenderSystem.bindDefaultUniforms(pass);
-            pass.setUniform("DynamicTransforms", transforms);
-            pass.setVertexBuffer(0, info.vertexBuffer().slice());
-            pass.setIndexBuffer(info.indexBuffer(), info.indexType());
-            pass.drawIndexed(info.indexCount(), 1,
-                    info.firstIndex(), info.baseVertex(), 0);
-        }
-    }
-
+    /** Kept for backward-compatible GameRenderer close mixin. No GPU-owned buffers. */
     public static void close() {
-        BUFFER.close();
+        // All renderer-owned GPU resources were removed; vanilla owns buffers.
     }
 }
