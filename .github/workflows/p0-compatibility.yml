@@ -28,7 +28,7 @@ jobs:
           gradle-version: "9.8.0"
       - name: Static manifest validation
         run: python3 scripts/validate_p0_manifest.py
-      - name: Compile mod and process resources
+      - name: Compile and unit test foundation
         run: gradle build --no-daemon --stacktrace
       - name: Upload compiled artifacts
         uses: actions/upload-artifact@v4
