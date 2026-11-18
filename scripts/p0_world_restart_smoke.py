@@ -61,7 +61,7 @@ def boot(label: str, size: int, mode: str, timeout_seconds: int) -> tuple[str, s
                     f"{label}: dedicated server did not start with expected settings; inspect {log}"
                 )
             identity_match = re.search(
-                r"Foundation world identity: id=([0-9a-f-]{36}), seed=(-?\\d+)", text
+                r"Foundation world identity: id=([0-9a-f-]{36}), seed=(-?\d+)", text
             )
             if not identity_match:
                 raise RuntimeError(f"{label}: no world UUID/seed evidence in {log}")
