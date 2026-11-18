@@ -2,6 +2,8 @@ package dev.civcraftreborn.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -13,8 +15,8 @@ import net.minecraft.world.level.block.Blocks;
 
 /**
  * Opt-in client-only 3D hologram prototype. It never sets blocks and grants
- * no inventory. Green dots mark real completed steps; cyan dotted cube edges
- * mark missing blocks. Server-side validation remains authoritative.
+ * no inventory. Cyan dotted 3D box corners mark missing blocks and disappear
+ * when the corresponding real block is built. The server remains authoritative.
  */
 public final class CampBlueprintProjection {
     public enum Plan {
@@ -46,8 +48,6 @@ public final class CampBlueprintProjection {
 
     private static final DustParticleOptions MISSING =
             new DustParticleOptions(0x41CCFF, 0.75f);
-    private static final DustParticleOptions COMPLETE =
-            new DustParticleOptions(0x51E89C, 0.58f);
 
     private static BlockPos coreAnchor;
     private static String dimension;
@@ -112,7 +112,12 @@ public final class CampBlueprintProjection {
             }
             parts.add(new Step(5, 0, 5, Blocks.WHITE_BED, true));
         }
-        return List.copyOf(parts);
+        // Corner walls from orthogonal faces can overlap. One world cell = one step.
+        Map<String, Step> unique = new LinkedHashMap<>();
+        for (Step step : parts) {
+            unique.put(step.dx() + ":" + step.dy() + ":" + step.dz(), step);
+        }
+        return List.copyOf(unique.values());
     }
 
     public static int completed(Plan plan) {
@@ -140,8 +145,8 @@ public final class CampBlueprintProjection {
         for (Step step : steps(activePlan)) {
             BlockPos pos = step.position(coreAnchor);
             if (!client.level.hasChunkAt(pos)) continue;
-            boolean built = step.matches(client.level, coreAnchor);
-            DustParticleOptions particle = built ? COMPLETE : MISSING;
+            if (step.matches(client.level, coreAnchor)) continue;
+            DustParticleOptions particle = MISSING;
             // Four opposite cube corners give a legible 3D silhouette.
             for (int c = 0; c < 4; c++) {
                 double x = pos.getX() + ((c & 1) == 0 ? 0.05 : 0.95);
