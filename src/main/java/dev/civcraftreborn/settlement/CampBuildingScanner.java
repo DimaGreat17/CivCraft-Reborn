@@ -2,13 +2,10 @@ package dev.civcraftreborn.settlement;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Blocks;
 
 /**
- * Initial physical-module recognition for starter structures. Buildings are not
- * spawned: each module must be a real Minecraft block in an accessible camp.
- *
- * Final flexible MODULES blueprint validation is a separate, stricter P1 gate.
+ * Functional buildings require actual COMPLETE, registered structures.
+ * A workbench, chest or handful of farmland by themselves never count.
  */
 public final class CampBuildingScanner {
     private CampBuildingScanner() {}
@@ -18,25 +15,27 @@ public final class CampBuildingScanner {
             int composters, boolean complete) {}
 
     public static Facilities scan(ServerLevel world, CampRecord camp) {
-        BlockPos center = new BlockPos(camp.x(), camp.y(), camp.z());
-        int craftingTables=0, furnaces=0, storage=0, farmland=0, composters=0;
-        boolean complete = true;
-        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-12,-3,-12),
-                center.offset(12,3,12))) {
-            if (!world.hasChunkAt(pos)) {
-                complete = false;
-                continue;
+        if (!world.dimension().identifier().toString().equals(camp.dimension()))
+            return new Facilities(false,false,false,0,0,0,0,0,false);
+        var server=world.getServer();
+        boolean workshop=false,storage=false,farm=false;
+        int chests=0,tables=0,furnaces=0,farmland=0,composters=0;
+        boolean complete=true;
+        for(BuildingRecord building : BuildingSavedData.get(server).atCamp(camp)) {
+            var check=FunctionalBuildingTemplates.inspect(world,
+                    new BlockPos(building.x(),building.y(),building.z()),
+                    building.type(),building.rotation());
+            if (!check.loaded()) complete=false;
+            if (!check.complete()) continue; // No benefit for destroyed building
+            switch(building.type()) {
+                case STORAGE -> { storage=true;chests+=3; }
+                case WORKSHOP -> { workshop=true;tables++;furnaces++; }
+                case FARM -> { farm=true;farmland+=24;composters++; }
+                case SMALL_HOUSE -> { tables++;chests++; }
+                case BEDROOM -> {}
             }
-            var b = world.getBlockState(pos).getBlock();
-            if (b == Blocks.CRAFTING_TABLE) craftingTables++;
-            if (b == Blocks.FURNACE || b == Blocks.BLAST_FURNACE) furnaces++;
-            if (b == Blocks.CHEST || b == Blocks.BARREL) storage++;
-            if (b == Blocks.FARMLAND) farmland++;
-            if (b == Blocks.COMPOSTER) composters++;
         }
-        // Do not grant a facility for an unloaded or partially verified region.
-        return new Facilities(complete && craftingTables>0 && furnaces>0,
-                complete && storage>0, complete && farmland>=4 && composters>0,
-                storage,craftingTables,furnaces,farmland,composters,complete);
+        return new Facilities(workshop,storage,farm,chests,tables,furnaces,
+                farmland,composters,complete);
     }
 }
