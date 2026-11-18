@@ -134,6 +134,12 @@ D-057 refines D-053 ROOM, D-055 FLOOR and provisional D-056 4 block²/NPC: quali
 
 D-058 resolves the accounting unit left open by D-057. **Only fully validated** usable cells contribute one block² apiece; a nominal full block does not qualify if blocked or unsafe, whereas a slab/stair may qualify when PHYSICAL tests pass. A carpet, slab overlay or multiple collision surfaces at one usable location must not mint duplicate area. Distinct walkable floors at different heights are a future geometry-validation detail, not automatic duplicates. Preliminary D-056 remains **4 valid cells per NPC**, alongside real beds, ROOM checks and separate comfort. No implementation, new balance freeze or P1 authorization implied.
 
+| D-059 | PRIVATE_ONLY housing space allocation: each residential room uses only its own validated floor cells for NPC capacity; shared corridors and stairs provide passage but do not increase any room's housing capacity | APPROVED_CONCEPT | Owner explicitly selected PRIVATE_ONLY on 2026-11-18. A shared dormitory may be one living region with its own beds/area. Exact room segmentation, private-vs-shared classification, rights and split/merge transitions remain PROPOSED; see P1_HOUSING_REGIONS_AND_SHARED_SPACE_PROPOSAL.md |
+
+## P1 PRIVATE_ONLY shared-space approval (2026-11-18)
+
+D-059 chooses option A from the Housing Regions proposal, superseding the former three-way OPEN question, without turning its example algorithms into approved rules. Every eligible CELL (D-058) may contribute to at most one private residential region. Shared corridors and stairs are evaluated for access only and contribute **zero** housing area to adjacent bedrooms. A genuinely shared single dormitory bedroom is one residential room, not a corridor and not multiple beds multiplied by the full room. Provisional D-056 (4 usable cells/NPC) applies to each independently recognized living region. No P1 implementation, specific segmentation algorithm or balance freeze is approved.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
