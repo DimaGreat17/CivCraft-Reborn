@@ -105,6 +105,7 @@ public final class CampCommands {
             CampRecord promoted;
             try {
                 promoted = CampRules.promote(camp, housing.roomCount(),
+                        CitizenSavedData.get(source.getServer()).atCamp(camp).size(),
                         food.food(), food.storageBlocks() > 0);
             } catch (IllegalStateException e) {
                 return fail(source, e.getMessage());
