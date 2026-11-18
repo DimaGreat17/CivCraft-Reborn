@@ -18,6 +18,19 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 | Diagnostics | `/civcraft camp status`, `inspect`; tests for sites, ID uniqueness, stage/identity and food conditions | Not yet graphical GUI |
 | CI artifact | `.github/workflows/p1-living-settlement.yml` builds Java tests, boots dedicated server and uploads **development JAR** | Passing compilation/server smoke != playable-feature validation |
 
+## User-requested creation and management UX update (2026-11-18)
+
+**Choice:** physically constructed camp, **not** auto-generated building and not abstract inventory-only camp. Player crafts/places a real `camp_core`, then gathers real materials and registers the camp; further construction is by ordinary Minecraft blocks and a modular checklist/schematic, not an automatic free prefab.
+
+- Right-clicking the physical camp core opens an **independent CivCraft management screen** with tabs **Лагерь** / **Цивилизация**. The camp section exposes **Основать**, **Проверить**, **Схема строительства**, **Принять жителя**, **Повысить**, **Список поселений**.
+- Action buttons invoke **server-authoritative** `/civcraft camp ...` commands. There is no client-trusted mutation of stocks, citizens or camp ownership.
+- `/civcraft camp plan` gives a progress-aware construction checklist: 3 actual sheltered bedrooms, 3 citizens, food in real storage, workshop, farm. The player constructs blocks physically. **No translucent world-space hologram/ghost blueprint or snapping has been implemented**.
+- The **Цивилизация** tab is intentionally disabled and explicitly labelled future: actual civ government features belong to a later patch, not a fake functional 0.2 menu.
+- The old floating Create World widgets are removed. CivCraft world options are now a dedicated screen entered from the vanilla World tab, with an explicit enable switch; a vanilla new world no longer receives the CivCraft border automatically. Existing 0.1 saves remain opt-in by legacy decode.
+- Client tab mixin is `environment=client` in `fabric.mod.json`, so dedicated-server launch must not require client GUI resource.
+
+**Acceptance still open:** verify the World tab placement and camp screen interactively on Minecraft 26.3, packet/command execution and permission checks on dedicated servers; CI Java compilation and server startup alone are insufficient.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
