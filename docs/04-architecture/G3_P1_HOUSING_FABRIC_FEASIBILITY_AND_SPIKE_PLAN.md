@@ -84,6 +84,6 @@ Fabric ClaimRightsAdapter ──┘            |
 ## Ссылки на контракты
 
 - [P0 toolchain candidate](G3_P0_TOOLCHAIN_FEASIBILITY_PLAN.md)
-- [G2-10 integrated housing](../03-system-design/G2_10_HOUSING_INTEGRATED_DOMAIN_CONTRACT.md)
+- [G2-10 integrated housing](../03-system-design/G2_P1_HOUSING_INTEGRATED_DOMAIN_CONTRACT.md)
 - [Housing UX and acceptance](../05-roadmap/P1_HOUSING_DIAGNOSTICS_AND_ACCEPTANCE_MATRIX.md)
 - [P1 patch plan](../05-roadmap/PATCH_DEPENDENCY_AND_ACCEPTANCE_PLAN.md)
