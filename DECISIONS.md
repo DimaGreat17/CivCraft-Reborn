@@ -116,6 +116,12 @@ D-054 extends D-053 (ROOM), D-050 (free-built houses) and D-017 (needs). A usabl
 
 D-055 refines D-053 (ROOM) and D-054 (COMBINED): use verified usable floor cells as the measurable space input, not cubic room volume. Choosing FLOOR does **not** waive safe access and shelter checks or impose a new numerical ceiling-height threshold. One surface cannot be counted twice across overlapping rooms; no extra housing slots appear from comfort or decorative air space. P0 code and P1 release authorization remain unchanged.
 
+| D-056 | Preliminary P1 housing balance: require 4 usable Minecraft floor-block equivalents (4 block²) per NPC as the FLOOR area allowance, alongside one usable bed and ROOM eligibility; comfort remains a separate metric | APPROVED_PRELIMINARY_BALANCE | Owner explicitly approved a **preliminary** 4 block²/NPC value on 2026-11-18, to be re-evaluated by in-game tests. Rules for partial blocks, space ownership, multilevel partitioning, occupancy changes and exact calculation are PROPOSED; see P1_FLOOR_HOUSING_BALANCE_4_BLOCKS.md |
+
+## P1 housing balance proposal approved for testing (2026-11-18)
+
+D-056 adds a numeric **test baseline**, not a frozen final gameplay balance. Under the candidate capacity calculation, a verified room permits at most `min(valid beds, floor(usable floor area / 4))` NPCs subject to access, shelter, safety and housing rights (D-053–D-055). One physical bed remains a single slot and comfort cannot create extra slots. For 3 usable block², area capacity is zero; 4–7 permits at most one before beds, 8–11 at most two, etc. Cells, shared-space accounting and invalidation must be specified and tested before P1 freeze; modify the provisional value only through a new explicit balance decision.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
