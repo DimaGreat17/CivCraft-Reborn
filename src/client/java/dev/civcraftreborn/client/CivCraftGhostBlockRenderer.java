@@ -80,8 +80,8 @@ public final class CivCraftGhostBlockRenderer {
 
         List<BlockPos> missing = new ArrayList<>();
         for (CampBlueprintProjection.Step step : CampBlueprintProjection.steps(plan)) {
-            BlockPos pos = step.position(anchor);
-            if (!client.level.hasChunkAt(pos) || step.matches(client.level, anchor)) continue;
+            BlockPos pos = CampBlueprintProjection.worldPosition(plan, step);
+            if (!client.level.hasChunkAt(pos) || CampBlueprintProjection.matches(plan, step)) continue;
             missing.add(pos.immutable());
             if (missing.size() >= MAX_BLOCKS) break;
         }
