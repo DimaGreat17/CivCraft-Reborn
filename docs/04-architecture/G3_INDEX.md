@@ -16,6 +16,10 @@
 - [G0 audit gaps](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md).
 - [G4 pre-code readiness](../05-roadmap/G4_PRE_CODE_READINESS_REVIEW.md) — explicit NO-GO until verification.
 
+## P0 toolchain plan
+
+[Candidate Minecraft Java 26.3 + Fabric feasibility checklist](./G3_P0_TOOLCHAIN_FEASIBILITY_PLAN.md) records desk-research evidence and proposed reproducible compile/client/server checks, **none of which have run**.
+
 ## Required G3 signoff evidence
 
 | Check | Status |
