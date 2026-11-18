@@ -29,7 +29,8 @@ public final class CampCommands {
                 .then(Commands.literal("plan").executes(ctx -> plan(ctx.getSource())))
                 .then(Commands.literal("promote").executes(ctx -> promote(ctx.getSource())))
                 .then(Commands.literal("recruit").executes(ctx -> recruit(ctx.getSource())))
-                .then(CampBuildingCommands.command());
+                .then(CampBuildingCommands.command())
+                .then(CampResidentJobCommands.command());
     }
 
     private static int found(CommandSourceStack source) {
