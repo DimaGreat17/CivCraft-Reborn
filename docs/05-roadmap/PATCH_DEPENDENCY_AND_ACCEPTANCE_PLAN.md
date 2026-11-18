@@ -1,0 +1,42 @@
+# Последовательные патчи и зависимости — план для будущего G4 freeze
+
+**2026-11-18 · PROPOSED, NOT APPROVED PATCH CONTENT.** D-012 / D-038 / D-045; [G2 index](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md).
+
+## Граф зависимостей
+
+`World config / border → stable IDs and authority → saves / ledger → citizens / food / housing / jobs → local production / construction → claims / city / province → validated tech prerequisite closure + Capitol → civilization promotion → strategic AI expansion → diplomacy / war → wonder victory / events`.
+
+Гильдии/частные предприятия требуют оплаты, собственности, найма, налогов и обратимых договоров. Поздние религиозные и дипломатические победы требуют всех реально существующих зданий/исследований и timer evaluator.
+
+## Предлагаемые релизные контрольные пакеты
+
+| Patch candidate | Scope | Gate/tests |
+|---|---|---|
+| P0 Foundation | Выбор Overworld 10k/15k/25k, session-mode persisted, server authority, versioned save, event journal, claim stub **запрещён**; полноценные border/permissions для доступных действий | Dedicated/singleplayer create/save/load; border enforced, no false available finite win |
+| P1 Living Settlement | Полноценная цепочка NPC group→camp→settlement; еда, жильё, реальные ресурсы, jobs, строительство, Loaded↔Virtual и миграция, не псевдо-NPC | Test loaded/virtual conservation and survival, crash recovery; performance verified |
+| P2 Intermediate Polity & Research (candidate revision) | Claims, city money, lawful province, validated early research **полной замкнутой цепочки**, Capitol, promotion to civilization together if feasible | All prerequisite AND gates, state transitions and tax rights tested |
+| P3 Expansion & full selected tech | Дополнительные города, логистика, complete selected research DAG, здания, эпохи и культура в пределах утверждённого списка | Full graph validated; two cities and NPC state cost parity |
+| P4 Independent Rivals | Autonomous country generation/expansion/trade and long-range AI strategy using real resources | Long-run fair simulation with no resource cheats and no excessive chunks |
+| P5 Diplomacy & War | Five relations, agreements, army/supply, lawful siege/occupation/revolution/peace and restitution rule | Complete war→peace→capture→liberation cycle; WAR-CONFLICT-001 resolved |
+| P6 Legacy & Endgame | Retained catalog of buildings/wonders, nation/religion/event/spy/ruins, space, fully usable finite victory outcomes and sandbox milestones | Each retained content source/recipe is approved and all win paths pass |
+| P7 Stabilization | Multiplayer hardening, migration tests, UI/accessibility, profiling, balance, compatibility | Release acceptance and benchmark suite |
+
+**These are dependency-safe candidates, not actual approved P0–P7 numbering.** P2 early tech and P3 selected later tree separation must be verified; if closure impossible, promote province only as part of P3 and move connected scope, no placeholder.
+
+## Definition of Done per patch
+
+Requirements traced to GDD/G2; no unavailable stub; both singleplayer/dedicated tests; crash/recovery tests; competitive AI parity; saved world compatibility; metrics measured and accepted; source provenance; full user acceptance and release tag before unlocking next major patch.
+
+## G4 approval fields for each patch
+
+`PatchId, ApprovedScope, ExplicitExclusions, SourceRevisionSet, RequiredTechClosure, NumericBalanceRevision, ReferenceHardware, MeasuredTPS/MSPT, SaveFormatVersion, DependencyVersions, LicensesReviewed, TestEvidence, OwnerAcceptance`. Blank = not ready.
+
+## Open release decisions
+
+- P0 finite world mode is selected/persisted, but usable completion is unavailable before late game; clarify exactly which UI/creation choices are available in each release.
+- Research graph complete closure and economic catalog uncertain; cannot freeze P2/P3 split today.
+- P6 scope may be too large for one complete major patch: splitting into sequential, independently completed sub-patches is allowed before freeze with explicit owner approval. No hidden release dates.
+- Full PvP/NPC war gameplay/visuals require dedicated prototypes and mode balance.
+- Every patch needs truthful launch criteria and accepted saved-state migrations.
+
+**Current status: PATCH LADDER DRAFT — no coding permission.**
