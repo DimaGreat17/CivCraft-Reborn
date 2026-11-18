@@ -17,7 +17,7 @@
 | Patch candidate | Scope | Gate/tests |
 |---|---|---|
 | P0 Foundation | Выбор Overworld 10k/15k/25k, session-mode persisted, server authority, versioned save, event journal, claim stub **запрещён**; полноценные border/permissions для доступных действий | Dedicated/singleplayer create/save/load; border enforced, no false available finite win |
-| P1 Living Settlement | **Основание лагеря игроком и автономное основание лагеря NPC на общей модели**; полноценная цепочка group→camp→settlement; еда, жильё, реальные ресурсы, jobs, строительство, Loaded↔Virtual и миграция, не псевдо-NPC. Игрок вправе вместо собственного основания вступить в существующее поселение (D-019). | Проверить оба пути основания лагеря, общий учёт ресурсов/прав, переход camp→settlement, loaded/virtual conservation, survival, crash recovery и производительность |
+| P1 Living Settlement | **Основание лагеря игроком и автономное основание лагеря NPC на общей модели**; полноценная цепочка group→camp→settlement; еда, жильё, реальные ресурсы, jobs, **чертежи функциональных зданий + свободные дома/декор (D-050)**, Loaded↔Virtual и миграция, не псевдо-NPC. Игрок вправе вместо собственного основания вступить в существующее поселение (D-019). | Проверить оба пути основания лагеря, общий учёт ресурсов/прав, переход camp→settlement, loaded/virtual conservation, survival, crash recovery и производительность |
 | P2 Intermediate Polity & Research (candidate revision) | Claims, city money, lawful province, validated early research **полной замкнутой цепочки**, Capitol, promotion to civilization together if feasible | All prerequisite AND gates, state transitions and tax rights tested |
 | P3 Expansion & full selected tech | Дополнительные города, логистика, complete selected research DAG, здания, эпохи и культура в пределах утверждённого списка | Full graph validated; two cities and NPC state cost parity |
 | P4 Independent Rivals | Autonomous country generation/expansion/trade and long-range AI strategy using real resources | Long-run fair simulation with no resource cheats and no excessive chunks |
@@ -27,7 +27,11 @@
 
 **These are dependency-safe candidates, not actual approved P0–P7 numbering.** P2 early tech and P3 selected later tree separation must be verified; if closure impossible, promote province only as part of P3 and move connected scope, no placeholder.
 
-**P1 player-founded camp detail:** [P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md](./P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md) (PROPOSED, requires P1 freeze and P0 acceptance).\n\n## Definition of Done per patch
+**P1 player-founded camp detail:** [P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md](./P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md) (D-049 approved concept; further details proposed). 
+
+**P1 construction design:** [P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md](./P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md) (D-050 approved concept; detailed implementation and balances still proposed). P1 freeze and P0 acceptance remain mandatory.
+
+## Definition of Done per patch
 
 Requirements traced to GDD/G2; no unavailable stub; both singleplayer/dedicated tests; crash/recovery tests; competitive AI parity; saved world compatibility; metrics measured and accepted; source provenance; full user acceptance and release tag before unlocking next major patch.
 
