@@ -93,3 +93,5 @@ Nation selection and governments are different systems. Talents chosen upon capi
 - [Happiness, governance and social systems: pass 04](./VIME_SOCIAL_HAPPINESS_GOVERNANCE_PASS_04.md): player resident records vs physical NPCs, happiness tiers, civic plot permissions, 9 later wiki government modes, culture influence and world-size implications.
 
 - [Taxation, governance and revolution: pass 05](./TAXATION_REVOLUTION_GOVERNANCE_PASS_05.md): legacy Java trace of taxable deposits, science allocation, daily upkeep and revolution; VimeWorld occupation rights, tax commands and government timing differences.
+
+- [Diplomacy, war and sovereignty: pass 06](./DIPLOMACY_WAR_CONSEQUENCES_PASS_06.md): five source-confirmed diplomacy states, peace/treaty requests, war windows, casual-mode distinction, conquest and liberation; **WAR-CONFLICT-001** records old-code vs later-wiki capital liberation divergence.
