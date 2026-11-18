@@ -40,7 +40,17 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 - If the inventory lacks space, any remaining items drop at the camp location.
 - The old receipt SavedData/state/test files were removed as unused.
 - **Balance/exploit risk:** breaking and re-placing a Camp Core yields another 4 obsidian, as explicitly requested. A later crafting-cost and abuse review is required; do not claim the starter economy is finalized.
-- The current build provides a **text/UI construction guide**, not a holographic world-space blueprint. Ghost placement, per-block progress visualization, and blueprint snapping are NOT implemented.
+- A first **3D world-space blueprint preview** has now been coded: the player opens the Camp Core management UI → construction schematic → selects a HEART, STORAGE, WORKSHOP, FARM or BEDROOM template. Missing block locations are indicated by cyan client-side dust particles, and their locations disappear when matching real blocks are placed. The construction menu shows per-block progress. This is a particle-based holographic outline, **not yet a solid semi-transparent block mesh**, and has not been interactively client-tested. No snapping/auto-placement or client-authoritative construction is added.
+
+## 3D blueprint preview (development, 2026-11-18)
+
+- `CampBlueprintProjection` maintains a client-only active template bound to the last physical Camp Core clicked. The preview automatically hides on changing dimensions or walking farther than 28 blocks.
+- `CampBlueprintProjection.Plan`: HEART (4 obsidian N/S/E/W), STORAGE (chest+barrel), WORKSHOP (craft table+furnace), FARM (4 farmland+composter), BEDROOM (optional 3×3 oak room, roof and any bed).
+- `CivCraftBlueprintScreen` selects and hides templates and shows `completed / total` based on **real currently loaded client world block states**. The visual overlay uses cyan dust corner particles for missing cells. **Block correctness, resources, claim permission and promotion still belong to the server** and are checked by existing `/civcraft camp ...` commands, not by the client visual preview.
+- Rendering is throttled every five client ticks and limited to 80 step locations per sample. No chunk force-load; preview does not work without a clicked core.
+- The BEDROOM geometry is an **optional** example; under D-050/D-053 ordinary houses remain freeform and are validated by actual physical ROOM criteria. Exact template shape must not be misrepresented as mandatory.
+- Pending G3 follow-up: fully translucent quads/solid block ghosts, correct rendering through/behind blocks, HUD progress without leaving the world, client multiplayer testing, localization and performance verification for large templates.
+- **Acceptance test:** right-click core → choose HEART → see four cyan outlined cells → put obsidian one by one → each correctly placed cell disappears → remove obsidian → corresponding cell reappears → select workshop/farm/bedroom → walk >28 blocks or switch dimension, projection stops → dedicated-server restart and world rights remain unaffected.
 
 ## NOT implemented; release blockers
 
