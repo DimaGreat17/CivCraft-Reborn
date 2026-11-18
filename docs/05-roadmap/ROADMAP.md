@@ -22,6 +22,9 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 ## Pre-code documentation handoff (2026-11-18)
 
+**Final handoff artifacts:** [G3 index](../04-architecture/G3_INDEX.md), [20 cross-system integration tests (NOT RUN)](./PRE_CODE_INTEGRATION_VERIFICATION_MATRIX.md), [G4 readiness NO-GO](./G4_PRE_CODE_READINESS_REVIEW.md). Documentation coverage ≠ code authorization.
+
+
 Owner requested the **full documentation process through the stage immediately before code**. Generated all [G2 contracts 01–12](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md), [G3 architectural outline](../04-architecture/G3_00_ARCHITECTURE_BLUEPRINT.md), [G3 recovery](../04-architecture/G3_01_PERSISTENCE_TRANSACTION_RECOVERY.md), [simulation/performance](../04-architecture/G3_02_SIMULATION_SCHEDULER_PERFORMANCE.md) and [network, content and rights](../04-architecture/G3_03_NETWORK_SECURITY_CONTENT_PROVENANCE.md). Draft [dependency-safe patch plan](./PATCH_DEPENDENCY_AND_ACCEPTANCE_PLAN.md) and [parameter register](./BALANCE_AND_SOURCE_PARAMETER_REGISTER.md). [G4 final readiness review](./G4_PRE_CODE_READINESS_REVIEW.md) produced **NO-GO for gameplay code** because G0 source gaps, detailed approved balances, Fabric toolchain feasibility, crash-safe storage and benchmarks are unresolved. G2 and G3 have **document coverage, not implementation-ready validation**. No code has been modified.
 
 ## G0 source retrieval follow-up
