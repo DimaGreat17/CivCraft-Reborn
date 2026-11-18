@@ -35,10 +35,10 @@ public final class CampRules {
 
     /** No promotion bonus: the same persistent ID and stored resources remain intact. */
     public static CampRecord promote(CampRecord existing, int validHomes, int residents,
-            int foodItems, boolean storageExists) {
+            int foodItems, boolean storageExists, boolean workshopExists, boolean farmExists) {
         if (existing.stage() != SettlementStage.CAMP || validHomes < 3 || residents < 3
-                || foodItems < 16 || !storageExists) {
-            throw new IllegalStateException("Requires 3 rooms, 3 living citizens, 16 real food items and storage");
+                || foodItems < 16 || !storageExists || !workshopExists || !farmExists) {
+            throw new IllegalStateException("Requires 3 rooms, 3 living citizens, 16 real food items, storage, workshop and farm");
         }
         return existing.promoted();
     }
