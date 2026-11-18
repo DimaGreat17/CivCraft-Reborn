@@ -64,6 +64,7 @@ public final class CivCraftManagementScreen extends Screen {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.getConnection() != null) {
             minecraft.getConnection().sendCommand(command);
+            minecraft.gui.setScreen(parent);
         }
     }
 
