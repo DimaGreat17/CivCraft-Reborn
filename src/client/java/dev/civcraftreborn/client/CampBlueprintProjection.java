@@ -9,6 +9,7 @@ import java.util.Map;
 import dev.civcraftreborn.settlement.BlueprintAccess;
 import dev.civcraftreborn.settlement.CampRules;
 import dev.civcraftreborn.settlement.BlueprintTransform;
+import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
 import dev.civcraftreborn.settlement.SettlementStage;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -148,6 +149,16 @@ public final class CampBlueprintProjection {
     }
 
     private static List<Step> buildSteps(Plan plan) {
+        // Full structural layouts for starter functional facilities are shared
+        // with the server. No decorative two-block fake facility previews.
+        if (plan == Plan.STORAGE || plan == Plan.WORKSHOP || plan == Plan.FARM
+                || plan == Plan.BEDROOM || plan == Plan.SMALL_HOUSE) {
+            FunctionalBuildingTemplates.Type type =
+                    FunctionalBuildingTemplates.Type.valueOf(plan.name());
+            return FunctionalBuildingTemplates.cells(type).stream()
+                    .map(c -> new Step(c.x(),c.y(),c.z(),c.block(),c.anyBed()))
+                    .toList();
+        }
         List<Step> parts = new ArrayList<>();
         if (plan == Plan.HEART) {
             parts.add(new Step(0, 0, -1, Blocks.OBSIDIAN));
