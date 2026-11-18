@@ -3,7 +3,8 @@ plugins {
 }
 
 repositories {
-    // Fabric Loom installs the Minecraft and Fabric repositories.
+    // Only used when launching the dedicated Litematica reference-test profile.
+    maven { url = 'https://api.modrinth.com/maven' }
 }
 
 loom {
@@ -24,6 +25,33 @@ dependencies {
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.12.2"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.12.2"
+}
+
+
+// Reference-test profile: required together, but NOT packaged into CivCraft.
+// Usage: gradle runClient -PschematicTest=true
+if (providers.gradleProperty('schematicTest').map { it.toBoolean() }.getOrElse(false)) {
+    dependencies {
+        modRuntimeOnly "maven.modrinth:bEpr0Arc:ZqV316KY" // Litematica 0.29.1 / MC 26.3
+        modRuntimeOnly "maven.modrinth:GcWjdA9I:JX9bESec" // MaLiLib 0.30.2 / MC 26.3
+    }
+    logger.lifecycle('CivCraft schematic test profile: Litematica + MaLiLib REQUIRED for runClient')
+}
+
+tasks.register('verifySchematicTestProfile') {
+    group = 'verification'
+    description = 'Resolve both mandatory reference mods for the schematic comparison profile'
+    doLast {
+        if (!providers.gradleProperty('schematicTest').map { it.toBoolean() }.getOrElse(false)) {
+            throw new GradleException('Use -PschematicTest=true for the reference profile')
+        }
+        def dependencies = configurations.modRuntimeOnly.dependencies
+        if (!dependencies.any { it.group == 'maven.modrinth' && it.name == 'bEpr0Arc' } ||
+                !dependencies.any { it.group == 'maven.modrinth' && it.name == 'GcWjdA9I' }) {
+            throw new GradleException('Both Litematica and MaLiLib are required for reference tests')
+        }
+        logger.lifecycle('Reference test mod pair declared (Litematica 0.29.1 + MaLiLib 0.30.2)')
+    }
 }
 
 tasks.named('test', Test) {
