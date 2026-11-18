@@ -17,6 +17,10 @@ Fixes and maintenance of the active stage are permitted. Research and design of 
 4. **Acceptance:** user approves the release against its checklist; version/tag/changelog published.
 5. **Next patch:** unlock only after acceptance.
 
+## Round B concept approval (2026-11-18)
+
+Owner approved [D-038](../../DECISIONS.md): a complete province-to-civilization promotion must ship alongside its validated required early research in one fully usable patch; if prerequisite technology is not yet ready, the **whole promotion** moves to a later patch. The P2/P3 table below remains a **tentative proposal**, not a revised or approved set of release numbers and scopes. G4 must reconcile this dependency, honoring D-012, and publish a frozen release plan before coding.
+
 ## Proposed major-patch ladder (subject to design approval)
 
 | Stage | Tentative release | Objective | Initial exit criteria |
