@@ -55,13 +55,13 @@ public final class FunctionalBuildingTemplates {
                         put(c,x,-1,z,Blocks.OAK_PLANKS);
                         if(!(x==3&&z==0)) put(c,x,0,z,Blocks.OAK_FENCE);
                     } else if(x==3&&z==3) {
-                        put(c,x,-1,z,Blocks.DIRT);
+                        put(c,x,-1,z,Blocks.WATER); // hydration source
                     } else {
                         put(c,x,-1,z,Blocks.FARMLAND);
                     }
                 }
                 put(c,3,0,0,Blocks.OAK_FENCE_GATE);
-                put(c,3,0,3,Blocks.COMPOSTER);
+                put(c,1,0,1,Blocks.COMPOSTER);
             }
             case BEDROOM -> {
                 shell(c,5,5,3,Blocks.OAK_PLANKS,Blocks.OAK_LOG,Blocks.OAK_PLANKS);
