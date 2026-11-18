@@ -24,6 +24,21 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 [Pass 14](../01-legacy-audit/G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) now distinguishes **42/73 wiki building articles retrievable** versus **31 currently inaccessible**, without claiming the 42 have complete effects audits. Bank-interest wiki table/formula conflict `BANK-CONFLICT-001` registered. G0 remains OPEN.
 
+## Full GDD documentation bundle (2026-11-18)
+
+At the project owner's explicit request, the full **13-section system-level GDD draft** has now been written and committed:
+
+- [Master GDD](../02-game-design/CIVCRAFT_REBORN_MASTER_GDD.md) + [complete section index](../02-game-design/GDD_INDEX.md).
+- [33 explicit open decisions / owner approval ledger](../02-game-design/GDD_APPROVAL_AND_OPEN_DECISIONS.md).
+- [Feature/source traceability and KEEP/ADAPT/EXCLUDE candidates](../02-game-design/GDD_13_SCOPE_TRACEABILITY_MATRIX.md).
+- The 13 documents describe NPC, economy, worldgen, technology, politics, wars, AI, victory, UX and cross-cutting safety.
+
+**Gate status: design DOCUMENTED, not APPROVED or FROZEN.** G0 completeness blockers still exist; no mod code was changed.
+
+**Critical G4 dependency:** historical Province→Civilization requires research, while current candidate P2 precedes full research P3. Must group all early prerequisite tech with civilization formation, or shift promotion as a complete capability to research patch. **Also:** finite victory selection in P0 must not be marketed as operational if victory outcomes will only arrive in late patch. Resolve these before patch scope freeze.
+
+**Next workflow:** owner approval of 33 outstanding choices → reconcile selected historical source versions and unavailable functionality → G2 exact system contracts → G3 verified architecture/performance and licensing → G4 release criteria and explicit authorization. Do not confuse the writing of GDD with approval to implement.
+
 ## Preliminary GDD work (not a phase-gate signoff)
 
 - [GDD-02: NPC population and behavior](../02-game-design/NPC_POPULATION_AND_BEHAVIOR_GDD_02.md): 18 design sections, 20 acceptance scenarios; identity, needs, housing, jobs, scarcity, migration, NPC/player permissions and loaded/virtual integration. **PROPOSED**, subject to owner approval and economy/architecture contracts.
