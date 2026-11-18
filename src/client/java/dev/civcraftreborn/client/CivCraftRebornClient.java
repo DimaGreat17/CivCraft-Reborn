@@ -13,11 +13,14 @@ import net.minecraft.world.InteractionResult;
 public final class CivCraftRebornClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        CampBlueprintProjection.register();
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (!world.isClientSide() ||
                     !world.getBlockState(hit.getBlockPos()).is(CampBlocks.CAMP_CORE)) {
                 return InteractionResult.PASS;
             }
+            CampBlueprintProjection.useCore(hit.getBlockPos(),
+                    world.dimension().identifier().toString());
             Minecraft minecraft = Minecraft.getInstance();
             minecraft.gui.setScreen(new CivCraftManagementScreen(minecraft.gui.screen()));
             return InteractionResult.SUCCESS;
