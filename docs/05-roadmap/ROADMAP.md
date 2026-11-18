@@ -26,7 +26,7 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 ## GDD review Round D (2026-11-18)
 
-[Round D proposal — Minecraft/Fabric platform, private enterprise/guilds and code/assets licensing](../02-game-design/GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md) is **READY_FOR_OWNER_REVIEW, NOT APPROVED**. The three remaining choices are GDD-027/GDD-031/GDD-033. Round A/B/C status remains **30 APPROVED_CONCEPT, 3 OPEN, 0 FROZEN**. No Minecraft version pin, source copying permission, detailed finances or implementation approval has been implied.
+[Round D — Minecraft/Fabric platform, private enterprise/guilds and source rights](../02-game-design/GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md) **APPROVED_CONCEPT** by owner, recorded as [D-046…D-048](../../DECISIONS.md). The concept ledger now shows **33 APPROVED_CONCEPT / 0 OPEN / 0 FROZEN**. Specific Minecraft/Java/Fabric releases, technical feasibility, source-copying rights, economic balance, exact guild contracts, missing legacy evidence and release scope remain unresolved. G0/G1/G2/G3/G4 not signed off.
 
 ## GDD review Round C (2026-11-18)
 
