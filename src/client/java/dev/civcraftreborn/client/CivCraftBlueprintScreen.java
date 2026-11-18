@@ -43,8 +43,10 @@ public final class CivCraftBlueprintScreen extends Screen {
         addRenderableWidget(Button.builder(Component.literal("Проверить построенное"),
                 b -> {
                     Minecraft game = Minecraft.getInstance();
-                    if (game.getConnection() != null)
+                    if (game.getConnection() != null) {
                         game.getConnection().sendCommand("civcraft camp plan");
+                        game.gui.setScreen(null); // Show server-authored progress messages in chat.
+                    }
                 }).bounds(x, y + 132, 310, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Назад к управлению"),
