@@ -25,10 +25,20 @@ public final class CampBuildingCommands {
                                 .then(Commands.argument("rotation",IntegerArgumentType.integer(0,3))
                                         .executes(c -> register(c.getSource(),
                                                 StringArgumentType.getString(c,"type"),
-                                                IntegerArgumentType.getInteger(c,"rotation"))))));
+                                                IntegerArgumentType.getInteger(c,"rotation"),null))
+                                        .then(Commands.argument("x",IntegerArgumentType.integer())
+                                                .then(Commands.argument("y",IntegerArgumentType.integer())
+                                                        .then(Commands.argument("z",IntegerArgumentType.integer())
+                                                                .executes(c->register(c.getSource(),
+                                                                        StringArgumentType.getString(c,"type"),
+                                                                        IntegerArgumentType.getInteger(c,"rotation"),
+                                                                        new BlockPos(IntegerArgumentType.getInteger(c,"x"),
+                                                                                IntegerArgumentType.getInteger(c,"y"),
+                                                                                IntegerArgumentType.getInteger(c,"z"))))))))));
     }
 
-    private static int register(CommandSourceStack source,String requested,int rotation) {
+    private static int register(CommandSourceStack source,String requested,int rotation,
+            BlockPos requestedOrigin) {
         try {
             ServerPlayer player=source.getPlayerOrException();
             CampRecord camp=CampSavedData.get(source.getServer())
@@ -44,7 +54,9 @@ public final class CampBuildingCommands {
             if(!BlueprintAccess.allowed(type.name(),camp.stage()))
                 return fail(source,"Building type is locked at the current camp stage.");
 
-            BlockPos origin=player.blockPosition();
+            BlockPos origin=requestedOrigin==null?player.blockPosition():requestedOrigin;
+            if(player.blockPosition().distSqr(origin)>24*24)
+                return fail(source,"You must be present near the physical construction site.");
             if(Math.abs(origin.getX()-camp.x())>CampRules.CAMP_RADIUS||
                     Math.abs(origin.getZ()-camp.z())>CampRules.CAMP_RADIUS)
                 return fail(source,"Stand at the building floor origin within camp bounds.");
