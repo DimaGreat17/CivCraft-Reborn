@@ -89,4 +89,39 @@ final class WorldSettingsTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new WorldSettings(WorldSettings.CURRENT_SCHEMA, WorldPreset.SMALL, null));
     }
+    @Test
+    void selectedWorldCreationChoiceRoundTripsToDisk() {
+        Path configuration = temporaryDirectory.resolve("civcraft/world-defaults.properties");
+        for (WorldPreset preset : WorldPreset.values()) {
+            for (SessionMode mode : SessionMode.values()) {
+                WorldSettings selected = new WorldSettings(WorldSettings.CURRENT_SCHEMA, preset, mode);
+                FoundationDefaults.toFile(configuration, selected);
+                assertEquals(selected, FoundationDefaults.fromFile(configuration));
+            }
+        }
+    }
+
+    @Test
+    void atomicWriteDoesNotLeaveTemporaryFiles() throws IOException {
+        Path folder = temporaryDirectory.resolve("world-config");
+        Path config = folder.resolve("world-defaults.properties");
+        FoundationDefaults.toFile(config, WorldSettings.defaults());
+        try (var entries = Files.list(folder)) {
+            assertEquals(java.util.List.of(config), entries.toList());
+        }
+    }
+
+    @Test
+    void invalidSelectionCannotReplaceExistingChoice() throws IOException {
+        Path config = temporaryDirectory.resolve("world-defaults.properties");
+        WorldSettings selected = new WorldSettings(
+                WorldSettings.CURRENT_SCHEMA, WorldPreset.LARGE, SessionMode.FINITE_VICTORY);
+        FoundationDefaults.toFile(config, selected);
+        String before = Files.readString(config);
+        assertThrows(IllegalArgumentException.class, () -> FoundationDefaults.toFile(config, null));
+        assertEquals(before, Files.readString(config));
+        assertEquals(selected, FoundationDefaults.fromFile(config));
+    }
+
+
 }
