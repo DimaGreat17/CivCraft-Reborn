@@ -15,6 +15,7 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
+import dev.civcraftreborn.foundation.WorldSettingsSavedData;
 
 /** Player-founded camps: real resources, physical anchor, server-side checks. */
 public final class CampCommands {
@@ -34,6 +35,9 @@ public final class CampCommands {
         try {
             ServerPlayer player = source.getPlayerOrException();
             var level = player.level();
+            if (!WorldSettingsSavedData.get(source.getServer()).settings().civcraftWorld()) {
+                return fail(source, "Create a CivCraft world to found a camp.");
+            }
             CampSavedData store = CampSavedData.get(source.getServer());
             if (store.ownedBy(player.getUUID()).isPresent()) {
                 return fail(source, "You already own a camp; its ID and resources persist.");
@@ -47,7 +51,7 @@ public final class CampCommands {
             if (!hasPhysicalHeart(level, pos)) {
                 return fail(source, "Build the Camp Heart: surround the placed Camp Core with "
                         + "4 obsidian blocks to the north, south, east and west. "
-                        + "The first placed core gives a one-time obsidian kit.");
+                        + "Each placement of a Camp Core provides four obsidian.");
             }
             String dimension = level.dimension().identifier().toString();
             boolean withinBorder = level.getWorldBorder().isWithinBounds(pos);
