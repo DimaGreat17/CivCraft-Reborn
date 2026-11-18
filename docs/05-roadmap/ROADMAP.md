@@ -12,6 +12,8 @@
 | G3 | Technical architecture | Storage, LOD, scheduler, networking, perf budgets | NOT STARTED |
 | G4 | Design freeze | Contradiction audit, scope lock, explicit approval | NOT STARTED |
 
+**New G0-A wonder evidence:** [22 wonder technologies and their source-image gates](../01-legacy-audit/VIME_WONDER_TECH_BRANCH_PASS_06.md). The C5 branch is nonsequential; wonder research, construction and victory prerequisites remain separate for GDD approval.
+
 ## Proposed release sequence
 
 P0 0.1 Foundation → P1 0.2 Living Settlement → P2 0.3 Civilization Systems → P3 0.4 Research & Culture → P4 0.5 Independent Rivals → P5 0.6 Diplomacy & Warfare → P6 0.7–0.9 Legacy Completion → P7 1.0 Stable.
