@@ -80,6 +80,12 @@ Owner expressly approved all three recommended **conceptual** Round D options: G
 
 The owner approved **hybrid option C** for the camp founding interaction. See [P1 player camp proposal](docs/05-roadmap/P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md). This approval concerns the interaction model, not numeric costs, detailed mechanics, implementation or patch signoff.
 
+| D-050 | Hybrid construction rules: functional camp buildings use blueprints with verified physical construction and material/work accounting; ordinary houses and decorations can be freely built without a blueprint | APPROVED_CONCEPT | Owner explicitly chose the combined construction method on 2026-11-18. Functional building catalog, exact blueprint format, house/housing recognition, recipes, dimensions and build times NOT FROZEN; details in P1_BLUEPRINT_AND_FREE_BUILDING_DESIGN.md |
+
+## P1 construction-method decision (2026-11-18)
+
+D-050 extends D-049 without replacing it: the central camp block establishes a candidate camp, blueprints define functional infrastructure, and ordinary houses/decorations remain freely buildable. No vanilla construction is silently converted into a paid blueprint; functional bonuses require actual validated structures. This concept approval does not authorize P1 implementation before P0 acceptance and P1 freeze.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
