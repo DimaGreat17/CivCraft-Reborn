@@ -159,6 +159,13 @@ The owner directed the assistant to **choose remaining design details independen
 
 D-064…D-066 select a technical design for housing comfort within the user's prior delegation; they **do not constitute individual owner approvals, numeric balance signoff, city-happiness mechanics, or release freeze**. The authoritative scope remains the prior ROOM/COMBINED/FLOOR/PHYSICAL/CELL/PRIVATE_ONLY decisions and G2-01 needs; see [Housing Comfort & Needs](docs/05-roadmap/P1_HOUSING_COMFORT_AND_NEEDS_DESIGN.md). P0 acceptance and P1 G4 release scope approval remain mandatory before code.
 
+## Owner's interface and physical camp construction request (2026-11-18)
+
+| D-067 | CivCraft camp and later civilization management use a distinct in-game interface, separate from vanilla Minecraft settings/menus. Camp management may appear on interaction with the real Camp Core; civilization controls become available only when those mechanics exist | APPROVED_CONCEPT | User explicitly requested a dedicated interface for camp and civilization management. Current P1 client menu is an early UI slice, not the finished civilization government interface |
+| D-068 | Camp founding must have a real physical result: player places a Camp Core and builds the required real structures with a construction schematic, rather than receiving a free abstract or automatically complete settlement. Validate actual blocks and materials server-side | APPROVED_CONCEPT | User explicitly allowed physical appearance or player construction according to schematic; delegated choice adopts physical player-built buildings consistent with D-049/D-050/D-051. Initial construction guide is not yet an in-world holographic block-by-block schematic |
+
+**Release status unchanged:** no claim that P1 is complete or accepted; exact hologram/blueprint UI, positioning and final balance remain technical tasks.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
