@@ -24,6 +24,10 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 [Pass 14](../01-legacy-audit/G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) now distinguishes **42/73 wiki building articles retrievable** versus **31 currently inaccessible**, without claiming the 42 have complete effects audits. Bank-interest wiki table/formula conflict `BANK-CONFLICT-001` registered. G0 remains OPEN.
 
+## G2 preliminary system contracts (2026-11-18)
+
+At owner's instruction, drafted [G2 contract index and cross-system invariants](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md) plus [G2-01 NPC/Jobs/Housing/Migration](../03-system-design/G2_01_CITIZEN_JOBS_AND_MIGRATION.md), [G2-02 Settlement/Province/Civilization](../03-system-design/G2_02_SETTLEMENT_AND_POLITY_LIFECYCLE.md), and [G2-03 Economy/Production/Shipment/Payments](../03-system-design/G2_03_ECONOMY_TRANSACTIONS_AND_LOGISTICS.md). These specify proposed command boundaries, stable IDs, authorization checks, reservations, state transitions, failure handling and acceptance scenarios. **G2 IN PROGRESS; these 3 contracts are DRAFT, not approved/frozen**, G2-04…12 remain PLANNED. No numerical balances, source-version conflicts, real Minecraft/Fabric integrations or code claims. G0 is OPEN; G1 final signoff/G3/G4 still pending.
+
 ## GDD review Round D (2026-11-18)
 
 [Round D — Minecraft/Fabric platform, private enterprise/guilds and source rights](../02-game-design/GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md) **APPROVED_CONCEPT** by owner, recorded as [D-046…D-048](../../DECISIONS.md). The concept ledger now shows **33 APPROVED_CONCEPT / 0 OPEN / 0 FROZEN**. Specific Minecraft/Java/Fabric releases, technical feasibility, source-copying rights, economic balance, exact guild contracts, missing legacy evidence and release scope remain unresolved. G0/G1/G2/G3/G4 not signed off.
