@@ -5,7 +5,9 @@
 **Upstream:** [netizen539/civcraft](https://github.com/netizen539/civcraft), default branch `master`  
 **Config inventory:** [CONFIG_INVENTORY.md](./CONFIG_INVENTORY.md)
 
-**Java code analyses:** [Part 1](./JAVA_CODE_AUDIT_01.md) · [Part 2](./JAVA_CODE_AUDIT_02.md)
+**Java code analyses:** [Part 1](./JAVA_CODE_AUDIT_01.md) · [Part 2](./JAVA_CODE_AUDIT_02.md) · [Part 3](./JAVA_CODE_AUDIT_03.md)
+
+**Complete configured research catalog:** [Technology graph](./TECHNOLOGY_GRAPH.md)
 
 ## 1. Provenance and scope
 
