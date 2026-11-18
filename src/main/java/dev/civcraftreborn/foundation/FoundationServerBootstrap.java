@@ -19,6 +19,7 @@ public final class FoundationServerBootstrap {
 
     private static void applySettings(MinecraftServer server) {
         WorldSettings settings = WorldSettingsSavedData.get(server).settings();
+        FoundationWorldIdentitySavedData identity = FoundationWorldIdentitySavedData.get(server);
         // A side length is not a radius. Pin center so all presets span [-side/2, +side/2].
         server.overworld().getWorldBorder().setCenter(0.0, 0.0);
         server.overworld().getWorldBorder().setSize(settings.preset().sideBlocks());
@@ -28,6 +29,9 @@ public final class FoundationServerBootstrap {
                 settings.preset().sideBlocks(),
                 settings.preset().sideBlocks(),
                 settings.mode());
+
+        CivCraftReborn.LOGGER.info("Foundation world identity: id={}, seed={}",
+                identity.worldId(), identity.seed());
 
         if (settings.mode() == SessionMode.FINITE_VICTORY) {
             CivCraftReborn.LOGGER.warn(
