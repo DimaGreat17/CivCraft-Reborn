@@ -12,7 +12,10 @@ assert props["minecraft_version"] == "26.3"
 assert props["loader_version"] == "0.20.1"
 assert props["fabric_api_version"] == "0.166.2+26.3"
 assert metadata["entrypoints"]["main"] == ["dev.civcraftreborn.CivCraftReborn"]
+assert metadata["entrypoints"]["client"] == ["dev.civcraftreborn.client.CivCraftRebornClient"]
 assert metadata["depends"]["minecraft"] == "~26.3"
 source = root / "src/main/java/dev/civcraftreborn/CivCraftReborn.java"
 assert source.exists()
+assert (root / "src/client/java/dev/civcraftreborn/client/CivCraftRebornClient.java").exists()
+assert (root / "src/main/java/dev/civcraftreborn/foundation/FoundationWorldIdentitySavedData.java").exists()
 print("P0 manifest checked; runtime compatibility remains to be tested.")
