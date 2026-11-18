@@ -1,6 +1,6 @@
 # CivCraft Reborn — Game Design Document Index
 
-**Status: PARTIALLY APPROVED_CONCEPT / NOT FROZEN (2026-11-18).** The owner approved 14 Round A (D-016…D-029), nine Round B (D-030…D-038), and seven Round C (D-039…D-045) concept choices. Three other decisions remain OPEN; G0 and G2–G4 remain incomplete. G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
+**Status: PARTIALLY APPROVED_CONCEPT / NOT FROZEN (2026-11-18).** The owner approved 14 Round A (D-016…D-029), nine Round B (D-030…D-038), seven Round C (D-039…D-045), and three Round D (D-046…D-048) conceptual choices. **33 APPROVED_CONCEPT, 0 OPEN, 0 FROZEN**; remaining work is detailed requirements, not unreviewed concept questions. G0 and G2–G4 remain incomplete. G0 audit remains open; G1 drafting completed at system-outline level, not approved. No gameplay code implemented.
 
 ## Main document
 
@@ -29,12 +29,12 @@
 - **[Round A — living world: 14 concept choices](./GDD_REVIEW_ROUND_A_LIVING_WORLD.md)** — **APPROVED_CONCEPT by owner**; numerical tuning remains open.
 - **[Round B — technologies, government, war and AI: 9 concept choices](./GDD_REVIEW_ROUND_B_STATE_AND_TECH.md)** — **APPROVED_CONCEPT** by owner; costs, contested historical details and patch numbering remain open.
 - **[Round C — victory, religion, nations, espionage, events and UX: 7 concept choices](./GDD_REVIEW_ROUND_C_VICTORY_CONTENT_UX.md)** — **APPROVED_CONCEPT** by owner; historical content conflicts/unknowns explicit.
-- **[Round D — technical platform, private enterprise, source rights: 3 choices](./GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md)** — **AWAITING OWNER APPROVAL**; no specific Minecraft version or source-reuse permissions assumed.
+- **[Round D — technical platform, private enterprise, source rights: 3 choices](./GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md)** — **APPROVED_CONCEPT** by owner; no specific Minecraft version or source-reuse permissions assumed.
 - [All 33 outstanding decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md) — no decisions silently accepted.
 
 ## Supporting design constraints and source catalogs
 
-- [33 owner decisions: 30 APPROVED_CONCEPT, 3 OPEN](./GDD_APPROVAL_AND_OPEN_DECISIONS.md)
+- [33 owner decisions: 33 APPROVED_CONCEPT, 0 OPEN](./GDD_APPROVAL_AND_OPEN_DECISIONS.md)
 - [D-015 interbranch technology research](./TECHNOLOGY_PROGRESSION_RULES.md)
 - [D-014 finite victory vs endless sandbox](./WORLD_SESSION_MODES.md)
 - [D-013 world size presets](../04-architecture/WORLD_SIZE_PRESETS.md)
