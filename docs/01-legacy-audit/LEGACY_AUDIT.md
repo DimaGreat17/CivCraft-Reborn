@@ -9,6 +9,8 @@
 
 **Complete configured research catalog:** [Technology graph](./TECHNOLOGY_GRAPH.md)
 
+**Building catalog:** [Building parity matrix](./BUILDING_PARITY_MATRIX.md)
+
 ## 1. Provenance and scope
 
 The upstream README describes an old Bukkit server-side civilization modification, with player-formed camps, towns, civilizations, research, diplomacy, wonders, and wars. The repository also contains multi-server ban/perk components not necessarily related to gameplay.
