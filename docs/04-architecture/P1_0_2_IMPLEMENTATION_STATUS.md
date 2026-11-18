@@ -103,6 +103,19 @@ The failure is definitively in the custom Minecraft 26.3 Renderpearl GPU pass wh
 
 Do **not** advise reusing the pre-hotfix 3D GPU JAR for construction testing, and do **not** claim this workaround has been visually validated on the user's computer.
 
+## Reimplementation: translucent full-block ghosts via native submit collection (2026-11-18)
+
+**Confirmed cause in user report:** earlier `CivCraftGhostBlockRenderer.render():116` called `StagedVertexBuffer.upload()` from `AFTER_TRANSLUCENT_TERRAIN` during an already-open render pass. That is forbidden in Minecraft 26.3 Renderpearl.
+
+**Implemented correction:** new `CivCraftGhostBlockRenderer` registers `LevelRenderEvents.COLLECT_SUBMITS`, gathers up to 256 currently missing world positions, and uses `context.submitNodeCollector().submitCustomGeometry(poseStack, RenderTypes.debugFilledBox(), callback)`. Minecraft's own feature renderer now owns buffer uploads and render pass ordering. CivCraft owns no GPU buffers, opens no RenderPass, and calls no StagedVertexBuffer.upload. Existing closing mixin now invokes a no-op for backward compatibility.
+
+- A missing block is represented by six complete, cyan-tinted full faces with 0.30 alpha; correctly placed blocks are not submitted. This restores volumetric holograms without the old raw GPU path.
+- The ghost respects the user's selected template, current rotation/translation, 24-block construction radius, 28-block viewer distance and existing server-authoritative unlocks.
+- `scripts/verify_ghost_renderer_lifecycle.py` guards against accidental reintroduction of the previous illegal call pattern in CI.
+- The particle-only stopgap is removed when the new submit-based renderer is enabled.
+- **Evidence pending:** compilation and dedicated server smoke + artifact, then actual graphics-client acceptance on Minecraft 26.3 (open STORAGE, move, rotate, place/remove blocks, changing worlds, improved transparency ON/OFF). A successful headless server run alone CANNOT establish graphics stability or exact visual appearance.
+- Still not exact block textures/mesh topology; stairs, beds, walls and slabs remain translucent cube bounding volumes. This is the full-block geometric hologram milestone, not full Litematica mesh parity.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
