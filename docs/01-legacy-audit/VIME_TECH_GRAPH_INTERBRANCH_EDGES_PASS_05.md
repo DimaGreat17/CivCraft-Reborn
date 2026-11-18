@@ -43,6 +43,10 @@
 - Directed cycles **among these cross-branch candidate arrows only**: **0**.
 - This does **NOT** prove that the combined 49 same-track candidate edges + these crosses + yellow wonder constraints form a valid acyclic complete technology graph. Those sources have their own unresolved aliases and possible incorrect arrows.
 
+## Combined preliminary validation (passes 03 + 05)
+
+Manually parsed the rows of [pass 03](./VIME_TECH_GRAPH_EDGES_PASS_03.md) and this pass and performed a directed cycle check of the **union**: **68 candidate edges**, touching **59 named nodes**, **0 cycles detected**. This only validates the *transcribed subset* and cannot establish that the source graph itself has no cycles or that every node is reachable. A wrong or omitted arrow can change the result.
+
 ## Three key AND-gate groups
 
 **X-02, middle-tier military:** all four T3 military nodes are reached by red horizontal progression plus blue bus rooted at Engineering and purple bus rooted at Economics. Before lock-in, trace the exact order of bus meeting and whether minimal direct parents are Engineering and Economics or intermediate nodes.
