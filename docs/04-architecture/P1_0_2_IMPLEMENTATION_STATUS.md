@@ -24,7 +24,7 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 
 - Right-clicking the physical camp core opens an **independent CivCraft management screen** with tabs **Лагерь** / **Цивилизация**. The camp section exposes **Основать**, **Проверить**, **Схема строительства**, **Принять жителя**, **Повысить**, **Список поселений**.
 - The camp construction action opens a separate **CivCraftBlueprintScreen** with an ordered physical-build guide; its **Проверить построенное** button asks the server to report actual progress. Action buttons invoke **server-authoritative** `/civcraft camp ...` commands. There is no client-trusted mutation of stocks, citizens or camp ownership.
-- `/civcraft camp plan` gives a progress-aware construction checklist: 3 actual sheltered bedrooms, 3 citizens, food in real storage, workshop, farm. The player constructs blocks physically. **No translucent world-space hologram/ghost blueprint or snapping has been implemented**.
+- `/civcraft camp plan` gives a progress-aware construction checklist: 3 actual sheltered bedrooms, 3 citizens, food in real storage, workshop, farm. The player constructs blocks physically. **A native translucent whole-block preview is now implemented in the development branch; exact block textures/model fidelity and snapping are not yet implemented**.
 - The **Цивилизация** tab is intentionally disabled and explicitly labelled future: actual civ government features belong to a later patch, not a fake functional 0.2 menu.
 - The old floating Create World widgets are removed. CivCraft world options are now a dedicated screen entered from the vanilla World tab, with an explicit enable switch; a vanilla new world no longer receives the CivCraft border automatically. Existing 0.1 saves remain opt-in by legacy decode.
 - Client tab mixin is `environment=client` in `fabric.mod.json`, so dedicated-server launch must not require client GUI resource.
@@ -51,6 +51,14 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 - The BEDROOM geometry is an **optional** example; under D-050/D-053 ordinary houses remain freeform and are validated by actual physical ROOM criteria. Exact template shape must not be misrepresented as mandatory.
 - Pending G3 follow-up: fully translucent quads/solid block ghosts, correct rendering through/behind blocks, HUD progress without leaving the world, client multiplayer testing, localization and performance verification for large templates.
 - **Acceptance test:** right-click core → choose HEART → see four cyan outlined cells → put obsidian one by one → each correctly placed cell disappears → remove obsidian → corresponding cell reappears → select workshop/farm/bedroom → walk >28 blocks or switch dimension, projection stops → dedicated-server restart and world rights remain unaffected.
+
+## Native translucent blocks + Litematica required test profile (2026-11-18)
+
+- Previous dot particle prototype has been replaced by `CivCraftGhostBlockRenderer`, which emits **six alpha-tinted faces for every missing whole-block cell** into Minecraft 26.3's client-only Renderpearl pipeline. The plan selector, per-cell progress and server validation remain independent.
+- This is a **full-volume translucent voxel preview**, not a Minecraft-textured baked BlockState model renderer. Accurate bed, stair, slab, facing/orientation, textured faces, rotate/move/flip controls and an interactive in-game graphical acceptance test are NOT yet complete.
+- `gradle runClient -PschematicTest=true` explicitly requires the **Litematica 0.29.1 + MaLiLib 0.30.2** reference-mod pair, pinned from Modrinth. Their dependencies are scoped to the reference test profile; **do not** put them in CivCraft production fabric.mod.json. The build is not reliant on their Java APIs.
+- Separate acceptance and licensing notes: [P1_SCHEMATIC_RENDER_REFERENCE_TEST.md](P1_SCHEMATIC_RENDER_REFERENCE_TEST.md). No source from Litematica or MaLiLib is copied into CivCraft; reuse/compliance requires separate review.
+- **API caveat:** Minecraft 26.3 migrated GPU interfaces from Blaze3D to Renderpearl; the renderer must pass real 26.3 compilation, server bootstrap, and manual client rendering tests before it can be called finished.
 
 ## NOT implemented; release blockers
 
