@@ -2,6 +2,7 @@ package dev.civcraftreborn.settlement;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,14 @@ public final class FunctionalBuildingTemplates {
 
     private FunctionalBuildingTemplates() {}
 
+    private static final Map<Type,List<Cell>> CACHE = new EnumMap<>(Type.class);
+
     public static List<Cell> cells(Type type) {
+        if(type==null)return List.of();
+        return CACHE.computeIfAbsent(type,FunctionalBuildingTemplates::build);
+    }
+
+    private static List<Cell> build(Type type) {
         List<Cell> c = new ArrayList<>();
         switch (type) {
             case STORAGE -> {
