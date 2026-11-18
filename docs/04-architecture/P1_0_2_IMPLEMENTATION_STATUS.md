@@ -90,16 +90,16 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 
 ## Client crash report — schematic storage selection (2026-11-18)
 
-**Reported by owner:** an older development JAR crashed Minecraft when selecting/placing the storage blueprint. The exact `crash-reports/crash-*.txt` or `logs/latest.log` has not been supplied, therefore the root cause is **not confirmed**.
+**Reported by owner:** an older development JAR crashed Minecraft when selecting/placing the storage blueprint. The owner provided `crash-2026-11-18_17.01.54-client.txt`: **root cause confirmed**. The render thread threw `IllegalStateException: Close the existing render pass before performing additional commands` at `CivCraftGhostBlockRenderer.render(CivCraftGhostBlockRenderer.java:116)` during `StagedVertexBuffer.upload()`. This is an illegal upload inside Fabric `AFTER_TRANSLUCENT_TERRAIN`'s already active render pass. It is not a missing storage schematic, unsupported GPU or RAM allocation failure.
 
-A possible failure point is the custom Minecraft 26.3 Renderpearl GPU pass on the first active ghost frame. GitHub Actions runs compile/boot dedicated server but **do not perform client GPU rendering**, so prior PASS must not be interpreted as GPU safety.
+The failure is definitively in the custom Minecraft 26.3 Renderpearl GPU pass when the first ghost is drawn. GitHub Actions runs compile/boot dedicated server but **do not perform client GPU rendering**, so prior PASS must not be interpreted as GPU safety.
 
 **Containment hotfix (not root-cause fix):**
-- Quarantine `CivCraftGhostBlockRenderer.register()` behind JVM opt-in `-Dcivcraft.experimentalFullBlockGhosts=true`. **Default game launch never enables that unverified pipeline**.
+- **Completely unregister** `CivCraftGhostBlockRenderer` for development builds, including removing the unsafe JVM override. Its upload/draw lifecycle must be redesigned and visually tested before re-enabling.
 - Restore bounded Minecraft-native `DustParticleOptions` 3D cube-corner markers; only unloaded/missing cells are shown; correct block placement hides them.
 - Limit the fallback to 36 missing cells × 8 particles every 6 client ticks; use no forced chunk loads or unsafe GPU buffer calls.
 - This temporarily changes the preview from full translucent faces back to 3D outline points. Owner's ultimate requirement for accurate solid block ghosts remains **unresolved** until GPU failure is reproduced and corrected.
-- Collect `latest.log` or the actual crash report, verify which thread/exceptions crashed, then fix the real cause. Tests: select STORAGE/WORKSHOP/HEART, switch templates, render on a dedicated multiplayer world, exit/rejoin and test with/without Litematica.
+- The crash report now establishes the root cause. Next, redesign GPU buffer upload to occur outside any active render pass (and verify with graphical integration tests), then restore real translucent voxel surfaces. Tests: select STORAGE/WORKSHOP/HEART, switch templates, render on a dedicated multiplayer world, exit/rejoin and test with/without Litematica.
 
 Do **not** advise reusing the pre-hotfix 3D GPU JAR for construction testing, and do **not** claim this workaround has been visually validated on the user's computer.
 
