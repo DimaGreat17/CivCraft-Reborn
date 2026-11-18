@@ -11,6 +11,8 @@
 
 **Building catalog:** [Building parity matrix](./BUILDING_PARITY_MATRIX.md)
 
+**Later version (wiki-only):** [VimeWorld wiki audit](./VIMEWORLD_WIKI_AUDIT.md) — separate source, not equivalent to verified old source code.
+
 ## 1. Provenance and scope
 
 The upstream README describes an old Bukkit server-side civilization modification, with player-formed camps, towns, civilizations, research, diplomacy, wonders, and wars. The repository also contains multi-server ban/perk components not necessarily related to gameplay.
