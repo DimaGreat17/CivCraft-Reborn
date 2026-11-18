@@ -39,7 +39,8 @@ public final class CampCoreBlock extends Block {
         if (!grants.registerPlacement(player.getUUID())) return;
 
         ItemStack obsidian = new ItemStack(Items.OBSIDIAN, STARTER_OBSIDIAN);
-        if (!player.getInventory().add(obsidian)) {
+        if (!player.getInventory().add(obsidian) && !obsidian.isEmpty()) {
+            // Inventory insertion can be partial; only drop the remainder.
             player.drop(obsidian, false);
         }
         player.sendSystemMessage(Component.literal(
