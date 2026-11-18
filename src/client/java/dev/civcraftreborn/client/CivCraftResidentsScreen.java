@@ -34,10 +34,14 @@ public final class CivCraftResidentsScreen extends Screen {
                 b->issue("civcraft camp job assign CRAFTSMAN")).bounds(x,y+104,300,20).build());
         addRenderableWidget(Button.builder(Component.literal("Назначить кладовщиком"),
                 b->issue("civcraft camp job assign STOREKEEPER")).bounds(x,y+130,300,20).build());
+        addRenderableWidget(Button.builder(Component.literal("Назначить дозорным (башня)"),
+                b->issue("civcraft camp job assign WATCHMAN")).bounds(x,y+156,300,20).build());
+        addRenderableWidget(Button.builder(Component.literal("Назначить водоносом (колодец)"),
+                b->issue("civcraft camp job assign WATER_CARRIER")).bounds(x,y+182,300,20).build());
         addRenderableWidget(Button.builder(Component.literal("Список жителей и работ"),
-                b->issue("civcraft camp job list")).bounds(x,y+156,300,20).build());
+                b->issue("civcraft camp job list")).bounds(x,y+208,300,20).build());
         addRenderableWidget(Button.builder(Component.literal("Назад к лагерю"),
-                b->onClose()).bounds(x,y+182,300,20).build());
+                b->onClose()).bounds(x,y+234,300,20).build());
     }
     private void issue(String command) {
         Minecraft game=Minecraft.getInstance();
