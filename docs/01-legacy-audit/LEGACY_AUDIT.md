@@ -19,6 +19,8 @@
 
 **G0-A structure parity:** [27 original IDs ↔ 73 later navigation entries](./STRUCTURE_PARITY_27_VS_VIME.md) — exact-name matches vs unresolved possible successors, not implementation equivalence.
 
+**G0-A wonder research branch:** [22 C5 wonder technology gates](./VIME_WONDER_TECH_BRANCH_PASS_06.md) — the yellow dotted line is nonsequential; printed ordinary prerequisites are documented separately from physical construction rules.
+
 **G0-A later tech recovery:** [verified technology-to-unlock gates](./VIME_TECH_GRAPH_RECOVERY_01.md) and [visual transcription pass 02](./VIME_TECH_GRAPH_VISUAL_TRANSCRIPTION_02.md) — source image acquired, 66 ordinary labels and 22 wonder labels transcribed; [49 same-track directed-edge candidates](./VIME_TECH_GRAPH_EDGES_PASS_03.md) are traced; [8 interbranch gate groups](./VIME_TECH_GRAPH_INTERBRANCH_PASS_04.md) now described by visual evidence; exact immediate AND parents and costs still require validation.
 
 ## 1. Provenance and scope
