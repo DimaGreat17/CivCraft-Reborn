@@ -47,9 +47,15 @@ public final class CivCraftManagementScreen extends Screen {
             addRenderableWidget(Button.builder(Component.literal("Повысить поселение"),
                     b -> command("civcraft camp promote"))
                     .bounds(left + 142, top + 84, 138, 20).build());
-            addRenderableWidget(Button.builder(Component.literal("Список поселений"),
-                    b -> command("civcraft camp status"))
+            addRenderableWidget(Button.builder(Component.literal("Жители и профессии"),
+                    b -> Minecraft.getInstance().gui.setScreen(new CivCraftResidentsScreen(this)))
                     .bounds(left, top + 110, 280, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("Рабочие здания / стройка"),
+                    b -> command("civcraft camp building list"))
+                    .bounds(left, top + 136, 138, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("Заказы на строительство"),
+                    b -> command("civcraft camp construction list"))
+                    .bounds(left + 142, top + 136, 138, 20).build());
         } else {
             Button future = addRenderableWidget(Button.builder(
                     Component.literal("Цивилизации — в следующем этапе"),
@@ -57,7 +63,7 @@ public final class CivCraftManagementScreen extends Screen {
             future.active = false;
         }
         addRenderableWidget(Button.builder(Component.literal("Закрыть"),
-                b -> onClose()).bounds(left, top + 145, 280, 20).build());
+                b -> onClose()).bounds(left, top + 168, 280, 20).build());
     }
 
     private void command(String command) {
