@@ -2,6 +2,7 @@ package dev.civcraftreborn;
 
 import net.fabricmc.api.ModInitializer;
 import dev.civcraftreborn.foundation.FoundationServerBootstrap;
+import dev.civcraftreborn.foundation.FoundationCommands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ public final class CivCraftReborn implements ModInitializer {
     @Override
     public void onInitialize() {
         FoundationServerBootstrap.register();
+        FoundationCommands.register();
         LOGGER.info("CivCraft Reborn 0.1 Foundation entrypoint loaded");
     }
 }
