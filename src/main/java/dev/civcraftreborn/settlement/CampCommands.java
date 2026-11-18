@@ -137,12 +137,15 @@ public final class CampCommands {
             CampRecord camp = entry.get();
             var housing = HousingScanner.scan(player.serverLevel(), camp);
             var stock = CampStorageScanner.scan(player.serverLevel(), camp);
+            var facilities = CampBuildingScanner.scan(player.serverLevel(), camp);
             String message = "Camp " + camp.name() + " (" + camp.stage() + "): "
                     + housing.roomCount() + " rooms, " + housing.bedCount() + " valid beds, "
                     + housing.privateFloorCells() + " usable floor cells, "
                     + housing.capacity() + " housing slots (4 cells/NPC), "
                     + stock.food() + " real food items in " + stock.storageBlocks()
-                    + " storages. Complete=" + (housing.complete() && stock.complete());
+                    + " storages, workshop=" + facilities.workshop()
+                    + ", farm=" + facilities.farm()
+                    + ". Complete=" + (housing.complete() && stock.complete() && facilities.complete());
             source.sendSuccess(() -> Component.literal(message), false);
             return 1;
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
@@ -158,14 +161,16 @@ public final class CampCommands {
             if (camp == null) return fail(source, "Found a camp before promoting it.");
             var housing = HousingScanner.scan(player.serverLevel(), camp);
             var food = CampStorageScanner.scan(player.serverLevel(), camp);
-            if (!housing.complete() || !food.complete()) {
+            var facilities = CampBuildingScanner.scan(player.serverLevel(), camp);
+            if (!housing.complete() || !food.complete() || !facilities.complete()) {
                 return fail(source, "Some housing or storage chunks could not be verified.");
             }
             CampRecord promoted;
             try {
                 promoted = CampRules.promote(camp, housing.roomCount(),
                         CitizenSavedData.get(source.getServer()).atCamp(camp).size(),
-                        food.food(), food.storageBlocks() > 0);
+                        food.food(), food.storageBlocks() > 0,
+                        facilities.workshop(), facilities.farm());
             } catch (IllegalStateException e) {
                 return fail(source, e.getMessage());
             }
