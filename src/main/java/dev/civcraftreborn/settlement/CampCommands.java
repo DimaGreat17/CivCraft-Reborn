@@ -23,6 +23,7 @@ public final class CampCommands {
                 .then(Commands.literal("found").executes(ctx -> found(ctx.getSource())))
                 .then(Commands.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(Commands.literal("inspect").executes(ctx -> inspect(ctx.getSource())))
+                .then(Commands.literal("plan").executes(ctx -> plan(ctx.getSource())))
                 .then(Commands.literal("promote").executes(ctx -> promote(ctx.getSource())))
                 .then(Commands.literal("recruit").executes(ctx -> recruit(ctx.getSource())));
     }
@@ -69,6 +70,42 @@ public final class CampCommands {
             return 1;
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source, "Only a player can found a camp.");
+        }
+    }
+
+    private static int plan(CommandSourceStack source) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            CampRecord camp = CampSavedData.get(source.getServer())
+                    .ownedBy(player.getUUID()).orElse(null);
+            if (camp == null) {
+                return fail(source, "Place a physical Camp Core and found your camp first.");
+            }
+            var rooms = HousingScanner.scan(player.level(), camp);
+            var stock = CampStorageScanner.scan(player.level(), camp);
+            var facilities = CampBuildingScanner.scan(player.level(), camp);
+            int residents = CitizenSavedData.get(source.getServer()).atCamp(camp).size();
+
+            source.sendSuccess(() -> Component.literal(
+                    "CivCraft camp building plan: construct real structures around the core."), false);
+            source.sendSuccess(() -> Component.literal(
+                    "1. Sheltered bedrooms: " + rooms.roomCount() + "/3. "
+                    + "Each NPC needs a physical bed and at least 4 valid private floor cells."), false);
+            source.sendSuccess(() -> Component.literal(
+                    "2. Residents: " + residents + "/3. Recruit existing villagers, no free spawns."), false);
+            source.sendSuccess(() -> Component.literal(
+                    "3. Granary: " + stock.food() + "/16 actual food in "
+                    + stock.storageBlocks() + " loaded containers."), false);
+            source.sendSuccess(() -> Component.literal(
+                    "4. Workshop: crafting table + furnace = " + facilities.workshop()), false);
+            source.sendSuccess(() -> Component.literal(
+                    "5. Farm: at least 4 farmland + composter = " + facilities.farm()), false);
+            source.sendSuccess(() -> Component.literal(
+                    "This is a modular build schematic, NOT spawned structures. "
+                    + "Use /civcraft camp inspect to validate and /civcraft camp promote to advance."), false);
+            return 1;
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            return fail(source, "Only camp owners can review their construction plan.");
         }
     }
 
