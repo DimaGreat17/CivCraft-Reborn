@@ -24,6 +24,11 @@
 | GDD-12 | [Nations, espionage, ruins and special mechanics](./GDD_12_ESPIONAGE_NATIONS_EXPLORATION.md) | PROPOSED |
 | GDD-13 | [Feature provenance and scope traceability](./GDD_13_SCOPE_TRACEABILITY_MATRIX.md) | PROPOSED |
 
+## Owner approval rounds
+
+- **[Round A — living world: 14 design choices](./GDD_REVIEW_ROUND_A_LIVING_WORLD.md)** — variants, recommendations, dependencies; **AWAITING OWNER APPROVAL**.
+- [All 33 outstanding decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md) — no decisions silently accepted.
+
 ## Supporting design constraints and source catalogs
 
 - [33 unresolved owner decisions](./GDD_APPROVAL_AND_OPEN_DECISIONS.md)
