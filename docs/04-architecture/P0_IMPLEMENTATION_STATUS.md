@@ -23,7 +23,7 @@
 - [Run 44279950983](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44279950983): successful compile, JUnit and **one** dedicated server startup to `Done`.
 - [Run 44291344239](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44291344239): successful compile, tests and single-server smoke on earlier UI changes, as inspected through workflow jobs. Later commits require independent CI evidence.
 - [Run 44292882057](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44292882057) **PASS 6/6**: six isolated dedicated worlds created and cleanly restarted after altering global defaults; original size/mode remained authoritative. This does not validate the actual client GUI, border-edge behaviour or failure injection.
-- A strengthened follow-up matrix additionally compares persistent WorldId/seed across restarts; its result requires separate CI evidence.
+- A strengthened follow-up matrix additionally compares persistent WorldId/seed across restarts. An earlier attempt was blocked by a test-harness regex bug (corrected); a later run saw Maven Central 429 dependency throttling on at least one worker. The matrix workflow now limits parallelism and retries transient build failures; **the strengthened matrix is not yet accepted as PASS**.
 
 ## Known technical/release blockers
 
