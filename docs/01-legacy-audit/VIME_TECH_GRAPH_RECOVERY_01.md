@@ -75,4 +75,6 @@ The project owner supplied a readable 2048×1057 VimeWorld technology tree graph
 
 **Cross-branch gate trace:** [Pass 04 — eight visual AND-gate topology groups](./VIME_TECH_GRAPH_INTERBRANCH_PASS_04.md), based on full supplied diagram and enlarged crops. These groupings are not an exact per-technology incoming-edge list; implementation graph remains open.
 
+[Pass 05 — 19 named interbranch parent candidates](./VIME_TECH_GRAPH_INTERBRANCH_EDGES_PASS_05.md): 15 visually high-confidence, 4 likely; combined 68-edge subset has no detected cycles, **but full DAG is still not validated**.
+
 **G0-A partial progress, GAP-002 still OPEN. No mod code changed.**
