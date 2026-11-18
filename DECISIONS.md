@@ -73,6 +73,13 @@ Owner explicitly approved all seven recommended **conceptual** Round C options: 
 
 Owner expressly approved all three recommended **conceptual** Round D options: GDD-027, GDD-031 and GDD-033. D-046…D-048 record the decision; see [Round D](docs/02-game-design/GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md) and [33-item GDD ledger](docs/02-game-design/GDD_APPROVAL_AND_OPEN_DECISIONS.md). All **33 GDD-level concept questions now APPROVED_CONCEPT**, but **0 FROZEN**. This does not set an exact Minecraft/Fabric/Java version, coding architecture, technical performance budget, economic numbers, specific guild/contract rules, or actual rights to historical code/assets. G0 audit, G1 final design approval, G2, G3 and G4 remain open; gameplay code remains unauthorized.
 
+
+| D-049 | Player-founded camp uses hybrid approach C: place an authoritative central camp block, then build and upgrade real physical structures in Minecraft; inhabitants interact with real structures; player and NPC founders share SET-01 and resource/permission checks | APPROVED_CONCEPT | Owner selected option C on 2026-11-18. Block recipe, visuals, construction validation, footprint, resident requirements and balance remain OPEN; no P1 code authorization |
+
+## P1 player camp founding approval (2026-11-18)
+
+The owner approved **hybrid option C** for the camp founding interaction. See [P1 player camp proposal](docs/05-roadmap/P1_PLAYER_CAMP_FOUNDING_PROPOSAL.md). This approval concerns the interaction model, not numeric costs, detailed mechanics, implementation or patch signoff.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
