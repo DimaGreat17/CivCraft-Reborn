@@ -17,13 +17,12 @@ public final class CivCraftRebornClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CampBlueprintProjection.register();
+        CivCraftGhostBlockRenderer.register();
         ClientPlayNetworking.registerGlobalReceiver(BlueprintStatusResponse.TYPE,
                 (payload, context) -> context.client().execute(() ->
                         CampBlueprintProjection.setServerStage(payload.core(), payload.stage())));
-        // The original Renderpearl upload during an existing render pass is
-        // CONFIRMED to crash 26.3 clients (2026-11-18 crash report, line 116).
-        // Do not register the experimental GPU handler until its lifecycle
-        // is redesigned and verified in a real graphical client.
+        // Registered renderer uses vanilla feature submit batching, not a
+        // nested GPU pass or StagedVertexBuffer.upload().
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (!world.isClientSide() ||
                     !world.getBlockState(hit.getBlockPos()).is(CampBlocks.CAMP_CORE)) {
