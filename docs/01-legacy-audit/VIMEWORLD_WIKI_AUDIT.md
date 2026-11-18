@@ -85,3 +85,5 @@ Nation selection and governments are different systems. Talents chosen upon capi
 **Scope caution:** Some 2021–2022 update notes modify effects and prices. For each individual mechanic use the specific revision of the relevant wiki page or patch notes; an older page and later patch note may not match.
 
 - [Detailed building effects: pass 01](./VIME_BUILDING_EFFECTS_PASS_01.md): Factory, NPP, Laboratory, World Market, National College, Hermitage, East India Company and World Bank. Includes costs, formulas, requirement checks and explicit NPP limit inconsistency.
+
+- [Production, science and logistics: pass 02](./VIME_PRODUCTION_SCIENCE_LOGISTICS_PASS_02.md): warehouse→mines, granary→cottages, sawmill/tool wear, construction work points, science, road travel and arsenal; source uncertainties and upgrade inconsistencies retained.
