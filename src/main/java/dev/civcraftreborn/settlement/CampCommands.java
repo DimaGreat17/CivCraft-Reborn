@@ -19,7 +19,9 @@ public final class CampCommands {
     public static LiteralArgumentBuilder<CommandSourceStack> command() {
         return Commands.literal("camp")
                 .then(Commands.literal("found").executes(ctx -> found(ctx.getSource())))
-                .then(Commands.literal("status").executes(ctx -> status(ctx.getSource())));
+                .then(Commands.literal("status").executes(ctx -> status(ctx.getSource())))
+                .then(Commands.literal("inspect").executes(ctx -> inspect(ctx.getSource())))
+                .then(Commands.literal("promote").executes(ctx -> promote(ctx.getSource())));
     }
 
     private static int found(CommandSourceStack source) {
@@ -64,6 +66,57 @@ public final class CampCommands {
             return 1;
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source, "Only a player can found a camp.");
+        }
+    }
+
+    private static int inspect(CommandSourceStack source) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            var camps = CampSavedData.get(source.getServer());
+            var entry = camps.ownedBy(player.getUUID());
+            if (entry.isEmpty()) return fail(source, "You do not own a registered camp.");
+            CampRecord camp = entry.get();
+            var housing = HousingScanner.scan(player.serverLevel(), camp);
+            var stock = CampStorageScanner.scan(player.serverLevel(), camp);
+            String message = "Camp " + camp.name() + " (" + camp.stage() + "): "
+                    + housing.roomCount() + " rooms, " + housing.bedCount() + " valid beds, "
+                    + housing.privateFloorCells() + " usable floor cells, "
+                    + housing.capacity() + " housing slots (4 cells/NPC), "
+                    + stock.food() + " real food items in " + stock.storageBlocks()
+                    + " storages. Complete=" + (housing.complete() && stock.complete());
+            source.sendSuccess(() -> Component.literal(message), false);
+            return 1;
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            return fail(source, "Only camp owners can inspect their own housing.");
+        }
+    }
+
+    private static int promote(CommandSourceStack source) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            CampSavedData registry = CampSavedData.get(source.getServer());
+            CampRecord camp = registry.ownedBy(player.getUUID()).orElse(null);
+            if (camp == null) return fail(source, "Found a camp before promoting it.");
+            var housing = HousingScanner.scan(player.serverLevel(), camp);
+            var food = CampStorageScanner.scan(player.serverLevel(), camp);
+            if (!housing.complete() || !food.complete()) {
+                return fail(source, "Some housing or storage chunks could not be verified.");
+            }
+            CampRecord promoted;
+            try {
+                promoted = CampRules.promote(camp, housing.roomCount(),
+                        food.food(), food.storageBlocks() > 0);
+            } catch (IllegalStateException e) {
+                return fail(source, e.getMessage());
+            }
+            // Promotion changes only the settlement stage; existing beds,
+            // real food and resident identities are never duplicated.
+            registry.replace(camp, promoted);
+            source.sendSuccess(() -> Component.literal(
+                    "Camp promoted to SETTLEMENT without free resources or new IDs."), false);
+            return 1;
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            return fail(source, "Only camp owners can promote settlements.");
         }
     }
 
