@@ -13,6 +13,8 @@
 
 **Later version (wiki-only):** [VimeWorld wiki audit](./VIMEWORLD_WIKI_AUDIT.md) — separate source, not equivalent to verified old source code.
 
+**Cross-generation comparison:** [Old code ↔ VimeWorld wiki matrix](./GENERATION_COMPARISON_MATRIX.md) — source-by-source comparison, proposals not approved.
+
 ## 1. Provenance and scope
 
 The upstream README describes an old Bukkit server-side civilization modification, with player-formed camps, towns, civilizations, research, diplomacy, wonders, and wars. The repository also contains multi-server ban/perk components not necessarily related to gameplay.
