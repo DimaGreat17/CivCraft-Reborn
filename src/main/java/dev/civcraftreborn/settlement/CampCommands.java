@@ -28,7 +28,8 @@ public final class CampCommands {
                 .then(Commands.literal("inspect").executes(ctx -> inspect(ctx.getSource())))
                 .then(Commands.literal("plan").executes(ctx -> plan(ctx.getSource())))
                 .then(Commands.literal("promote").executes(ctx -> promote(ctx.getSource())))
-                .then(Commands.literal("recruit").executes(ctx -> recruit(ctx.getSource())));
+                .then(Commands.literal("recruit").executes(ctx -> recruit(ctx.getSource())))
+                .then(CampBuildingCommands.command());
     }
 
     private static int found(CommandSourceStack source) {
@@ -99,7 +100,7 @@ public final class CampCommands {
 
             source.sendSuccess(() -> Component.literal(
                     "CivCraft camp building plan: place a physical Camp Core, then place "
-                    + "4 obsidian blocks N/S/E/W around it; the first core grants the obsidian once."), false);
+                    + "4 obsidian blocks N/S/E/W around it; each core placement grants the obsidian."), false);
             source.sendSuccess(() -> Component.literal(
                     "1. Sheltered bedrooms: " + rooms.roomCount() + "/3. "
                     + "Each NPC needs a physical bed and at least 4 valid private floor cells."), false);
