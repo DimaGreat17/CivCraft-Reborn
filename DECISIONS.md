@@ -122,6 +122,12 @@ D-055 refines D-053 (ROOM) and D-054 (COMBINED): use verified usable floor cells
 
 D-056 adds a numeric **test baseline**, not a frozen final gameplay balance. Under the candidate capacity calculation, a verified room permits at most `min(valid beds, floor(usable floor area / 4))` NPCs subject to access, shelter, safety and housing rights (D-053–D-055). One physical bed remains a single slot and comfort cannot create extra slots. For 3 usable block², area capacity is zero; 4–7 permits at most one before beds, 8–11 at most two, etc. Cells, shared-space accounting and invalidation must be specified and tested before P1 freeze; modify the provisional value only through a new explicit balance decision.
 
+| D-057 | PHYSICAL floor eligibility: recognize usable housing floor surfaces by actual Minecraft collision geometry, walkability and safety for an NPC, rather than full-block-only or a static whitelist; slabs/stairs and modded surfaces may qualify when physically usable | APPROVED_CONCEPT | Owner selected PHYSICAL on 2026-11-18. Exact collision tests, clearance, pathfinding rules, fractional areas, edge cases and runtime budgets remain PROPOSED; see P1_PHYSICAL_FLOOR_VALIDATION_CONTRACT.md |
+
+## P1 PHYSICAL floor qualification approval (2026-11-18)
+
+D-057 refines D-053 ROOM, D-055 FLOOR and provisional D-056 4 block²/NPC: qualify usable floor by genuine physical support, NPC traversability and safety. A slab/stair is neither automatically eligible nor automatically forbidden by block identity. Actual geometry and route constraints determine whether a cell contributes area. This does not approve a specific fractional-credit formula, pathfinder, collision threshold, code change, or release signoff.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
