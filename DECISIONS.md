@@ -92,6 +92,12 @@ D-050 extends D-049 without replacing it: the central camp block establishes a c
 
 D-051 refines D-050: no requirement that every building reproduce one rigid schematic, and no permission to activate a function from an arbitrary standalone block without the required module checks. Server-authoritative validation, physical Minecraft blocks and accounting still apply. No P1 code authorization or release signoff is implied.
 
+| D-052 | HYBRID materials for modular functional buildings: ordinary Minecraft blocks form the physical structure; dedicated CivCraft Reborn blocks provide unique functions only where vanilla blocks are insufficient | APPROVED_CONCEPT | Owner selected HYBRID on 2026-11-18. Exact special-block catalog, substitutions, crafting recipes and compatibility remain PROPOSED; see P1_HYBRID_MATERIALS_AND_FUNCTIONAL_BLOCKS.md |
+
+## P1 hybrid-materials approval (2026-11-18)
+
+D-052 extends D-049 through D-051 without replacing them. Functionality requires actual server-validated modules, resources and permissions, not automatic effects from decorative vanilla builds. Standard Minecraft blocks remain available for the surrounding architecture. Unique mod blocks are introduced when the function cannot reasonably be represented by vanilla components; the necessity of each new block must be documented. P0 code and P1 release authorization are unaffected.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
