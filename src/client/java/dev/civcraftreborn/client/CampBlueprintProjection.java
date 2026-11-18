@@ -110,7 +110,7 @@ public final class CampBlueprintProjection {
                 parts.add(new Step(4, y, t, Blocks.OAK_PLANKS));
                 parts.add(new Step(6, y, t, Blocks.OAK_PLANKS));
             }
-            parts.add(new Step(5, 0, 5, Blocks.WHITE_BED, true));
+            parts.add(new Step(5, 0, 5, Blocks.AIR, true));
         }
         // Corner walls from orthogonal faces can overlap. One world cell = one step.
         Map<String, Step> unique = new LinkedHashMap<>();
