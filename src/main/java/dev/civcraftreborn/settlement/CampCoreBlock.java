@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The one-time construction material kit is supplied *after the player places*
- * a physical camp core. No resources are awarded on login or world creation.
+ * The construction material kit is supplied *every time the player places*
+ * a physical camp core in a CivCraft world. No resources are awarded on login or world creation.
  * The obsidian is for building the camp heart around the placed core, not for
  * crafting the core itself (which would cause a progression deadlock).
  */
@@ -35,9 +35,6 @@ public final class CampCoreBlock extends Block {
             return;
         }
 
-        StarterGrantSavedData grants = StarterGrantSavedData.get(player.level().getServer());
-        if (!grants.registerPlacement(player.getUUID())) return;
-
         ItemStack obsidian = new ItemStack(Items.OBSIDIAN, STARTER_OBSIDIAN);
         if (!player.getInventory().add(obsidian) && !obsidian.isEmpty()) {
             // Inventory insertion can be partial; only drop the remainder.
@@ -45,7 +42,7 @@ public final class CampCoreBlock extends Block {
                     pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, obsidian);
         }
         player.sendSystemMessage(Component.literal(
-                "CivCraft: you placed your first Camp Core. Received 4 obsidian "
-                + "to build the physical camp heart. This grant is once per player per world."));
+                "CivCraft: Camp Core placed. Received 4 obsidian "
+                + "to build its physical camp heart. Each placement provides a new kit."));
     }
 }
