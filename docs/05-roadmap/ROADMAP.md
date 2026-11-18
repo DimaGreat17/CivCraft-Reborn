@@ -26,6 +26,9 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 ## Preliminary GDD work (not a phase-gate signoff)
 
+- [GDD-02: NPC population and behavior](../02-game-design/NPC_POPULATION_AND_BEHAVIOR_GDD_02.md): 18 design sections, 20 acceptance scenarios; identity, needs, housing, jobs, scarcity, migration, NPC/player permissions and loaded/virtual integration. **PROPOSED**, subject to owner approval and economy/architecture contracts.
+
+
 [GDD-01: settlement → province → independent civilization](../02-game-design/SETTLEMENT_PROVINCE_CIVILIZATION_LIFECYCLE_GDD_01.md) was drafted at project-owner request during outstanding G0 audit. This is **PROPOSED**, not frozen. Early major patches have a dependency conflict: provincial promotion requires technologies, while the tentative patch ladder schedules civilization mechanics before the complete research tree. G4 must resolve prerequisite closure without fake stubs; no gameplay code was added.
 
 ## G0 comprehensive review (2026-11-18)
