@@ -8,6 +8,10 @@
 
 Гильдии/частные предприятия требуют оплаты, собственности, найма, налогов и обратимых договоров. Поздние религиозные и дипломатические победы требуют всех реально существующих зданий/исследований и timer evaluator.
 
+## P0 early-release narrowing (2026-11-18)
+
+[Read P0/0.1 scope and exit criteria](./P0_0_1_SCOPE_AND_SIGNOFF_PROPOSAL.md). First patch deliberately excludes citizen/game economy/claims; all enabled functions (world choices, server border and state persistence) must work completely. This is a **candidate for explicit owner review**, not a changed approved release freeze. Minecraft 26.3 is a [toolchain verification candidate](../04-architecture/G3_P0_TOOLCHAIN_FEASIBILITY_PLAN.md), not a confirmed build. Session mode selection is stored and non-working FINITE outcomes must be truthfully disclosed per D-045.
+
 ## Предлагаемые релизные контрольные пакеты
 
 | Patch candidate | Scope | Gate/tests |
