@@ -141,6 +141,11 @@ public final class CampBlueprintProjection {
     public static BlockPos anchor() { return coreAnchor; }
     public static int rotationDegrees() { return rotation * 90; }
     public static int offsetX() { return offsetX; }
+    /** NW floor-level origin used by server construction and acceptance. */
+    public static BlockPos placedOrigin() {
+        return coreAnchor == null ? null : coreAnchor.offset(offsetX,0,offsetZ);
+    }
+
     public static int offsetZ() { return offsetZ; }
 
     public static List<Step> steps(Plan plan) {
