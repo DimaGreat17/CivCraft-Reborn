@@ -25,7 +25,7 @@ public final class CivCraftBlueprintScreen extends Screen {
         int y = Math.max(32, height / 2 - 110);
 
         addRenderableWidget(Button.builder(
-                Component.literal("Шаг 1 — физический центр лагеря"),
+                Component.literal("Шаг 1 — центр + 4 обсидиана по сторонам"),
                 b -> {}).bounds(x, y, 310, 20).build()).active = false;
         addRenderableWidget(Button.builder(
                 Component.literal("Шаг 2 — 3 укрытых спальни с кроватями"),
