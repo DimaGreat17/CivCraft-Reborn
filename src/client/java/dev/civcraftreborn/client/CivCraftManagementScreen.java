@@ -39,7 +39,7 @@ public final class CivCraftManagementScreen extends Screen {
                     b -> command("civcraft camp inspect"))
                     .bounds(left + 142, top + 32, 138, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Схема строительства"),
-                    b -> command("civcraft camp plan"))
+                    b -> Minecraft.getInstance().gui.setScreen(new CivCraftBlueprintScreen(this)))
                     .bounds(left, top + 58, 280, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Принять жителя"),
                     b -> command("civcraft camp recruit"))
