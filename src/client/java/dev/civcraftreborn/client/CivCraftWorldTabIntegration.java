@@ -11,7 +11,7 @@ public final class CivCraftWorldTabIntegration {
     public static Button createButton() {
         return Button.builder(Component.literal("Мир CivCraft..."), button -> {
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.setScreen(new CivCraftWorldOptionsScreen(minecraft.screen));
+            minecraft.gui.setScreen(new CivCraftWorldOptionsScreen(minecraft.gui.screen()));
         }).size(210, 20).build();
     }
 }
