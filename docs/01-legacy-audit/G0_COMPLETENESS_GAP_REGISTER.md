@@ -23,7 +23,7 @@
 ## G0-A progress update (2026-11-18)
 
 - [STRUCTURE_PARITY_27_VS_VIME.md](./STRUCTURE_PARITY_27_VS_VIME.md): all **27** old configured structure IDs now have an evidence-graded later wiki name mapping or explicit unmatched classification; this closes only the **identity mapping subtask** of GAP-001, not detailed behavioral parity. Of 73 later index entries, 51 lack an *unambiguous exact-name* old counterpart; many are genuinely new, but some may be renamed successors. Do not call them 51 confirmed new structures.
-- [VIME_TECH_GRAPH_RECOVERY_01.md](./VIME_TECH_GRAPH_RECOVERY_01.md): direct technology-to-building unlock and civic prerequisite examples collected. The late tree is embedded as a raster, not a readable list of technology-to-technology prerequisites; full graph reconstruction remains blocked until image acquisition and verification. Its wiki page indicates a **2024-09-03** last edit (source tree version 1.9.2), so 2022 wiki-page dating must not be applied globally.
+- [VIME_TECH_GRAPH_RECOVERY_01.md](./VIME_TECH_GRAPH_RECOVERY_01.md): direct technology-to-building unlock and civic prerequisite examples collected. The late tree is a raster; the project owner supplied a readable 2048×1057 copy on 2026-11-18, resolving acquisition. Full directional edge transcription and graph validation remain open. D-015 approves cross-branch prerequisites as a design principle. Its wiki page indicates a **2024-09-03** last edit (source tree version 1.9.2), so 2022 wiki-page dating must not be applied globally.
 
 ## 2. Priority-ranked open research backlog
 
