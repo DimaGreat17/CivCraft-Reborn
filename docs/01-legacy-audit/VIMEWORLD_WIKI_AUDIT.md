@@ -87,3 +87,5 @@ Nation selection and governments are different systems. Talents chosen upon capi
 - [Detailed building effects: pass 01](./VIME_BUILDING_EFFECTS_PASS_01.md): Factory, NPP, Laboratory, World Market, National College, Hermitage, East India Company and World Bank. Includes costs, formulas, requirement checks and explicit NPP limit inconsistency.
 
 - [Production, science and logistics: pass 02](./VIME_PRODUCTION_SCIENCE_LOGISTICS_PASS_02.md): warehouse→mines, granary→cottages, sawmill/tool wear, construction work points, science, road travel and arsenal; source uncertainties and upgrade inconsistencies retained.
+
+- [Agriculture, extraction and food: pass 03](./VIME_AGRICULTURE_EXTRACTION_PASS_03.md): farm crops, fish farm, quarry, plantation, resource mine, granary, fish boat, stoneworks, silkworm and beekeeping, plus input/output invariants and remaining evidence gaps.
