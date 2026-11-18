@@ -157,6 +157,10 @@ Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CO
 
 **APPROVED_PRELIMINARY_BALANCE:** 4 пригодных блока² пола на каждого NPC, совместно с кроватью и всеми проверками ROOM. Это параметр для P1-тестов, а не финальный баланс. Комфорт не увеличивает вместимость. [Примеры и тесты D-056](../05-roadmap/P1_FLOOR_HOUSING_BALANCE_4_BLOCKS.md).
 
+## D-057 — PHYSICAL usable floor (2026-11-18)
+
+**APPROVED_CONCEPT:** считать пол пригодным по реальным коллизиям, физической проходимости и безопасности для NPC; плиты/ступени не запрещены по названию блока. Норма D-056 4 блока²/NPC остаётся предварительной, конкретный вклад частичных поверхностей ещё не утверждён. [Контракт PHYSICAL](../05-roadmap/P1_PHYSICAL_FLOOR_VALIDATION_CONTRACT.md).
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
