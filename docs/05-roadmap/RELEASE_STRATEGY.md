@@ -21,7 +21,7 @@ Fixes and maintenance of the active stage are permitted. Research and design of 
 
 | Stage | Tentative release | Objective | Initial exit criteria |
 |---|---|---|---|
-| P0 | 0.1 Foundation | Mod boots, world-scoped state, registries, config, saves, **world-size preset choice at creation**, border, permissions/test harness | Create/load worlds for 10k/15k/25k without losing settings; enforce border; server-only authority, automated core tests |
+| P0 | 0.1 Foundation | Mod boots, world-scoped state, registries, config, saves, **world-size and finite/endless session-mode choices at creation**, border, permissions/test harness | Create/load worlds for 10k/15k/25k with either session mode, preserve settings, enforce border; do not claim finite victory complete until full outcomes exist; server-only authority, automated core tests |
 | P1 | 0.2 Living Settlement | Player-founded camp → settlement, housing, basic workers, jobs, real stocks and construction | Autonomous test village survives 10 game-days, works correctly in loaded/unloaded simulation and across restart |
 | P2 | 0.3 Civilization Systems | Multiple cities, claims/culture, treasury/taxes, economy/trade/logistics, government and happiness basics | Two settlements and a player settlement can interact, trade, claim and persist without duplication |
 | P3 | 0.4 Research & Culture | Full selected technology tree, progress, upgrades, eras, cultural talents and infrastructure bonuses | All selected tech dependencies and building unlocks tested, progression complete |
