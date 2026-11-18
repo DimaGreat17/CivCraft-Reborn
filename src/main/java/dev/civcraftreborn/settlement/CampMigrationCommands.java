@@ -57,8 +57,8 @@ public final class CampMigrationCommands {
                 return fail(source,"Inviting a migrant requires 12 bread (food & travel supplies).");
 
             BlockPos entry=null;
-            for(int dx:new int[]{12,-12,0,0}) {
-                int dz=dx==0?(entry==null?12:-12):0;
+            for(int[] offset:new int[][]{{12,0},{-12,0},{0,12},{0,-12}}) {
+                int dx=offset[0],dz=offset[1];
                 for(int dy=-3;dy<=3;dy++) {
                     BlockPos candidate=center.offset(dx,dy,dz);
                     if(!player.level().hasChunkAt(candidate)||!player.level().getWorldBorder()
