@@ -24,6 +24,10 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 [Pass 14](../01-legacy-audit/G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) now distinguishes **42/73 wiki building articles retrievable** versus **31 currently inaccessible**, without claiming the 42 have complete effects audits. Bank-interest wiki table/formula conflict `BANK-CONFLICT-001` registered. G0 remains OPEN.
 
+## GDD owner approval — Round A (2026-11-18)
+
+The owner **approved 14 of 33 conceptual GDD decisions** ([Round A](../02-game-design/GDD_REVIEW_ROUND_A_LIVING_WORLD.md), [DECISIONS D-016…D-029](../../DECISIONS.md)). [The ledger](../02-game-design/GDD_APPROVAL_AND_OPEN_DECISIONS.md) now has 14 APPROVED_CONCEPT, 19 OPEN; **zero FROZEN**. Updated GDD-01/02/03/04/08/11 and master GDD. No numeric balance (including historic culture threshold, 150-block spacing and money amounts), exact timer, source-version choice, tech graph, patch scope or code authorization was approved. G0 remains OPEN.
+
 ## Full GDD documentation bundle (2026-11-18)
 
 At the project owner's explicit request, the full **13-section system-level GDD draft** has now been written and committed:
