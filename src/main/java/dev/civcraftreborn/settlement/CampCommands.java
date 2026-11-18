@@ -4,6 +4,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -42,6 +44,11 @@ public final class CampCommands {
                 return fail(source, "Place a CivCraft Camp Core within 4 blocks before founding.");
             }
             BlockPos pos = anchor.get();
+            if (!hasPhysicalHeart(level, pos)) {
+                return fail(source, "Build the Camp Heart: surround the placed Camp Core with "
+                        + "4 obsidian blocks to the north, south, east and west. "
+                        + "The first placed core gives a one-time obsidian kit.");
+            }
             String dimension = level.dimension().identifier().toString();
             boolean withinBorder = level.getWorldBorder().isWithinBounds(pos);
             boolean supported = level.getBlockState(pos.below()).isSolid();
@@ -232,6 +239,14 @@ public final class CampCommands {
                     + "," + camp.z() + " ID=" + camp.id()), false);
         }
         return store.all().size();
+    }
+
+    /** A small, literal starter blueprint assembled by the player in-world. */
+    private static boolean hasPhysicalHeart(net.minecraft.world.level.Level level, BlockPos core) {
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            if (!level.getBlockState(core.relative(direction)).is(Blocks.OBSIDIAN)) return false;
+        }
+        return true;
     }
 
     private static Optional<BlockPos> findCore(ServerPlayer player) {
