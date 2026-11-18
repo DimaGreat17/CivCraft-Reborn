@@ -68,6 +68,12 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 - Mandatory Litematica/MaLiLib **reference-test profile** remains separate from release. The explicit `verifySchematicTestProfile -PschematicTest=true` task is designed to download both exact Modrinth artifacts, and a separate CI workflow has been added; no successful resolution/client comparison run has yet been verified by this document.
 - The preview draws translucent whole-block volumes, **not yet per-block Minecraft textures/models**. No claim of final Litematica parity or full 0.2 release.
 
+## Subsequent schematic-profile CI evidence (2026-11-18)
+
+- [Run 44307976724](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44307976724) **PASS**: normal CivCraft 0.2 development build, JUnit and dedicated server smoke, with the separately optional Modrinth test-profile Gradle declarations present. Includes a downloadable development JAR.
+- The dedicated-server build does **not** require Litematica/MaLiLib. Their separate resolution task `verifySchematicTestProfile -PschematicTest=true` is checked by its own workflow; this run alone does **not** prove the reference-mod test has passed.
+- Visual client GPU test and correct color/alpha behavior still require actual Minecraft runtime confirmation.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
