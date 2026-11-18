@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 from pathlib import Path
 import signal
 import subprocess
@@ -33,7 +34,7 @@ def write_defaults(size: int, mode: str) -> None:
     )
 
 
-def boot(label: str, size: int, mode: str, timeout_seconds: int) -> None:
+def boot(label: str, size: int, mode: str, timeout_seconds: int) -> tuple[str, str]:
     LOGDIR.mkdir(parents=True, exist_ok=True)
     log = LOGDIR / f"{label}.log"
     expected = f"Foundation world settings: Overworld {size}x{size} blocks, mode {mode}"
@@ -59,6 +60,12 @@ def boot(label: str, size: int, mode: str, timeout_seconds: int) -> None:
                 raise RuntimeError(
                     f"{label}: dedicated server did not start with expected settings; inspect {log}"
                 )
+            identity_match = re.search(
+                r"Foundation world identity: id=([0-9a-f-]{36}), seed=(-?\\d+)", text
+            )
+            if not identity_match:
+                raise RuntimeError(f"{label}: no world UUID/seed evidence in {log}")
+            identity = identity_match.group(1), identity_match.group(2)
 
             # Gradle's runServer may or may not forward stdin in all Loom versions.
             # If it does not, treat shutdown as a blocker instead of asserting
@@ -74,6 +81,7 @@ def boot(label: str, size: int, mode: str, timeout_seconds: int) -> None:
                 ) from error
             if result != 0:
                 raise RuntimeError(f"{label}: server exited with {result}; inspect {log}")
+            return identity
         finally:
             if proc.poll() is None:
                 os.killpg(proc.pid, signal.SIGTERM)
@@ -99,24 +107,31 @@ def main() -> None:
     (RUN / "eula.txt").write_text("eula=true\n", encoding="utf-8")
 
     write_defaults(args.size, args.mode)
-    boot("first-create", args.size, args.mode, args.timeout_seconds)
+    first_identity = boot("first-create", args.size, args.mode, args.timeout_seconds)
 
     found = list(WORLD.rglob("*world_settings*.dat"))
     if not found:
         raise RuntimeError("No CivCraft world SavedData file found after clean stop")
     initial_bytes = {str(f.relative_to(WORLD)): f.read_bytes() for f in found}
+    identity_files = list(WORLD.rglob("*world_identity*.dat"))
+    if not identity_files:
+        raise RuntimeError("No stable CivCraft UUID/seed SavedData file after clean stop")
 
     different_size = next(s for s in SIZES if s != args.size)
     different_mode = next(m for m in MODES if m != args.mode)
     write_defaults(different_size, different_mode)
-    boot("restarted-after-defaults-changed", args.size, args.mode, args.timeout_seconds)
+    restarted_identity = boot("restarted-after-defaults-changed", args.size, args.mode, args.timeout_seconds)
+    if restarted_identity != first_identity:
+        raise RuntimeError(
+            f"World UUID/seed changed after restart: {first_identity} -> {restarted_identity}"
+        )
 
     for filename in initial_bytes:
         if not (WORLD / filename).exists():
             raise RuntimeError(f"Persisted P0 SavedData disappeared after restart: {filename}")
     print(
         f"PASS real-world restart: {args.size}x{args.size} {args.mode}; "
-        "changed defaults did not change the stored world settings"
+        "changed defaults did not change the stored world settings or identity"
     )
 
 
