@@ -98,6 +98,12 @@ D-051 refines D-050: no requirement that every building reproduce one rigid sche
 
 D-052 extends D-049 through D-051 without replacing them. Functionality requires actual server-validated modules, resources and permissions, not automatic effects from decorative vanilla builds. Standard Minecraft blocks remain available for the surrounding architecture. Unique mod blocks are introduced when the function cannot reasonably be represented by vanilla components; the necessity of each new block must be documented. P0 code and P1 release authorization are unaffected.
 
+| D-053 | ROOM housing recognition: NPC housing is validated automatically from actual Minecraft rooms using bed availability, shelter, physical access and safety; ordinary houses need no mandatory blueprint or manual registration | APPROVED_CONCEPT | Owner selected ROOM on 2026-11-18. Exact flood-fill bounds, geometry, lighting, hostile-mob thresholds, household ownership and scoring remain PROPOSED; see P1_ROOM_HOUSING_RECOGNITION_CONTRACT.md |
+
+## P1 ROOM housing recognition approval (2026-11-18)
+
+D-053 extends D-050/D-052: building a vanilla home remains free-form, while **assigning NPC housing requires objective server validation**, not just the presence of an arbitrary bed. Validation must account for shelter, usable bed, traversable access and safety. No automatic NPC spawning, arbitrary claims, money, or extra slots from decorative interiors. The numeric rules, integration, and implementation remain unapproved.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
