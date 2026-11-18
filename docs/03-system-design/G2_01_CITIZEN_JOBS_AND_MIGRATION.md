@@ -153,6 +153,10 @@ Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CO
 
 **APPROVED_CONCEPT:** для D-054 COMBINED используется подтверждённая пригодная площадь пола, а не весь 3D-объём комнаты. Кровати и ROOM-условия обязательны; вертикальная проходимость остаётся частью доступа. Норма площади, геометрические допуски и расчёт многоэтажности PROPOSED. [Спецификация FLOOR](../05-roadmap/P1_FLOOR_AREA_HOUSING_METRIC.md).
 
+## D-056 — provisional FLOOR housing density (2026-11-18)
+
+**APPROVED_PRELIMINARY_BALANCE:** 4 пригодных блока² пола на каждого NPC, совместно с кроватью и всеми проверками ROOM. Это параметр для P1-тестов, а не финальный баланс. Комфорт не увеличивает вместимость. [Примеры и тесты D-056](../05-roadmap/P1_FLOOR_HOUSING_BALANCE_4_BLOCKS.md).
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
