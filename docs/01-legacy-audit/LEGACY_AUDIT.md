@@ -17,6 +17,10 @@
 
 **G0 closure review:** [Completeness, Gap Register and Exit Criteria](./G0_COMPLETENESS_GAP_REGISTER.md) — 18 prioritized gaps, contradictions and evidence-based exit checklist; G0 NOT closed.
 
+**G0-A structure parity:** [27 original IDs ↔ 73 later navigation entries](./STRUCTURE_PARITY_27_VS_VIME.md) — exact-name matches vs unresolved possible successors, not implementation equivalence.
+
+**G0-A later tech recovery:** [verified technology-to-unlock gates](./VIME_TECH_GRAPH_RECOVERY_01.md) — full late prerequisite graph is image-only and still blocked.
+
 ## 1. Provenance and scope
 
 The upstream README describes an old Bukkit server-side civilization modification, with player-formed camps, towns, civilizations, research, diplomacy, wonders, and wars. The repository also contains multi-server ban/perk components not necessarily related to gameplay.
