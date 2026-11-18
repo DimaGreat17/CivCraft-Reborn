@@ -20,6 +20,10 @@ P0 0.1 Foundation → P1 0.2 Living Settlement → P2 0.3 Civilization Systems �
 
 The sequence is preliminary and can be revised *during design* based on dependencies and the legacy feature-parity audit. Once frozen, it is governed by the change-control policy.
 
+## P0 0.1 scoped pre-code review (2026-11-18)
+
+The next development candidate is [P0/0.1 narrow scope & acceptance](./P0_0_1_SCOPE_AND_SIGNOFF_PROPOSAL.md): authoritative creation/persistence of 3 Overworld presets and finite/sandbox intent, border, versioned save and nonmisleading UI. NPCs, population, technologies, claims and economies explicitly outside P0, **not fake stubs**. [Technical feasibility plan](../04-architecture/G3_P0_TOOLCHAIN_FEASIBILITY_PLAN.md) identifies Minecraft Java 26.3 + Java25/Fabric as a **desk-research candidate** only; exact coordinates, local compilation and dedicated server tests not done. **P0 scope not approved/frozen; no coding authorization.** Historical G0 gaps for later patches still open and must not be silently claimed resolved.
+
 ## Pre-code documentation handoff (2026-11-18)
 
 **Final handoff artifacts:** [G3 index](../04-architecture/G3_INDEX.md), [20 cross-system integration tests (NOT RUN)](./PRE_CODE_INTEGRATION_VERIFICATION_MATRIX.md), [G4 readiness NO-GO](./G4_PRE_CODE_READINESS_REVIEW.md). Documentation coverage ≠ code authorization.
