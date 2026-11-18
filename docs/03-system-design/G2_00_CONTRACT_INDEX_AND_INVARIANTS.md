@@ -10,15 +10,15 @@
 | G2-01 | [Citizen / Need / Housing / Job / Migration](./G2_01_CITIZEN_JOBS_AND_MIGRATION.md) | DRAFT |
 | G2-02 | [Site / Settlement / Province / Civilization lifecycle](./G2_02_SETTLEMENT_AND_POLITY_LIFECYCLE.md) | DRAFT |
 | G2-03 | [Item ledger / Production / Shipment / Money](./G2_03_ECONOMY_TRANSACTIONS_AND_LOGISTICS.md) | DRAFT |
-| G2-04 | Territory/claim/permissions/construction | PLANNED |
-| G2-05 | Technology graph/eras/wonders | PLANNED, G0 DAG BLOCKED |
-| G2-06 | Government/culture/legal transitions | PLANNED |
-| G2-07 | Diplomacy/war/capture/revolution | PLANNED, WAR-CONFLICT-001 BLOCKED |
-| G2-08 | AI strategic planning/knowledge budget | PLANNED |
-| G2-09 | Victory/events/religion/espionage/ruins | PLANNED, G0 CONTENT BLOCKED |
-| G2-10 | Player UI/network/ACL | PLANNED |
-| G2-11 | Worldgen, seeding, session/border rules | PLANNED |
-| G2-12 | Cross-system persistence, scheduling, reconciliation and simulation budgets | PLANNED — depends on G3 feasibility |
+| G2-04 | [Territory/claim/permissions/construction](./G2_04_TERRITORY_PERMISSIONS_CONSTRUCTION.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-05 | [Technology graph/eras/wonders](./G2_05_RESEARCH_ERAS_WONDERS.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-06 | [Government/culture/legal transitions](./G2_06_GOVERNMENT_CULTURE_CITIZENSHIP.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-07 | [Diplomacy/war/capture/revolution](./G2_07_DIPLOMACY_WAR_CAPTURE.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-08 | [AI strategic planning/knowledge budget](./G2_08_STRATEGIC_AI_AND_KNOWLEDGE.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-09 | [Victory/events/religion/espionage/ruins](./G2_09_VICTORY_EVENTS_NATIONS_ESPIONAGE.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-10 | [Player UI/network/ACL](./G2_10_UI_MULTIPLAYER_COMMAND_AUTH.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-11 | [Worldgen, seeding, session/border rules](./G2_11_WORLDGEN_SEED_BORDER_SESSION.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
+| G2-12 | [Cross-system persistence, scheduling, reconciliation and simulation budgets](./G2_12_PERSISTENCE_CLOCK_LOD_CROSS_SYSTEM.md) | DRAFT / NOT FROZEN; source and G3 blockers remain |
 
 ## 2. Источник истины и правила точности
 
@@ -77,8 +77,8 @@
 
 ## 7. Границы первого набора
 
-G2-01/02/03 задают **сквозные контракты для фундаментальных циклов**, но **не** финальные рецепты, баланс, все технологии и политические алгоритмы. Не считать готовым релиз P1: нет определения точного входа worldgen, complete ACL / construction, тестов Fabric, migration format и performance budgets.
+G2-01…12 задают **проектные системные контракты с открытыми зависимостями**, но **не** финальные рецепты, баланс, все технологии и политические алгоритмы. Не считать готовым релиз P1: нет определения точного входа worldgen, complete ACL / construction, тестов Fabric, migration format и performance budgets.
 
 ## 8. Definition of Done G2
 
-Полный G2 можно предложить к утверждению после покрытия G2-01…12, отсечения/подтверждения всех required G0 деталей для выбранного патча, сквозного согласования операций и тестов, уточнения G3 API/persistence/LOD и explicit owner signoff. Данный индекс — рабочий baseline; статус **G2 IN PROGRESS, NOT FROZEN**.
+Полный G2 можно предложить к утверждению после покрытия G2-01…12, отсечения/подтверждения всех required G0 деталей для выбранного патча, сквозного согласования операций и тестов, уточнения G3 API/persistence/LOD и explicit owner signoff. Данный индекс — рабочий baseline; статус **G2 DRAFT DOCUMENT COVERAGE 12/12, NOT FROZEN OR TECHNICALLY VALIDATED**.
