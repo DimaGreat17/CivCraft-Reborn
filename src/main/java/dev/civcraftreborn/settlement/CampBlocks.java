@@ -28,7 +28,7 @@ public final class CampBlocks {
 
     private static Block registerCore() {
         Block block = Registry.register(BuiltInRegistries.BLOCK, CORE_ID.block(),
-                new Block(BlockBehaviour.Properties.of()
+                new CampCoreBlock(BlockBehaviour.Properties.of()
                         .setId(CORE_ID.block()).strength(3.0f).sound(SoundType.WOOD)));
         Registry.register(BuiltInRegistries.ITEM, CORE_ID.item(),
                 new BlockItem(block, new Item.Properties()
