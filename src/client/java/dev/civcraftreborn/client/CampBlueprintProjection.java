@@ -13,6 +13,7 @@ import dev.civcraftreborn.settlement.SettlementStage;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -82,6 +83,9 @@ public final class CampBlueprintProjection {
         });
     }
 
+    private static final DustParticleOptions SAFE_OUTLINE =
+            new DustParticleOptions(0x36C7F4, 0.7f);
+    private static int visualTicks;
     private static BlockPos coreAnchor;
     private static String dimension;
     private static Plan activePlan;
@@ -297,5 +301,26 @@ public final class CampBlueprintProjection {
         }
         if (activePlan != null && (client.player.blockPosition().distSqr(coreAnchor) > 28*28
                 || !unlocked(activePlan))) hide();
+
+        // Temporary safe rendering path: vanilla particles only; avoids the
+        // custom Renderpearl pass which crashed before client GPU acceptance.
+        if (activePlan == null || Boolean.getBoolean("civcraft.experimentalFullBlockGhosts")
+                || ++visualTicks % 6 != 0) return;
+
+        int rendered = 0;
+        for (Step step : steps(activePlan)) {
+            BlockPos pos = worldPosition(activePlan, step);
+            if (pos == null || !client.level.hasChunkAt(pos) || matches(activePlan,step)) continue;
+            double x=pos.getX(),y=pos.getY(),z=pos.getZ();
+            // Explicit 3D block corners instead of misleading flat ground marks.
+            for (int corner=0; corner<8; corner++) {
+                client.level.addParticle(SAFE_OUTLINE,
+                        x+(((corner & 1)==0)?0.05:0.95),
+                        y+(((corner & 2)==0)?0.05:0.95),
+                        z+(((corner & 4)==0)?0.05:0.95),
+                        0,0,0);
+            }
+            if (++rendered>=36) break; // Bound to 288 vanilla particles per 6 ticks.
+        }
     }
 }
