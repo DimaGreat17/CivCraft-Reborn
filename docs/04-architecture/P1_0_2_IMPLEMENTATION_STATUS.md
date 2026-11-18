@@ -31,6 +31,17 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 
 **Acceptance still open:** verify the World tab placement and camp screen interactively on Minecraft 26.3, packet/command execution and permission checks on dedicated servers; CI Java compilation and server startup alone are insufficient.
 
+## Starter rare materials — event is physical core placement (2026-11-18)
+
+The owner clarified explicitly: **the game must give rare resources AFTER the player places the Camp Core, not when a world is created and not on first login**.
+
+- The registered `CampCoreBlock.setPlacedBy` performs server-side check for a player actually placing a physical `camp_core` in a CivCraft-enabled world.
+- Server world-saved `StarterGrantSavedData` records the placing player's UUID once. One-time kit: **4 actual obsidian** to construct the four-block heart foundation around the newly placed core. No grant for other cores or ordinary worlds.
+- To finish the camp heart, physically place four obsidian at the N/S/E/W faces of the center core, and only then `/civcraft camp found` can succeed. The grant is **after** setting the core in world; the obsidian is not an impossible prerequisite to the initial craft.
+- If the player's inventory cannot hold the entire kit, remainder drops as actual items at the core location, not free-floating virtual stock.
+- Once-per-player ledger is server-authoritative, versioned and checked in tests; full crash/rollback recovery and client integration remain an acceptance gate.
+- Implementation note: the current one-time receipt is recorded before inventory mutation, which prevents easy duplication; atomic recovery from server crash in the middle of grant requires a future reconcile/journal test.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
