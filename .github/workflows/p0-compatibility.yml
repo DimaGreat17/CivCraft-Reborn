@@ -22,10 +22,10 @@ jobs:
         with:
           distribution: temurin
           java-version: "25"
-      - name: Install Gradle 9.6.0
+      - name: Install Gradle 9.8.0
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.6.0"
+          gradle-version: "9.8.0"
       - name: Static manifest validation
         run: python3 scripts/validate_p0_manifest.py
       - name: Compile mod and process resources
