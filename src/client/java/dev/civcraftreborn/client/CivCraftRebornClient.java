@@ -1,14 +1,26 @@
 package dev.civcraftreborn.client;
 
+import dev.civcraftreborn.settlement.CampBlocks;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionResult;
 
 /**
- * Client entry point. World-tab controls live inside the vanilla tab's own
- * GridLayout (see CreateWorldWorldTabMixin), not as free-floating overlays.
+ * The physical camp core opens a management interface on right-click.
+ * On a server the command actions remain fully authoritative.
  */
 public final class CivCraftRebornClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        // Registered declaratively by the client-only mixin.
+        UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+            if (!world.isClientSide() ||
+                    !world.getBlockState(hit.getBlockPos()).is(CampBlocks.CAMP_CORE)) {
+                return InteractionResult.PASS;
+            }
+            Minecraft minecraft = Minecraft.getInstance();
+            minecraft.gui.setScreen(new CivCraftManagementScreen(minecraft.gui.screen()));
+            return InteractionResult.SUCCESS;
+        });
     }
 }
