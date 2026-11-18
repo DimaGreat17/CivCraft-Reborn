@@ -14,7 +14,7 @@ Each topic must have complete rules before design freeze.
 10. Recruitment, army supply, combat, sieges and captures
 11. Civilization / settlement / citizen AI
 12. Player interface, maps and notifications
-13. Single-player, multiplayer, configurable rules and victory
+13. Single-player, multiplayer, configurable rules and victory — [world session modes](./WORLD_SESSION_MODES.md): finite victory or endless sandbox
 14. Edge cases, anti-griefing and recovery
 
 Each rule needs triggers, inputs, algorithm, output, persistence, authority, feedback and tests.
