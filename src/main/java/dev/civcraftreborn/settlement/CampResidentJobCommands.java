@@ -42,7 +42,7 @@ public final class CampResidentJobCommands {
             ResidentWorkRole role;
             try {role=ResidentWorkRole.valueOf(name.toUpperCase(java.util.Locale.ROOT));}
             catch(IllegalArgumentException e) {
-                return fail(source,"Supported roles: BUILDER FARMER CRAFTSMAN STOREKEEPER");
+                return fail(source,"Supported roles: BUILDER FARMER CRAFTSMAN STOREKEEPER WATCHMAN WATER_CARRIER");
             }
             ResidentWorkSavedData jobs=ResidentWorkSavedData.get(source.getServer());
             var residents=CitizenSavedData.get(source.getServer()).atCamp(camp);
@@ -86,6 +86,12 @@ public final class CampResidentJobCommands {
             }else if(role==ResidentWorkRole.CRAFTSMAN) {
                 villager.setVillagerData(villager.getVillagerData().withProfession(
                         player.level().registryAccess(),VillagerProfession.TOOLSMITH));
+            }else if(role==ResidentWorkRole.WATCHMAN) {
+                villager.setVillagerData(villager.getVillagerData().withProfession(
+                        player.level().registryAccess(),VillagerProfession.WEAPONSMITH));
+            }else if(role==ResidentWorkRole.WATER_CARRIER) {
+                villager.setVillagerData(villager.getVillagerData().withProfession(
+                        player.level().registryAccess(),VillagerProfession.FISHERMAN));
             }
             if(facility!=null) {
                 villager.getNavigation().moveTo(facility.x()+2.5,facility.y(),
