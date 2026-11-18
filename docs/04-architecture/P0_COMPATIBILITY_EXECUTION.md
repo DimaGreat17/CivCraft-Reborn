@@ -23,7 +23,7 @@ Minecraft Java `26.3`, Fabric Loader `0.20.1`, Fabric API `0.166.2+26.3`, Loom `
 4. Run client and dedicated-server smoke tests on the exact binary with Fabric Loader and API.
 5. Verify world creation, server border, persistent config and crash recovery only after adding P0 code.
 
-**Current stage:** isolated compatibility scaffold only; no world creation, world border, saved config, NPC, city or economy has been implemented.
+**Current stage:** initial compilation succeeded with pinned Loom/Gradle. Foundation server-settings implementation has since been added and is under CI; world-creation UI, runtime server smoke and six-option restart verification remain pending. No NPC, city or economy has been implemented.
 
 ## Rights
 
