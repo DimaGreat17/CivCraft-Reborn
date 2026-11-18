@@ -3,6 +3,10 @@
 **Decision:** D-012 (approved concept, 2026-11-18).  
 **Status:** Release process approved; patch contents and numbering are proposals until the full CivCraft + VimeWorld audit, GDD and architecture review are approved.
 
+## Round C concept approval (2026-11-18)
+
+[D-045](../../DECISIONS.md) keeps the world-creation FINITE/SANDBOX selection in the approved concept, but **P0 must not advertise an unimplemented victory as working**. If the completion functionality is not yet available, clearly indicate its inactive status and decide at G4 whether creating a usable FINITE world must be postponed. No actual major-patch release boundaries, victory dates, success conditions, or deployment were approved.
+
 ## Non-negotiable rule
 
 **Only one development stage may be active at a time. A later major patch cannot enter implementation until the preceding patch is feature-complete, integrated, tested, documented, released and explicitly accepted.**
