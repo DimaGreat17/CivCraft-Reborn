@@ -28,12 +28,15 @@ public final class CivCraftWorldOptionsScreen extends Screen {
         int x = this.width / 2 - 125;
         int y = Math.max(55, this.height / 2 - 65);
 
+        final Button[] optionButtons = new Button[2];
         addRenderableWidget(Button.builder(
                 Component.literal("Мир CivCraft: " + (selected.civcraftWorld() ? "Вкл" : "Выкл")),
                 button -> {
                     selected = new WorldSettings(WorldSettings.CURRENT_SCHEMA,
                             selected.preset(), selected.mode(), !selected.civcraftWorld());
                     save();
+                    optionButtons[0].active = selected.civcraftWorld();
+                    optionButtons[1].active = selected.civcraftWorld();
                     button.setMessage(Component.literal(
                             "Мир CivCraft: " + (selected.civcraftWorld() ? "Вкл" : "Выкл")));
                 }).bounds(x, y, 250, 20).build());
@@ -59,6 +62,8 @@ public final class CivCraftWorldOptionsScreen extends Screen {
                 }).bounds(x, y + 52, 250, 20).build());
 
         // These controls only apply when CivCraft mode is enabled.
+        optionButtons[0] = size;
+        optionButtons[1] = mode;
         size.active = selected.civcraftWorld();
         mode.active = selected.civcraftWorld();
 
