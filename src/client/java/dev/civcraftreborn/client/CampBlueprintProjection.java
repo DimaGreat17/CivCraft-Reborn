@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 
 /**
  * Opt-in client-only 3D hologram prototype. It never sets blocks and grants
- * no inventory. Cyan dotted 3D box corners mark missing blocks and disappear
+ * no inventory. Native translucent full-voxel ghosts show missing blocks and disappear
  * when the corresponding real block is built. The server remains authoritative.
  */
 public final class CampBlueprintProjection {
@@ -23,7 +23,13 @@ public final class CampBlueprintProjection {
         STORAGE("Склад"),
         WORKSHOP("Мастерская"),
         FARM("Ферма"),
-        BEDROOM("Жилая комната");
+        BEDROOM("Жилая комната"),
+        SMALL_HOUSE("Дом поселенца"),
+        BARRACKS("Общий барак"),
+        GRANARY("Амбар и склад"),
+        SMITHY("Кузница"),
+        WATCHTOWER("Сторожевая башня"),
+        WELL("Колодец");
 
         private final String title;
         Plan(String title) { this.title = title; }
@@ -107,6 +113,10 @@ public final class CampBlueprintProjection {
                 parts.add(new Step(6, y, t, Blocks.OAK_PLANKS));
             }
             parts.add(new Step(5, 0, 5, Blocks.AIR, true));
+        }
+        // New original starter plans are geometry-defined, not redistributed .schem files.
+        if (plan.ordinal() >= Plan.SMALL_HOUSE.ordinal()) {
+            return CampBuildingTemplates.forPlan(plan);
         }
         // Corner walls from orthogonal faces can overlap. One world cell = one step.
         Map<String, Step> unique = new LinkedHashMap<>();
