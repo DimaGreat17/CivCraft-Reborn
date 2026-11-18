@@ -13,7 +13,7 @@
 
 ## Test candidate
 
-Minecraft Java `26.3`, Fabric Loader `0.20.1`, Fabric API `0.166.2+26.3`, Loom `1.19-SNAPSHOT`, JDK `25`, Gradle `9.6.0`. The values come from the official example-mod 26.3 branch. **This does not prove the exact combination works on this repository until CI compiles it and a real server starts.**
+Minecraft Java `26.3`, Fabric Loader `0.20.1`, Fabric API `0.166.2+26.3`, Loom `1.19.4`, JDK `25`, Gradle `9.8.0`. The initial choices came from the official example-mod 26.3 branch; CI on 2026-11-18 showed resolved Loom 1.19.4 **requires Gradle >=9.8.0**, therefore these exact Loom/Gradle values supersede the earlier snapshot/9.6 pair. The corrected pair still needs a passing build. **This does not prove the exact combination works on this repository until CI compiles it and a real server starts.**
 
 ## Steps and pass gates
 
