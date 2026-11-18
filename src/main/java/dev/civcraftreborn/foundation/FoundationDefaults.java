@@ -2,17 +2,18 @@ package dev.civcraftreborn.foundation;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
- * Temporary pre-world server configuration source.
- * A first-run world-creation GUI is required before the P0 release can be signed off.
- * Once a world exists, its SavedData owns the settings; changes to this file do not rewrite it.
+ * Bootstraps settings for a NEW world. The world-scoped SavedData takes over on first access.
+ * Existing worlds never reread these defaults. The file remains useful for dedicated servers.
  */
 public final class FoundationDefaults {
     private static final String CONFIG_NAME = "civcraft-reborn-world-defaults.properties";
@@ -22,6 +23,44 @@ public final class FoundationDefaults {
 
     public static WorldSettings load() {
         return fromFile(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_NAME));
+    }
+
+    /**
+     * Persist the choice from the vanilla Create World screen before world generation begins.
+     * The same file format may also be written by a dedicated-server administrator.
+     */
+    public static void saveWorldCreationChoice(WorldSettings settings) {
+        toFile(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_NAME), settings);
+    }
+
+    static void toFile(Path path, WorldSettings settings) {
+        if (settings == null) {
+            throw new IllegalArgumentException("World settings cannot be null");
+        }
+
+        Properties properties = new Properties();
+        properties.setProperty("overworld_side_blocks", Integer.toString(settings.preset().sideBlocks()));
+        properties.setProperty("session_mode", settings.mode().name());
+
+        try {
+            Files.createDirectories(path.toAbsolutePath().getParent());
+            Path temporary = Files.createTempFile(path.toAbsolutePath().getParent(), ".civcraft-world-", ".tmp");
+            try {
+                try (Writer writer = Files.newBufferedWriter(temporary, StandardCharsets.UTF_8)) {
+                    properties.store(writer, "CivCraft Reborn defaults for newly created worlds");
+                }
+                try {
+                    Files.move(temporary, path, StandardCopyOption.ATOMIC_MOVE,
+                            StandardCopyOption.REPLACE_EXISTING);
+                } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+                    Files.move(temporary, path, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(temporary);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot write CivCraft Reborn world defaults at " + path, e);
+        }
     }
 
     static WorldSettings fromFile(Path path) {
