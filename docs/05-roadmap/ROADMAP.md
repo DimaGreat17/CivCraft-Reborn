@@ -24,6 +24,10 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 [Pass 14](../01-legacy-audit/G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) now distinguishes **42/73 wiki building articles retrievable** versus **31 currently inaccessible**, without claiming the 42 have complete effects audits. Bank-interest wiki table/formula conflict `BANK-CONFLICT-001` registered. G0 remains OPEN.
 
+## GDD review Round D (2026-11-18)
+
+[Round D proposal — Minecraft/Fabric platform, private enterprise/guilds and code/assets licensing](../02-game-design/GDD_REVIEW_ROUND_D_PLATFORM_SOCIAL_RIGHTS.md) is **READY_FOR_OWNER_REVIEW, NOT APPROVED**. The three remaining choices are GDD-027/GDD-031/GDD-033. Round A/B/C status remains **30 APPROVED_CONCEPT, 3 OPEN, 0 FROZEN**. No Minecraft version pin, source copying permission, detailed finances or implementation approval has been implied.
+
 ## GDD review Round C (2026-11-18)
 
 [Round C seven-decision package](../02-game-design/GDD_REVIEW_ROUND_C_VICTORY_CONTENT_UX.md) **APPROVED_CONCEPT** by owner; D-039…D-045 added to [DECISIONS.md](../../DECISIONS.md). GDD register: **30 APPROVED_CONCEPT / 3 OPEN / 0 FROZEN**. No victory timer, nation/religion modifier, spy mission probability, final building exclusion or release claim finalized. G0/G2/G3/G4 remain open.
