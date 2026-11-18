@@ -32,9 +32,12 @@ public final class CivCraftManagementScreen extends Screen {
                 .bounds(left + 142, top, 138, 20).build());
 
         if (!civilizationTab) {
-            addRenderableWidget(Button.builder(Component.literal("Состояние лагеря"),
+            addRenderableWidget(Button.builder(Component.literal("Основать лагерь"),
+                    b -> command("civcraft camp found"))
+                    .bounds(left, top + 32, 138, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("Проверка лагеря"),
                     b -> command("civcraft camp inspect"))
-                    .bounds(left, top + 32, 280, 20).build());
+                    .bounds(left + 142, top + 32, 138, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Схема строительства"),
                     b -> command("civcraft camp plan"))
                     .bounds(left, top + 58, 280, 20).build());
