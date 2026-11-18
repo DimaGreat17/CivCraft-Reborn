@@ -3,6 +3,7 @@ package dev.civcraftreborn.foundation;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import dev.civcraftreborn.settlement.CampCommands;
 
 /** Read-only, server-authoritative diagnostics for a world created with the P0 mod. */
 public final class FoundationCommands {
@@ -12,6 +13,7 @@ public final class FoundationCommands {
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(Commands.literal("civcraft")
+                        .then(CampCommands.command())
                         .then(Commands.literal("worldinfo").executes(context -> {
                             var source = context.getSource();
                             WorldSettings settings = WorldSettingsSavedData.get(source.getServer()).settings();
