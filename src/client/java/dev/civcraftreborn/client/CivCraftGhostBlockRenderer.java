@@ -154,7 +154,7 @@ public final class CivCraftGhostBlockRenderer {
         try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder()
                 .createRenderPass(() -> "CivCraft blueprint projection", color,
                         Optional.empty(), target.getDepthTextureView(), OptionalDouble.empty())) {
-            pass.setPipeline(GHOST_PIPELINE);
+            pass.setPipeline(RenderSystem.getCompiledPipeline(GHOST_PIPELINE));
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform("DynamicTransforms", transforms);
             pass.setVertexBuffer(0, info.vertexBuffer().slice());
