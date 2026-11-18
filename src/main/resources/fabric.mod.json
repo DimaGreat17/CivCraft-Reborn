@@ -8,6 +8,9 @@
   "entrypoints": {
     "main": [
       "dev.civcraftreborn.CivCraftReborn"
+    ],
+    "client": [
+      "dev.civcraftreborn.client.CivCraftRebornClient"
     ]
   },
   "depends": {
