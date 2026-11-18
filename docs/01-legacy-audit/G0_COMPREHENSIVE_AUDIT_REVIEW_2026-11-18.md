@@ -15,6 +15,10 @@
 
 No executable Minecraft mod code was written.
 
+## Supplement — individual article retrieval after initial comprehensive review
+
+[Pass 14](./G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md) checked each of 73 wiki-index building article URLs: **42 retrieved, 31 failed/timed out**. This does **not** change the earlier **19 individually written selective-effect summaries versus 54 not yet detailed**; those are different coverage measures. It adds verified examples for bank, forge, market, radio tower, trade ship, defense towers and city centers, including **BANK-CONFLICT-001**: bank rate table has percent signs inconsistent with its worked formula by a factor of 100. The [building ledger](./G0_73_BUILDING_COVERAGE_LEDGER.md) has a separate fetch column. Original G0 NO-GO verdict remains unchanged.
+
 ## 2. Evidence coverage summary
 
 | Evidence grouping | Verified/listed | Remaining limitation |
