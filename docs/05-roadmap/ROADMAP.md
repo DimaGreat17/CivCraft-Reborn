@@ -1,15 +1,25 @@
-# Roadmap — Design Before Implementation
+# Roadmap — Design Gates and Sequential Major Patches
+
+**Release policy:** [RELEASE_STRATEGY.md](./RELEASE_STRATEGY.md) — the next major patch is blocked until the previous one is completed, tested, released and accepted.
+
+## Design gates
 
 | Gate | Deliverable | Exit criteria | Status |
 |---|---|---|---|
-| G0 | CivCraft original audit | Source-backed complete feature inventory | NOT STARTED |
-| G1 | GDD | All mechanics and edge cases specified | NOT STARTED |
-| G2 | System specifications | Contracts, data, state, tests | NOT STARTED |
-| G3 | Architecture | Storage, LOD, threads, networking | NOT STARTED |
-| G4 | Design freeze | Dependency and contradiction review | NOT STARTED |
-| G5 | Mod foundation | Boots, saves, deterministic core tests | NOT STARTED |
-| G6 | Autonomous village | Real jobs, resources and construction | NOT STARTED |
-| G7 | Rival civilizations | Independent strategic progress | NOT STARTED |
-| G8 | Warfare and feature parity | Verifiable original-feature coverage | NOT STARTED |
+| G0 | Original CivCraft code audit + VimeWorld wiki audit | Verified, provenance-labelled feature inventory and comparison | IN PROGRESS |
+| G1 | Game Design Document | Full approved mechanics, options, edge cases | NOT STARTED |
+| G2 | System Design Documents | Contracts, data, transitions, tests and dependencies | NOT STARTED |
+| G3 | Technical architecture | Storage, LOD, scheduler, networking, perf budgets | NOT STARTED |
+| G4 | Design freeze | Contradiction audit, scope lock, explicit approval | NOT STARTED |
 
-Never mark a gate complete without reproducible evidence.
+## Proposed release sequence
+
+P0 0.1 Foundation → P1 0.2 Living Settlement → P2 0.3 Civilization Systems → P3 0.4 Research & Culture → P4 0.5 Independent Rivals → P5 0.6 Diplomacy & Warfare → P6 0.7–0.9 Legacy Completion → P7 1.0 Stable.
+
+The sequence is preliminary and can be revised *during design* based on dependencies and the legacy feature-parity audit. Once frozen, it is governed by the change-control policy.
+
+## Current priority
+
+Finish G0 rather than writing mod code. See [original audit](../01-legacy-audit/LEGACY_AUDIT.md) and [later VimeWorld wiki audit](../01-legacy-audit/VIMEWORLD_WIKI_AUDIT.md).
+
+Never mark a gate or patch complete without reproducible evidence and owner approval.
