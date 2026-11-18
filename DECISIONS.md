@@ -15,6 +15,7 @@ Status: `APPROVED_CONCEPT` / `PROPOSED` / `FROZEN` / `NEEDS_AUDIT`.
 | D-009 | Code must prioritize readability, extensibility, testability and measured optimization | APPROVED_CONCEPT | Engineering standards documented; technical choices remain proposed |
 | D-010 | Separate domain rules from Fabric/Minecraft APIs and persistence | PROPOSED | Architecture gate review required |
 | D-011 | Do not copy legacy code/assets before file-level rights review | PROPOSED | Root GPL-2.0 conflicts with notices in inspected Java files; clarify |
+| D-012 | Release large patches strictly sequentially; finish, test, publish and accept each before developing the next | APPROVED_CONCEPT | [Release strategy](docs/05-roadmap/RELEASE_STRATEGY.md); exact patch scopes are proposed |
 
 ## Change control
 
