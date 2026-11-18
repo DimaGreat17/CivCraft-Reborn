@@ -6,8 +6,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import net.minecraft.SharedConstants;
+import net.minecraft.server.Bootstrap;
 
 final class FunctionalBuildingsTest {
+    @BeforeAll
+    static void initializeVanillaBlockRegistry() {
+        // Blocks / blockstate properties are registered by vanilla bootstrap,
+        // not by plain JUnit's default classloader.
+        SharedConstants.tryDetectVersion();
+        Bootstrap.bootStrap();
+    }
+
     @Test
     void everyBuildingHasPhysicalFootprintAndMultipleStructuralCells() {
         for(var type:FunctionalBuildingTemplates.Type.values()) {
