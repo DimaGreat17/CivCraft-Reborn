@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
@@ -78,14 +78,14 @@ public final class CampCommands {
             CampSavedData store = CampSavedData.get(source.getServer());
             CampRecord camp = store.ownedBy(player.getUUID()).orElse(null);
             if (camp == null) return fail(source, "Found your camp first.");
-            if (!player.serverLevel().dimension().identifier().toString().equals(camp.dimension())) {
+            if (!player.level().dimension().identifier().toString().equals(camp.dimension())) {
                 return fail(source, "You must be in the camp's dimension.");
             }
             BlockPos center = new BlockPos(camp.x(), camp.y(), camp.z());
             if (player.blockPosition().distSqr(center) > 24 * 24) {
                 return fail(source, "Return to your camp to recruit.");
             }
-            var housing = HousingScanner.scan(player.serverLevel(), camp);
+            var housing = HousingScanner.scan(player.level(), camp);
             if (!housing.complete()) return fail(source, "Housing is pending full verification.");
             CitizenSavedData citizens = CitizenSavedData.get(source.getServer());
             int registered = citizens.atCamp(camp).size();
@@ -96,13 +96,13 @@ public final class CampCommands {
                 return fail(source, "Each recruited resident requires 4 real bread in your inventory.");
             }
 
-            var candidates = player.serverLevel().getEntitiesOfClass(Villager.class,
+            var candidates = player.level().getEntitiesOfClass(Villager.class,
                     new AABB(center).inflate(12.0),
                     villager -> villager.isAlive() && citizens.byEntity(villager.getUUID()).isEmpty());
             if (candidates.isEmpty()) {
                 return fail(source, "No unregistered living villager nearby. NPCs are never spawned for free.");
             }
-            var freeBed = HousingScanner.verifiedBedHeads(player.serverLevel(), camp).stream()
+            var freeBed = HousingScanner.verifiedBedHeads(player.level(), camp).stream()
                     .filter(bed -> !citizens.claimedBed(camp,
                             bed.getX(), bed.getY(), bed.getZ()))
                     .findFirst();
@@ -135,9 +135,9 @@ public final class CampCommands {
             var entry = camps.ownedBy(player.getUUID());
             if (entry.isEmpty()) return fail(source, "You do not own a registered camp.");
             CampRecord camp = entry.get();
-            var housing = HousingScanner.scan(player.serverLevel(), camp);
-            var stock = CampStorageScanner.scan(player.serverLevel(), camp);
-            var facilities = CampBuildingScanner.scan(player.serverLevel(), camp);
+            var housing = HousingScanner.scan(player.level(), camp);
+            var stock = CampStorageScanner.scan(player.level(), camp);
+            var facilities = CampBuildingScanner.scan(player.level(), camp);
             String message = "Camp " + camp.name() + " (" + camp.stage() + "): "
                     + housing.roomCount() + " rooms, " + housing.bedCount() + " valid beds, "
                     + housing.privateFloorCells() + " usable floor cells, "
@@ -159,9 +159,9 @@ public final class CampCommands {
             CampSavedData registry = CampSavedData.get(source.getServer());
             CampRecord camp = registry.ownedBy(player.getUUID()).orElse(null);
             if (camp == null) return fail(source, "Found a camp before promoting it.");
-            var housing = HousingScanner.scan(player.serverLevel(), camp);
-            var food = CampStorageScanner.scan(player.serverLevel(), camp);
-            var facilities = CampBuildingScanner.scan(player.serverLevel(), camp);
+            var housing = HousingScanner.scan(player.level(), camp);
+            var food = CampStorageScanner.scan(player.level(), camp);
+            var facilities = CampBuildingScanner.scan(player.level(), camp);
             if (!housing.complete() || !food.complete() || !facilities.complete()) {
                 return fail(source, "Some housing or storage chunks could not be verified.");
             }
