@@ -28,15 +28,15 @@ final class CampRulesTest {
     void promotionKeepsSettlementIdAndDoesNotAddAnyResources() {
         CampRecord camp = CampRules.found(UUID.randomUUID(), "minecraft:overworld",
                 0, 64, 0, "Camp", 0);
-        assertThrows(IllegalStateException.class, () -> CampRules.promote(camp, 2, 3, 16, true));
-        assertThrows(IllegalStateException.class, () -> CampRules.promote(camp, 3, 3, 15, true));
-        assertThrows(IllegalStateException.class, () -> CampRules.promote(camp, 3, 3, 16, false));
-        CampRecord promoted = CampRules.promote(camp, 3, 3, 16, true);
+        assertThrows(IllegalStateException.class, () -> CampRules.promote(camp, 2, 3, 16, true, true, true));
+        assertThrows(IllegalStateException.class, () -> CampRules.promote(camp, 3, 3, 15, true, true, true));
+        assertThrows(IllegalStateException.class, () -> CampRules.promote(camp, 3, 3, 16, false, true, true));
+        CampRecord promoted = CampRules.promote(camp, 3, 3, 16, true, true, true);
         assertEquals(SettlementStage.SETTLEMENT, promoted.stage());
         assertEquals(camp.id(), promoted.id());
         assertEquals(camp.owner(), promoted.owner());
         assertEquals(camp.createdGameTime(), promoted.createdGameTime());
-        assertThrows(IllegalStateException.class, () -> CampRules.promote(promoted, 3, 3, 16, true));
+        assertThrows(IllegalStateException.class, () -> CampRules.promote(promoted, 3, 3, 16, true, true, true));
     }
 
     @Test
