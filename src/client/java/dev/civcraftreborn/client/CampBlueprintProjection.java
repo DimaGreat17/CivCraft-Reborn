@@ -7,6 +7,7 @@ import java.util.Map;
 
 import dev.civcraftreborn.settlement.BlueprintAccess;
 import dev.civcraftreborn.settlement.CampRules;
+import dev.civcraftreborn.settlement.BlueprintTransform;
 import dev.civcraftreborn.settlement.SettlementStage;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -178,22 +179,16 @@ public final class CampBlueprintProjection {
         int maxZ = template.stream().mapToInt(Step::dz).max().orElse(0);
         int x = step.dx() - minX, z = step.dz() - minZ;
         int w = maxX - minX + 1, h = maxZ - minZ + 1;
-        int rx, rz;
-        switch (rotation) {
-            case 1 -> { rx = h - 1 - z; rz = x; }
-            case 2 -> { rx = w - 1 - x; rz = h - 1 - z; }
-            case 3 -> { rx = z; rz = w - 1 - x; }
-            default -> { rx = x; rz = z; }
-        }
-        return coreAnchor.offset(offsetX + rx, step.dy(), offsetZ + rz);
+        BlueprintTransform.Point point = BlueprintTransform.rotate(x,z,w,h,rotation);
+        return coreAnchor.offset(offsetX + point.x(), step.dy(), offsetZ + point.z());
     }
 
     private static boolean validPlacement() {
         if (activePlan == null || coreAnchor == null) return false;
         for (Step step : steps(activePlan)) {
             BlockPos pos = worldPosition(activePlan, step);
-            if (Math.abs(pos.getX()-coreAnchor.getX()) > CampRules.CAMP_RADIUS
-                    || Math.abs(pos.getZ()-coreAnchor.getZ()) > CampRules.CAMP_RADIUS
+            if (!BlueprintTransform.inCampRadius(pos.getX()-coreAnchor.getX(),
+                    pos.getZ()-coreAnchor.getZ(), CampRules.CAMP_RADIUS)
                     || pos.equals(coreAnchor)) return false;
         }
         return true;
@@ -240,7 +235,10 @@ public final class CampBlueprintProjection {
             String key = step.anyBed() ? "ANY_BED" : step.block().getName().getString();
             amounts.computeIfAbsent(key, k -> new int[2])[0]++;
             materials.putIfAbsent(key, new Count(step.block(), step.anyBed(),
-                    step.anyBed() ? "Любая кровать" : step.block().getName().getString()));
+                    step.anyBed() ? "Любая кровать"
+                            : step.block() == Blocks.FARMLAND
+                                    ? "Земля для грядок (мотыга)"
+                                    : step.block().getName().getString()));
             if (matches(plan, step)) amounts.get(key)[1]++;
         }
         Minecraft client = Minecraft.getInstance();
@@ -257,7 +255,8 @@ public final class CampBlueprintProjection {
                         if (stack.getItem() instanceof BlockItem blockItem
                                 && blockItem.getBlock() instanceof BedBlock)
                             inventory += stack.getCount();
-                    } else if (stack.is(material.block().asItem())) {
+                    } else if (stack.is(material.block() == Blocks.FARMLAND
+                            ? Blocks.DIRT.asItem() : material.block().asItem())) {
                         inventory += stack.getCount();
                     }
                 }
