@@ -91,3 +91,5 @@ Nation selection and governments are different systems. Talents chosen upon capi
 - [Agriculture, extraction and food: pass 03](./VIME_AGRICULTURE_EXTRACTION_PASS_03.md): farm crops, fish farm, quarry, plantation, resource mine, granary, fish boat, stoneworks, silkworm and beekeeping, plus input/output invariants and remaining evidence gaps.
 
 - [Happiness, governance and social systems: pass 04](./VIME_SOCIAL_HAPPINESS_GOVERNANCE_PASS_04.md): player resident records vs physical NPCs, happiness tiers, civic plot permissions, 9 later wiki government modes, culture influence and world-size implications.
+
+- [Taxation, governance and revolution: pass 05](./TAXATION_REVOLUTION_GOVERNANCE_PASS_05.md): legacy Java trace of taxable deposits, science allocation, daily upkeep and revolution; VimeWorld occupation rights, tax commands and government timing differences.
