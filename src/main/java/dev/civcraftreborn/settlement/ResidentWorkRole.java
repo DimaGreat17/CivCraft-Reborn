@@ -5,14 +5,20 @@ public enum ResidentWorkRole {
     BUILDER,
     FARMER,
     CRAFTSMAN,
-    STOREKEEPER;
+    STOREKEEPER,
+    WATCHMAN,
+    WATER_CARRIER;
 
     public boolean compatible(FunctionalBuildingTemplates.Type type) {
         return switch(this) {
             case BUILDER -> true;
             case FARMER -> type == FunctionalBuildingTemplates.Type.FARM;
-            case CRAFTSMAN -> type == FunctionalBuildingTemplates.Type.WORKSHOP;
-            case STOREKEEPER -> type == FunctionalBuildingTemplates.Type.STORAGE;
+            case CRAFTSMAN -> type == FunctionalBuildingTemplates.Type.WORKSHOP
+                    || type == FunctionalBuildingTemplates.Type.SMITHY;
+            case STOREKEEPER -> type == FunctionalBuildingTemplates.Type.STORAGE
+                    || type == FunctionalBuildingTemplates.Type.GRANARY;
+            case WATCHMAN -> type == FunctionalBuildingTemplates.Type.WATCHTOWER;
+            case WATER_CARRIER -> type == FunctionalBuildingTemplates.Type.WELL;
         };
     }
 }
