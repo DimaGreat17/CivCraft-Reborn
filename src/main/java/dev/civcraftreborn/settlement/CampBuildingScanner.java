@@ -29,10 +29,12 @@ public final class CampBuildingScanner {
             if (!check.complete()) continue; // No benefit for destroyed building
             switch(building.type()) {
                 case STORAGE -> { storage=true;chests+=3; }
+                case GRANARY -> {storage=true;chests+=6;}
                 case WORKSHOP -> { workshop=true;tables++;furnaces++; }
+                case SMITHY -> {workshop=true;tables++;furnaces+=2;}
                 case FARM -> { farm=true;farmland+=24;composters++; }
                 case SMALL_HOUSE -> { tables++;chests++; }
-                case BEDROOM -> {}
+                case BEDROOM, BARRACKS, WATCHTOWER, WELL -> {}
             }
         }
         return new Facilities(workshop,storage,farm,chests,tables,furnaces,
