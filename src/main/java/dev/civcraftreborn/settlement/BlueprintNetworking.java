@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
+import dev.civcraftreborn.foundation.WorldSettingsSavedData;
 
 /** Never trust client-supplied stage, permission or nearby settlement ID. */
 public final class BlueprintNetworking {
@@ -20,7 +21,8 @@ public final class BlueprintNetworking {
                     ServerPlayer player = context.player();
                     BlockPos core = request.core();
                     // Same dimension and actual placed block, nearby, with no force-loading.
-                    if (player.blockPosition().distSqr(core) > 16 * 16
+                    if (!WorldSettingsSavedData.get(context.server()).settings().civcraftWorld()
+                            || player.blockPosition().distSqr(core) > 16 * 16
                             || !player.level().hasChunkAt(core)
                             || !player.level().getBlockState(core).is(CampBlocks.CAMP_CORE)) {
                         ServerPlayNetworking.send(player, new BlueprintStatusResponse(core, -1));
