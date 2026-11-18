@@ -102,5 +102,6 @@ Nation selection and governments are different systems. Talents chosen upon capi
 
 - [Culture, diplomacy, domination victory: pass 09](./VIME_CULTURE_DIPLOMACY_DOMINATION_PASS_09.md): source code vs late wiki, Burj Al Arab, Council of Eight removal of votes, domination score ×9 and six wonders; version conflicts and NPC eligibility.
 
+- [Individual building source retrieval pass 14](./G0_BUILDING_SOURCE_RETRIEVAL_AND_CARDS_PASS_14.md): 42/73 fetched article sources, 31 failed, and rate/placement/production special cases.
 - [Comprehensive G0 review (2026-11-18)](./G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md): status, evidence counts and explicit blocking omissions.
 - [28 wonder construction catalog](./G0_WONDER_CONSTRUCTION_MATRIX_PASS_11.md), [73 building coverage ledger](./G0_73_BUILDING_COVERAGE_LEDGER.md), [province/spy/world events/ruins](./G0_WORLD_SYSTEMS_LATE_PASS_12.md).
