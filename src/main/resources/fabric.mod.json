@@ -6,7 +6,10 @@
   "description": "Server-authoritative civilization simulation mod. Technical compatibility milestone.",
   "environment": "*",
   "mixins": [
-    "civcraft_reborn.client.mixins.json"
+    {
+      "config": "civcraft_reborn.client.mixins.json",
+      "environment": "client"
+    }
   ],
   "entrypoints": {
     "main": [
