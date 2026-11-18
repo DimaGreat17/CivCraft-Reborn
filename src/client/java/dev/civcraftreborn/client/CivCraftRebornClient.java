@@ -14,6 +14,7 @@ public final class CivCraftRebornClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CampBlueprintProjection.register();
+        CivCraftGhostBlockRenderer.register();
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (!world.isClientSide() ||
                     !world.getBlockState(hit.getBlockPos()).is(CampBlocks.CAMP_CORE)) {
