@@ -60,6 +60,14 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 - Separate acceptance and licensing notes: [P1_SCHEMATIC_RENDER_REFERENCE_TEST.md](P1_SCHEMATIC_RENDER_REFERENCE_TEST.md). No source from Litematica or MaLiLib is copied into CivCraft; reuse/compliance requires separate review.
 - **API caveat:** Minecraft 26.3 migrated GPU interfaces from Blaze3D to Renderpearl; the renderer must pass real 26.3 compilation, server bootstrap, and manual client rendering tests before it can be called finished.
 
+## CI evidence for first native Renderpearl ghost renderer (2026-11-18)
+
+- [Run 44307466269](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44307466269): **PASS** Java compilation, unit tests, dedicated-server smoke and development JAR; this confirms no immediate dedicated-side classloading failure for the native renderer.
+- [Run 44307466275](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44307466275): **PASS** P0 compatibility pipeline on the same head.
+- Native rendering was adapted to the **Renderpearl** API of Minecraft 26.3. Compilation is evidence of API linkage only; it **does not** prove GPU draw works visually on the user's client.
+- Mandatory Litematica/MaLiLib **reference-test profile** remains separate from release. The explicit `verifySchematicTestProfile -PschematicTest=true` task is designed to download both exact Modrinth artifacts, and a separate CI workflow has been added; no successful resolution/client comparison run has yet been verified by this document.
+- The preview draws translucent whole-block volumes, **not yet per-block Minecraft textures/models**. No claim of final Litematica parity or full 0.2 release.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
