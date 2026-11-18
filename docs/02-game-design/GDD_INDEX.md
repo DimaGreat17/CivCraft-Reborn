@@ -9,7 +9,7 @@ Each topic must have complete rules before design freeze.
 5. Blueprints, buildings, construction and roads
 6. Citizens, households, professions and population
 7. Production, currency, trading, logistics and taxation
-8. Research, technologies and eras
+8. Research, technologies and eras — [interbranch dependencies, D-015](./TECHNOLOGY_PROGRESSION_RULES.md)
 9. Politics, diplomacy, treaties and alliances
 10. Recruitment, army supply, combat, sieges and captures
 11. Civilization / settlement / citizen AI
