@@ -3,6 +3,10 @@ name: P0 real world create/restart verification
 # Explicit opt-in because each case starts Minecraft twice. Not a substitute
 # for a real graphical singleplayer test or crash recovery injection.
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/p0-world-matrix.yml'
+      - 'scripts/p0_world_restart_smoke.py'
   workflow_dispatch:
 
 permissions:
