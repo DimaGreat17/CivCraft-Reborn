@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "dev.civcraftreborn.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "CreateWorldWorldTabMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
