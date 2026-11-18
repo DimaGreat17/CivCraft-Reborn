@@ -5,6 +5,8 @@
 **Upstream:** [netizen539/civcraft](https://github.com/netizen539/civcraft), default branch `master`  
 **Config inventory:** [CONFIG_INVENTORY.md](./CONFIG_INVENTORY.md)
 
+**Java code analyses:** [Part 1](./JAVA_CODE_AUDIT_01.md) · [Part 2](./JAVA_CODE_AUDIT_02.md)
+
 ## 1. Provenance and scope
 
 The upstream README describes an old Bukkit server-side civilization modification, with player-formed camps, towns, civilizations, research, diplomacy, wonders, and wars. The repository also contains multi-server ban/perk components not necessarily related to gameplay.
