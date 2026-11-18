@@ -128,6 +128,12 @@ D-056 adds a numeric **test baseline**, not a frozen final gameplay balance. Und
 
 D-057 refines D-053 ROOM, D-055 FLOOR and provisional D-056 4 block²/NPC: qualify usable floor by genuine physical support, NPC traversability and safety. A slab/stair is neither automatically eligible nor automatically forbidden by block identity. Actual geometry and route constraints determine whether a cell contributes area. This does not approve a specific fractional-credit formula, pathfinder, collision threshold, code change, or release signoff.
 
+| D-058 | CELL floor-area accounting: every distinct physically usable floor cell that passes PHYSICAL/ROOM checks contributes exactly 1 block² toward NPC housing capacity, including qualifying slabs/stairs; no fractional credit within a cell | APPROVED_CONCEPT | Owner selected CELL on 2026-11-18. Canonical cell identity, surface selection on unusual blocks, multi-floor ownership and precise collision/path checks remain PROPOSED; see P1_CELL_FLOOR_ACCOUNTING_CONTRACT.md |
+
+## P1 CELL floor-area counting approval (2026-11-18)
+
+D-058 resolves the accounting unit left open by D-057. **Only fully validated** usable cells contribute one block² apiece; a nominal full block does not qualify if blocked or unsafe, whereas a slab/stair may qualify when PHYSICAL tests pass. A carpet, slab overlay or multiple collision surfaces at one usable location must not mint duplicate area. Distinct walkable floors at different heights are a future geometry-validation detail, not automatic duplicates. Preliminary D-056 remains **4 valid cells per NPC**, alongside real beds, ROOM checks and separate comfort. No implementation, new balance freeze or P1 authorization implied.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
