@@ -304,8 +304,7 @@ public final class CampBlueprintProjection {
 
         // Temporary safe rendering path: vanilla particles only; avoids the
         // custom Renderpearl pass which crashed before client GPU acceptance.
-        if (activePlan == null || Boolean.getBoolean("civcraft.experimentalFullBlockGhosts")
-                || ++visualTicks % 6 != 0) return;
+        if (activePlan == null || ++visualTicks % 6 != 0) return;
 
         int rendered = 0;
         for (Step step : steps(activePlan)) {
