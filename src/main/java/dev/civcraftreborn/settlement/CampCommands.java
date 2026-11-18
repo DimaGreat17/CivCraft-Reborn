@@ -94,7 +94,8 @@ public final class CampCommands {
             int residents = CitizenSavedData.get(source.getServer()).atCamp(camp).size();
 
             source.sendSuccess(() -> Component.literal(
-                    "CivCraft camp building plan: construct real structures around the core."), false);
+                    "CivCraft camp building plan: place a physical Camp Core, then place "
+                    + "4 obsidian blocks N/S/E/W around it; the first core grants the obsidian once."), false);
             source.sendSuccess(() -> Component.literal(
                     "1. Sheltered bedrooms: " + rooms.roomCount() + "/3. "
                     + "Each NPC needs a physical bed and at least 4 valid private floor cells."), false);
