@@ -8,7 +8,6 @@ import java.util.Map;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -46,13 +45,10 @@ public final class CampBlueprintProjection {
         }
     }
 
-    private static final DustParticleOptions MISSING =
-            new DustParticleOptions(0x41CCFF, 0.75f);
 
     private static BlockPos coreAnchor;
     private static String dimension;
     private static Plan activePlan;
-    private static int tickCounter;
 
     private CampBlueprintProjection() {}
 
@@ -139,25 +135,6 @@ public final class CampBlueprintProjection {
             hide();
             return;
         }
-        // Full translucent voxel faces are rendered by CivCraftGhostBlockRenderer.
-        // The old particle dot preview is no longer emitted.
-        return;
-        /* Low particle budget even for the larger house preview.
-        if (++tickCounter % 5 != 0) return;
-        int emitted = 0;
-        for (Step step : steps(activePlan)) {
-            BlockPos pos = step.position(coreAnchor);
-            if (!client.level.hasChunkAt(pos)) continue;
-            if (step.matches(client.level, coreAnchor)) continue;
-            DustParticleOptions particle = MISSING;
-            // Four opposite cube corners give a legible 3D silhouette.
-            for (int c = 0; c < 4; c++) {
-                double x = pos.getX() + ((c & 1) == 0 ? 0.05 : 0.95);
-                double y = pos.getY() + ((c & 2) == 0 ? 0.08 : 0.92);
-                double z = pos.getZ() + ((c & 1) == 0 ? 0.95 : 0.05);
-                client.level.addParticle(particle, x, y, z, 0, 0, 0);
-            }
-            if (++emitted >= 80) break;
-        } */
+
     }
 }
