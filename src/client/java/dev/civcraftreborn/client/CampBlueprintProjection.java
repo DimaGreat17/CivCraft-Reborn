@@ -2,6 +2,7 @@ package dev.civcraftreborn.client;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,21 @@ public final class CampBlueprintProjection {
     public record MaterialLine(String title, int required, int alreadyBuilt,
             int inInventory, int stillNeeded) {}
 
+    private record Bounds(int minX, int minZ, int width, int depth) {}
+    private static final Map<Plan, List<Step>> TEMPLATE_CACHE = new EnumMap<>(Plan.class);
+    private static final Map<Plan, Bounds> BOUNDS_CACHE = new EnumMap<>(Plan.class);
+
+    private static Bounds bounds(Plan plan) {
+        return BOUNDS_CACHE.computeIfAbsent(plan, p -> {
+            List<Step> template = steps(p);
+            int minX=template.stream().mapToInt(Step::dx).min().orElse(0);
+            int maxX=template.stream().mapToInt(Step::dx).max().orElse(0);
+            int minZ=template.stream().mapToInt(Step::dz).min().orElse(0);
+            int maxZ=template.stream().mapToInt(Step::dz).max().orElse(0);
+            return new Bounds(minX,minZ,maxX-minX+1,maxZ-minZ+1);
+        });
+    }
+
     private static BlockPos coreAnchor;
     private static String dimension;
     private static Plan activePlan;
@@ -127,6 +143,11 @@ public final class CampBlueprintProjection {
     public static int offsetZ() { return offsetZ; }
 
     public static List<Step> steps(Plan plan) {
+        if (plan == null) return List.of();
+        return TEMPLATE_CACHE.computeIfAbsent(plan, CampBlueprintProjection::buildSteps);
+    }
+
+    private static List<Step> buildSteps(Plan plan) {
         List<Step> parts = new ArrayList<>();
         if (plan == Plan.HEART) {
             parts.add(new Step(0, 0, -1, Blocks.OBSIDIAN));
@@ -172,14 +193,10 @@ public final class CampBlueprintProjection {
     public static BlockPos worldPosition(Plan plan, Step step) {
         if (coreAnchor == null) return null;
         if (plan == Plan.HEART) return step.position(coreAnchor);
-        List<Step> template = steps(plan);
-        int minX = template.stream().mapToInt(Step::dx).min().orElse(0);
-        int maxX = template.stream().mapToInt(Step::dx).max().orElse(0);
-        int minZ = template.stream().mapToInt(Step::dz).min().orElse(0);
-        int maxZ = template.stream().mapToInt(Step::dz).max().orElse(0);
-        int x = step.dx() - minX, z = step.dz() - minZ;
-        int w = maxX - minX + 1, h = maxZ - minZ + 1;
-        BlueprintTransform.Point point = BlueprintTransform.rotate(x,z,w,h,rotation);
+        Bounds bounds = bounds(plan);
+        int x=step.dx()-bounds.minX(), z=step.dz()-bounds.minZ();
+        BlueprintTransform.Point point = BlueprintTransform.rotate(
+                x,z,bounds.width(),bounds.depth(),rotation);
         return coreAnchor.offset(offsetX + point.x(), step.dy(), offsetZ + point.z());
     }
 
