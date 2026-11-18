@@ -28,6 +28,7 @@ public final class CivCraftRebornClient implements ClientModInitializer {
             }
             CampBlueprintProjection.useCore(hit.getBlockPos(),
                     world.dimension().identifier().toString());
+            ClientPlayNetworking.send(new BlueprintStatusRequest(hit.getBlockPos()));
             Minecraft minecraft = Minecraft.getInstance();
             minecraft.gui.setScreen(new CivCraftManagementScreen(minecraft.gui.screen()));
             return InteractionResult.SUCCESS;
