@@ -31,9 +31,17 @@ dependencies {
 // Reference-test profile: required together, but NOT packaged into CivCraft.
 // Usage: gradle runClient -PschematicTest=true
 if (providers.gradleProperty('schematicTest').map { it.toBoolean() }.getOrElse(false)) {
+    configurations {
+        schematicReferenceDownloads {
+            canBeResolved = true
+            canBeConsumed = false
+        }
+    }
     dependencies {
         modRuntimeOnly "maven.modrinth:bEpr0Arc:ZqV316KY" // Litematica 0.29.1 / MC 26.3
         modRuntimeOnly "maven.modrinth:GcWjdA9I:JX9bESec" // MaLiLib 0.30.2 / MC 26.3
+        schematicReferenceDownloads "maven.modrinth:bEpr0Arc:ZqV316KY"
+        schematicReferenceDownloads "maven.modrinth:GcWjdA9I:JX9bESec"
     }
     logger.lifecycle('CivCraft schematic test profile: Litematica + MaLiLib REQUIRED for runClient')
 }
@@ -50,7 +58,13 @@ tasks.register('verifySchematicTestProfile') {
                 !dependencies.any { it.group == 'maven.modrinth' && it.name == 'GcWjdA9I' }) {
             throw new GradleException('Both Litematica and MaLiLib are required for reference tests')
         }
-        logger.lifecycle('Reference test mod pair declared (Litematica 0.29.1 + MaLiLib 0.30.2)')
+        def downloaded = configurations.schematicReferenceDownloads.resolve()
+        if (downloaded.size() < 2 ||
+                !downloaded.any { it.name.toLowerCase().contains('litematica') } ||
+                !downloaded.any { it.name.toLowerCase().contains('malilib') }) {
+            throw new GradleException('Missing downloaded Litematica/MaLiLib 26.3 test JARs')
+        }
+        logger.lifecycle('Both Litematica and MaLiLib test JARs resolved: ' + downloaded.collect { it.name })
     }
 }
 
