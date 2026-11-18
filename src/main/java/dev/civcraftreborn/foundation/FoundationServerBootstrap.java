@@ -19,10 +19,12 @@ public final class FoundationServerBootstrap {
 
     private static void applySettings(MinecraftServer server) {
         WorldSettings settings = WorldSettingsSavedData.get(server).settings();
+        // A side length is not a radius. Pin center so all presets span [-side/2, +side/2].
+        server.overworld().getWorldBorder().setCenter(0.0, 0.0);
         server.overworld().getWorldBorder().setSize(settings.preset().sideBlocks());
 
         CivCraftReborn.LOGGER.info(
-                "Foundation world settings: Overworld {}x{} blocks, mode {}",
+                "Foundation world settings: Overworld {}x{} blocks, mode {} (border center 0,0)",
                 settings.preset().sideBlocks(),
                 settings.preset().sideBlocks(),
                 settings.mode());
