@@ -88,6 +88,21 @@ This is a real source-code implementation on top of the unmerged P0 branch. It d
 
 **Known limits:** client holograms are whole translucent cubes, not textured actual BlockState shapes. Item material estimate ignores crafting recipes, block orientation and items in public warehouse containers. Selected move/rotation currently lasts until the client hides or changes the core, not a persisted/server-owned construction order. The catalog stage is refreshed on clicking the center core; it does not dynamically push a promotion event to currently open menus.
 
+## Client crash report — schematic storage selection (2026-11-18)
+
+**Reported by owner:** an older development JAR crashed Minecraft when selecting/placing the storage blueprint. The exact `crash-reports/crash-*.txt` or `logs/latest.log` has not been supplied, therefore the root cause is **not confirmed**.
+
+A possible failure point is the custom Minecraft 26.3 Renderpearl GPU pass on the first active ghost frame. GitHub Actions runs compile/boot dedicated server but **do not perform client GPU rendering**, so prior PASS must not be interpreted as GPU safety.
+
+**Containment hotfix (not root-cause fix):**
+- Quarantine `CivCraftGhostBlockRenderer.register()` behind JVM opt-in `-Dcivcraft.experimentalFullBlockGhosts=true`. **Default game launch never enables that unverified pipeline**.
+- Restore bounded Minecraft-native `DustParticleOptions` 3D cube-corner markers; only unloaded/missing cells are shown; correct block placement hides them.
+- Limit the fallback to 36 missing cells × 8 particles every 6 client ticks; use no forced chunk loads or unsafe GPU buffer calls.
+- This temporarily changes the preview from full translucent faces back to 3D outline points. Owner's ultimate requirement for accurate solid block ghosts remains **unresolved** until GPU failure is reproduced and corrected.
+- Collect `latest.log` or the actual crash report, verify which thread/exceptions crashed, then fix the real cause. Tests: select STORAGE/WORKSHOP/HEART, switch templates, render on a dedicated multiplayer world, exit/rejoin and test with/without Litematica.
+
+Do **not** advise reusing the pre-hotfix 3D GPU JAR for construction testing, and do **not** claim this workaround has been visually validated on the user's computer.
+
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
