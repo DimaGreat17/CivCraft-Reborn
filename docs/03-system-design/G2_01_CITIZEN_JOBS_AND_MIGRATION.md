@@ -165,6 +165,10 @@ Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CO
 
 **APPROVED_CONCEPT:** одна уникальная физически пригодная клетка пола, успешно прошедшая PHYSICAL/ROOM, даёт ровно 1 блок²; частичные поверхности могут участвовать, но без дробного кредита. D-056 сохраняет предварительную норму 4 таких клеток/NPC. Общая площадь нескольких жилищ не может засчитываться дважды; правила распределения комнат и геометрия поверхностей PROPOSED. [CELL contract](../05-roadmap/P1_CELL_FLOOR_ACCOUNTING_CONTRACT.md).
 
+## P1 Housing Regions and Shared Space (PROPOSED, 2026-11-18)
+
+Design candidate: [Housing Regions and Shared Space](../05-roadmap/P1_HOUSING_REGIONS_AND_SHARED_SPACE_PROPOSAL.md). It proposes distinct living regions, transition corridors and stairs, unique floor-cell attribution, multi-floor access and safe split/merge reconciliation. **No new owner-approved rule** for allocating shared corridors has been recorded: PRIVATE_ONLY, SHARED_ALLOCATED and COMPLEX_POOL remain alternatives. Existing HOME-01 reservations and D-053…D-058 take precedence.
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
