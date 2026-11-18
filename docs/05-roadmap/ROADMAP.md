@@ -26,7 +26,7 @@ The sequence is preliminary and can be revised *during design* based on dependen
 
 ## GDD review Round C (2026-11-18)
 
-[Round C seven-decision proposal](../02-game-design/GDD_REVIEW_ROUND_C_VICTORY_CONTENT_UX.md) is prepared. **NOT APPROVED**; no victory timer, historic game mode, nation/religion bonus, spy mission probability, building exclusion or release claim has been finalized. Existing 23 APPROVED_CONCEPT / 10 OPEN stays unchanged.
+[Round C seven-decision package](../02-game-design/GDD_REVIEW_ROUND_C_VICTORY_CONTENT_UX.md) **APPROVED_CONCEPT** by owner; D-039…D-045 added to [DECISIONS.md](../../DECISIONS.md). GDD register: **30 APPROVED_CONCEPT / 3 OPEN / 0 FROZEN**. No victory timer, nation/religion modifier, spy mission probability, final building exclusion or release claim finalized. G0/G2/G3/G4 remain open.
 
 ## GDD review Round B (2026-11-18)
 
