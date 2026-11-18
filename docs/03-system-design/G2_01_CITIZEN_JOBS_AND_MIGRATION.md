@@ -167,7 +167,7 @@ Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CO
 
 ## P1 Housing Regions and Shared Space (PROPOSED, 2026-11-18)
 
-Design candidate: [Housing Regions and Shared Space](../05-roadmap/P1_HOUSING_REGIONS_AND_SHARED_SPACE_PROPOSAL.md). It proposes distinct living regions, transition corridors and stairs, unique floor-cell attribution, multi-floor access and safe split/merge reconciliation. **Owner approved PRIVATE_ONLY as D-059:** individual rooms receive credit only for their own validated cells; shared hallways and stairs are transit and grant no residential capacity. The other two variants are not selected. How to recognize room boundaries, shared-vs-private use, merges and splits remains PROPOSED. Existing HOME-01 reservations and D-053…D-058 take precedence.
+Design candidate: [Housing Regions and Shared Space](../05-roadmap/P1_HOUSING_REGIONS_AND_SHARED_SPACE_PROPOSAL.md). It proposes distinct living regions, transition corridors and stairs, unique floor-cell attribution, multi-floor access and safe split/merge reconciliation. **Owner approved PRIVATE_ONLY as D-059:** individual rooms receive credit only for their own validated cells; shared hallways and stairs are transit and grant no residential capacity. The other two variants are not selected. D-060…D-063 are **DESIGN_SELECTED_DELEGATED**: HYBRID_ROOMS segmentation, deterministic shared/private floor attribution, transit-only common stairs, and safe merge/split with resident reassignment. Exact algorithms, hazards and timelines are not FROZEN; see [delegated region design](../05-roadmap/P1_HOUSING_REGION_SEGMENTATION_AND_RECOVERY_DESIGN.md). Existing HOME-01 reservations and D-053…D-058 take precedence.
 
 ## 10. BLOCKED / TODO
 
