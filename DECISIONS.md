@@ -110,6 +110,12 @@ D-053 extends D-050/D-052: building a vanilla home remains free-form, while **as
 
 D-054 extends D-053 (ROOM), D-050 (free-built houses) and D-017 (needs). A usable bed alone is insufficient for an additional occupant if required habitable space is lacking. Comfort is measured independently; it influences satisfaction under future approved rules and cannot create extra beds or override safety/access/ownership. No numeric balance or P1 implementation is approved.
 
+| D-055 | FLOOR is the NPC housing space metric: count usable, physically accessible floor area in validated rooms rather than total 3D air volume; beds and floor area jointly bound occupancy, comfort remains separate | APPROVED_CONCEPT | Owner selected FLOOR on 2026-11-18. Required headroom/pathfinding clearance remains part of ROOM access/safety, not an independent approved occupancy formula. Area-per-NPC, floor-cell rules, stairs, multilevel partitioning and limits remain PROPOSED; see P1_FLOOR_AREA_HOUSING_METRIC.md |
+
+## P1 FLOOR space-metric approval (2026-11-18)
+
+D-055 refines D-053 (ROOM) and D-054 (COMBINED): use verified usable floor cells as the measurable space input, not cubic room volume. Choosing FLOOR does **not** waive safe access and shelter checks or impose a new numerical ceiling-height threshold. One surface cannot be counted twice across overlapping rooms; no extra housing slots appear from comfort or decorative air space. P0 code and P1 release authorization remain unchanged.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
