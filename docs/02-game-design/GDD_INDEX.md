@@ -41,6 +41,14 @@
 - [G0 source audit](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md)
 - [Sequential release process](../05-roadmap/RELEASE_STRATEGY.md)
 
+## Pre-code engineering review
+
+- [G3 technical architecture index](../04-architecture/G3_INDEX.md)
+- [G4 pre-code readiness (NO-GO)](../05-roadmap/G4_PRE_CODE_READINESS_REVIEW.md)
+- [Integration verification matrix (20 cases, NOT RUN)](../05-roadmap/PRE_CODE_INTEGRATION_VERIFICATION_MATRIX.md)
+- [Balance/source parameter register](../05-roadmap/BALANCE_AND_SOURCE_PARAMETER_REGISTER.md)
+- [Dependency-safe patch plan, draft](../05-roadmap/PATCH_DEPENDENCY_AND_ACCEPTANCE_PLAN.md)
+
 ## G2 system design (in progress)
 
 - [G2-00 — Contract index, shared identity model and invariants](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md)
