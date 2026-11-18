@@ -31,7 +31,7 @@ public final class CampCoreBlock extends Block {
         super.setPlacedBy(level, pos, state, placer, placedStack);
         if (level.isClientSide() || !(placer instanceof ServerPlayer player)) return;
 
-        if (!WorldSettingsSavedData.get(player.getServer()).settings().civcraftWorld()) {
+        if (!WorldSettingsSavedData.get(player.level().getServer()).settings().civcraftWorld()) {
             return;
         }
 
@@ -41,7 +41,8 @@ public final class CampCoreBlock extends Block {
         ItemStack obsidian = new ItemStack(Items.OBSIDIAN, STARTER_OBSIDIAN);
         if (!player.getInventory().add(obsidian) && !obsidian.isEmpty()) {
             // Inventory insertion can be partial; only drop the remainder.
-            player.drop(obsidian, false);
+            net.minecraft.world.Containers.dropItemStack(level,
+                    pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, obsidian);
         }
         player.sendSystemMessage(Component.literal(
                 "CivCraft: you placed your first Camp Core. Received 4 obsidian "
