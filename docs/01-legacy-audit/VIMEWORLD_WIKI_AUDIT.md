@@ -75,3 +75,11 @@ Nation selection and governments are different systems. Talents chosen upon capi
 4. Catalog world events and endgame tracks, victory rules and options.
 5. Compare each Vime wiki mechanic to legacy code, label `OLD`, `LATER`, `SHARED`, `UNKNOWN`.
 6. Present conflicts to owner for design decision before freezing Reborn GDD.
+
+## Detailed follow-up registers (2026-11-18)
+
+- [Vime buildings and improvements by era](./VIME_BUILDINGS_BY_ERA.md): 73 navigation entries in era/military categories (not validated structure IDs), plus Town Hall and Capitol tracked separately.
+- [Nations, religions and wonders](./VIME_NATIONS_RELIGIONS_WONDERS.md): 7 listed nations, 7 religion choices, 22 world-wonder links and 6 national-wonder links. This is a categorized wiki inventory; detailed effect/price audit remains open.
+- Technology tree is shown as an image on the wiki. It must not be treated as a validated machine-readable full graph without explicit transcription and review.
+
+**Scope caution:** Some 2021–2022 update notes modify effects and prices. For each individual mechanic use the specific revision of the relevant wiki page or patch notes; an older page and later patch note may not match.
