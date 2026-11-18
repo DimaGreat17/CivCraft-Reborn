@@ -151,6 +151,14 @@ The owner directed the assistant to **choose remaining design details independen
 
 **Delegated package:** [P1 housing region implementation design](docs/05-roadmap/P1_HOUSING_REGION_SEGMENTATION_AND_RECOVERY_DESIGN.md). These choices select proposed architecture for future review, not completed implementation.
 
+| D-064 | Housing comfort is a separate, explainable, qualitative room-quality assessment (BASIC / ADEQUATE / GOOD as candidate bands), derived from verified physical living conditions and available amenities; ROOM safety/access and COMBINED capacity remain hard prerequisites | DESIGN_SELECTED_DELEGATED | Delegated P1 design choice on 2026-11-18. Bands and inputs are candidate technical policy, not frozen numeric weights or automatic item-price bonus; see P1_HOUSING_COMFORT_AND_NEEDS_DESIGN.md |
+| D-065 | Comfort affects resident housing satisfaction through the established needs evaluation, not a new continuous morale meter or automatic city-wide happiness; food, rest and safety retain independent need states, with no free production, population or economic gain | DESIGN_SELECTED_DELEGATED | Preserves D-017/D-054 and NPC-D12 separation of individual needs from city happiness. Exact satisfaction thresholds, durations and downstream effects remain OPEN for balance and GDD review |
+| D-066 | Comfort evaluation is event-driven, versioned, authoritative, and stable across Loaded/Virtual simulation; missing chunks/ambiguous room state never grant positive comfort, and housing disruption triggers safe revalidation/reassignment rather than deletion of NPCs | DESIGN_SELECTED_DELEGATED | The exact cache bounds, tick budget, recovery delay and adapter design require G3 testing. Does not authorize P1 implementation or P0 edits |
+
+## Delegated P1 comfort and needs package (2026-11-18)
+
+D-064…D-066 select a technical design for housing comfort within the user's prior delegation; they **do not constitute individual owner approvals, numeric balance signoff, city-happiness mechanics, or release freeze**. The authoritative scope remains the prior ROOM/COMBINED/FLOOR/PHYSICAL/CELL/PRIVATE_ONLY decisions and G2-01 needs; see [Housing Comfort & Needs](docs/05-roadmap/P1_HOUSING_COMFORT_AND_NEEDS_DESIGN.md). P0 acceptance and P1 G4 release scope approval remain mandatory before code.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
