@@ -89,3 +89,5 @@ Nation selection and governments are different systems. Talents chosen upon capi
 - [Production, science and logistics: pass 02](./VIME_PRODUCTION_SCIENCE_LOGISTICS_PASS_02.md): warehouse→mines, granary→cottages, sawmill/tool wear, construction work points, science, road travel and arsenal; source uncertainties and upgrade inconsistencies retained.
 
 - [Agriculture, extraction and food: pass 03](./VIME_AGRICULTURE_EXTRACTION_PASS_03.md): farm crops, fish farm, quarry, plantation, resource mine, granary, fish boat, stoneworks, silkworm and beekeeping, plus input/output invariants and remaining evidence gaps.
+
+- [Happiness, governance and social systems: pass 04](./VIME_SOCIAL_HAPPINESS_GOVERNANCE_PASS_04.md): player resident records vs physical NPCs, happiness tiers, civic plot permissions, 9 later wiki government modes, culture influence and world-size implications.
