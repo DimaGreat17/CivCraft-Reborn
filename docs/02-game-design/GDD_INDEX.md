@@ -41,6 +41,15 @@
 - [G0 source audit](../01-legacy-audit/G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md)
 - [Sequential release process](../05-roadmap/RELEASE_STRATEGY.md)
 
+## G2 system design (in progress)
+
+- [G2-00 — Contract index, shared identity model and invariants](../03-system-design/G2_00_CONTRACT_INDEX_AND_INVARIANTS.md)
+- [G2-01 — NPC needs, jobs, housing and migration](../03-system-design/G2_01_CITIZEN_JOBS_AND_MIGRATION.md)
+- [G2-02 — Settlement/province/civilization lifecycle](../03-system-design/G2_02_SETTLEMENT_AND_POLITY_LIFECYCLE.md)
+- [G2-03 — Economy, production, logistics and payment](../03-system-design/G2_03_ECONOMY_TRANSACTIONS_AND_LOGISTICS.md)
+
+**Draft / not frozen; source audit and remaining G2 contracts needed.**
+
 ## Completion disclaimer
 
 **Document coverage is not game design freeze.** All 13 system sections are written at design/draft level, but numerical balance, precise mechanics for historically undocumented items and 33 owner choices remain open. The old CivCraft/VimeWorld sources contain contradictions, and the modern source/asset rights have not been resolved. G2/G3 contracts, architecture and G4 signoff must be completed prior to mod coding.
