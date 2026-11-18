@@ -4,6 +4,10 @@
 **Decision:** D-013: user-approved concept of an explicit world-size choice at new-world creation.  
 **Status:** concept approved; implementation details/protection/other dimensions remain proposed until GDD and architecture freeze.
 
+## Independent session mode selection
+
+At world creation, the player also chooses **finite victory** or **endless sandbox** (D-014). The mode choice is independent of the 10k/15k/25k size setting: an endless sandbox continues in time but does not have infinite spatial terrain. See [world session modes](../02-game-design/WORLD_SESSION_MODES.md).
+
 ## World creation presets
 
 | Preset ID | Overworld border width | Playable square area (blocks²) | Approx. chunks in full square |
