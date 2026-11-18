@@ -166,6 +166,13 @@ D-064…D-066 select a technical design for housing comfort within the user's pr
 
 **Release status unchanged:** no claim that P1 is complete or accepted; exact hologram/blueprint UI, positioning and final balance remain technical tasks.
 
+## Owner-requested building progression and schematic interaction (2026-11-18)
+
+| D-069 | When the player first creates a camp, only basic buildings can be selected from the CivCraft blueprint catalog; advanced buildings unlock after settlement growth, not immediately on Camp Core placement | APPROVED_CONCEPT | The owner explicitly requested basic-only structures at the beginning. Delegated preliminary implementation splits: pre-camp = HEART; CAMP = HEART, STORAGE, WORKSHOP, FARM, BEDROOM, SMALL_HOUSE; SETTLEMENT additionally = BARRACKS, GRANARY, SMITHY, WATCHTOWER, WELL. Exact balance and later civilization tiers are not frozen |
+| D-070 | Players may move and rotate ghost building projections, and inspect the actual material bill including already built blocks and inventory shortfall; changing projection never creates blocks or waives server validation | DESIGN_SELECTED_DELEGATED | Owner requested this implementation stage. Placement bounded to the physical camp radius, rotation in 90° increments, HEART remains fixed to Camp Core, server controls stage unlocks; rights and resource consumption remain server-owned |
+
+**Evidence/limits:** [P1 development status](docs/04-architecture/P1_0_2_IMPLEMENTATION_STATUS.md) on feature branch is implementation evidence only, not a 0.2 release freeze or accepted G4 milestone. Visual blueprint unlocked stage is sent server→client; advanced functionality/benefits still require server-side building rules in later work.
+
 ## Change control
 
 Any approved or frozen decision change must specify why, affected features, save compatibility, acceptance tests, and explicit approval. Do not silently replace earlier decisions.
