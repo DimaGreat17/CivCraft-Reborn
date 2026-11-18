@@ -15,10 +15,14 @@ public final class FoundationCommands {
                         .then(Commands.literal("worldinfo").executes(context -> {
                             var source = context.getSource();
                             WorldSettings settings = WorldSettingsSavedData.get(source.getServer()).settings();
+                            FoundationWorldIdentitySavedData identity =
+                                    FoundationWorldIdentitySavedData.get(source.getServer());
                             var border = source.getServer().overworld().getWorldBorder();
                             String message = "CivCraft world: " + settings.preset().sideBlocks() + "x"
                                     + settings.preset().sideBlocks()
                                     + ", mode=" + settings.mode()
+                                    + ", world-id=" + identity.worldId()
+                                    + ", seed=" + identity.seed()
                                     + ", schema=" + settings.schemaVersion()
                                     + ", border-center=(" + border.getCenterX() + "," + border.getCenterZ() + ")"
                                     + ", border-size=" + border.getSize()
