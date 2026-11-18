@@ -65,4 +65,10 @@ Constructing later research graph from item unlocks would invent dependencies.
 5. Any graph edge not readable or confirmed remains `UNKNOWN`, never inferred from chronological location on image.
 6. User approves rule adaptations in GDD; source graph is not silently adopted as final Reborn progression.
 
-**G0-A partial progress, GAP-002 OPEN. No mod code changed.**
+## 6. Source acquisition update — supplied by project owner
+
+The project owner supplied a readable 2048×1057 VimeWorld technology tree graphic in conversation on 2026-11-18. The previous *image unavailable* blocker is therefore **RESOLVED for visual inspection**. Exact directed-edge transcription, graph validation, later-version identification and numerical verification are **STILL OPEN**. Do not equate the provided diagram automatically with the prior wiki-linked image filename.
+
+**User-approved design requirement D-015:** [preserve cross-branch AND prerequisites](../02-game-design/TECHNOLOGY_PROGRESSION_RULES.md). That applies to the eventual target graph but does not make each visually inferred edge a verified source fact.
+
+**G0-A partial progress, GAP-002 still OPEN. No mod code changed.**
