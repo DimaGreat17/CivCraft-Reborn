@@ -15,6 +15,10 @@
 
 **Cross-generation comparison:** [Old code ↔ VimeWorld wiki matrix](./GENERATION_COMPARISON_MATRIX.md) — source-by-source comparison, proposals not approved.
 
+**2026-11-18 comprehensive G0 audit review:** [Source coverage, 18 gaps, pass/fail gates, contradiction register](./G0_COMPREHENSIVE_AUDIT_REVIEW_2026-11-18.md) — audit still NOT closed.
+
+**New focused passes:** [Old runtime, special units, license and SQL](./G0_SOURCE_RUNTIME_AND_RISKS_PASS_10.md), [28-wonder construction matrix](./G0_WONDER_CONSTRUCTION_MATRIX_PASS_11.md), [province/spy/world-events/ruins](./G0_WORLD_SYSTEMS_LATE_PASS_12.md), [technology graph formal validation](./G0_TECH_GRAPH_VALIDATION_PASS_13.md), [all 73 late buildings coverage ledger](./G0_73_BUILDING_COVERAGE_LEDGER.md).
+
 **G0 closure review:** [Completeness, Gap Register and Exit Criteria](./G0_COMPLETENESS_GAP_REGISTER.md) — 18 prioritized gaps, contradictions and evidence-based exit checklist; G0 NOT closed.
 
 **G0-A structure parity:** [27 original IDs ↔ 73 later navigation entries](./STRUCTURE_PARITY_27_VS_VIME.md) — exact-name matches vs unresolved possible successors, not implementation equivalence.
