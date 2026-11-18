@@ -64,6 +64,10 @@ Owner approved [D-038](../../DECISIONS.md): a complete province-to-civilization 
 - An approved change to frozen scope requires impact analysis for dependencies, persistence, performance and testing.
 - Do not mark patch complete based only on code merged or a demo screenshot.
 
+## Pre-code readiness (2026-11-18)
+
+[Readiness review](./G4_PRE_CODE_READINESS_REVIEW.md): **NO-GO**, because G0 source gaps, selected platform feasibility, numerical balance, storage recovery and performance tests are not yet verified. See [draft dependency-safe patch plan](./PATCH_DEPENDENCY_AND_ACCEPTANCE_PLAN.md) and [integration test matrix](./PRE_CODE_INTEGRATION_VERIFICATION_MATRIX.md). This report does not change already proposed patch numbering or authorize code.
+
 ## Current status
 
 - G0 legacy audit: **IN PROGRESS**.
