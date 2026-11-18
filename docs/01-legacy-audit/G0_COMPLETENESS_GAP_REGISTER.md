@@ -20,6 +20,11 @@
 | [Victory passes 07–09](./VICTORY_CONDITIONS_PASS_07.md), [late game](./VIME_LATEGAME_VICTORY_MISSIONS_PASS_08.md), [culture/domination](./VIME_CULTURE_DIPLOMACY_DOMINATION_PASS_09.md) | Four original condition classes and six later wiki routes, seven space mission totals | Partial version-specific wiki, mission component matrix missing |
 | [World/session decisions](../04-architecture/WORLD_SIZE_PRESETS.md), [modes](../02-game-design/WORLD_SESSION_MODES.md) | D-013 sizes 10k/15k/25k; D-014 finite victory or endless sandbox | APPROVED CONCEPT; technical defaults and details not yet frozen |
 
+## G0-A progress update (2026-11-18)
+
+- [STRUCTURE_PARITY_27_VS_VIME.md](./STRUCTURE_PARITY_27_VS_VIME.md): all **27** old configured structure IDs now have an evidence-graded later wiki name mapping or explicit unmatched classification; this closes only the **identity mapping subtask** of GAP-001, not detailed behavioral parity. Of 73 later index entries, 51 lack an *unambiguous exact-name* old counterpart; many are genuinely new, but some may be renamed successors. Do not call them 51 confirmed new structures.
+- [VIME_TECH_GRAPH_RECOVERY_01.md](./VIME_TECH_GRAPH_RECOVERY_01.md): direct technology-to-building unlock and civic prerequisite examples collected. The late tree is embedded as a raster, not a readable list of technology-to-technology prerequisites; full graph reconstruction remains blocked until image acquisition and verification. Its wiki page indicates a **2024-09-03** last edit (source tree version 1.9.2), so 2022 wiki-page dating must not be applied globally.
+
 ## 2. Priority-ranked open research backlog
 
 **P0 = blocks G0 closure and core GDD dependencies; P1 = must be resolved before the related gameplay scope freezes; P2 = deliberate later-detail audit with explicitly tracked limits.** These are *audit priority levels*, not numbered release patches.
