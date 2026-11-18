@@ -161,6 +161,10 @@ Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CO
 
 **APPROVED_CONCEPT:** считать пол пригодным по реальным коллизиям, физической проходимости и безопасности для NPC; плиты/ступени не запрещены по названию блока. Норма D-056 4 блока²/NPC остаётся предварительной, конкретный вклад частичных поверхностей ещё не утверждён. [Контракт PHYSICAL](../05-roadmap/P1_PHYSICAL_FLOOR_VALIDATION_CONTRACT.md).
 
+## D-058 — CELL accounting of physically usable floor (2026-11-18)
+
+**APPROVED_CONCEPT:** одна уникальная физически пригодная клетка пола, успешно прошедшая PHYSICAL/ROOM, даёт ровно 1 блок²; частичные поверхности могут участвовать, но без дробного кредита. D-056 сохраняет предварительную норму 4 таких клеток/NPC. Общая площадь нескольких жилищ не может засчитываться дважды; правила распределения комнат и геометрия поверхностей PROPOSED. [CELL contract](../05-roadmap/P1_CELL_FLOOR_ACCOUNTING_CONTRACT.md).
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
