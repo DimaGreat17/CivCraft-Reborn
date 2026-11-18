@@ -145,6 +145,10 @@
 
 Housing eligibility for freely constructed Minecraft houses is now **APPROVED_CONCEPT** as an automatic, server-authoritative room check: a usable bed, shelter, physical accessibility and safety. This is a recognition prerequisite, **not** a free NPC spawn or an approved numerical score. One physical bed must not become multiple slots through duplicate discovery events; actual occupancy policy, room geometry, allocation rights, danger thresholds, and unloaded-chunk processing remain DRAFT. New housing design: [P1 ROOM recognition](../05-roadmap/P1_ROOM_HOUSING_RECOGNITION_CONTRACT.md). G2-01 housing reservations, migrations and Loaded/Virtual conservation remain in force.
 
+## D-054 — COMBINED housing capacity and comfort (2026-11-18)
+
+**APPROVED_CONCEPT:** доступная вместимость ограничивается количеством пригодных кроватей **и** пригодным пространством; комфорт учитывается отдельно и влияет на удовлетворённость NPC, но не создаёт дополнительных мест. Равенство HousingSlotId и CitizenId, безопасная переоценка при разрушении и запрет двойной записи сохраняются. Конкретные пространственные пороги, формулы и эффекты — PROPOSED; [детальная спецификация](../05-roadmap/P1_COMBINED_HOUSING_CAPACITY_AND_COMFORT.md).
+
 ## 10. BLOCKED / TODO
 
 `NPC-G2-B1`: конкретные показатели потребностей и таймеры (BALANCE).  
