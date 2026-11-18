@@ -62,8 +62,14 @@ public final class CivCraftBlueprintScreen extends Screen {
                 .bounds(x,y+104,94,20).build());
         previous.active = page > 0;
 
+        String tier = switch (lastStage) {
+            case 1 -> "Поселение";
+            case 0 -> "Лагерь";
+            case -1 -> "Сердце";
+            default -> "Проверка";
+        };
         addRenderableWidget(Button.builder(Component.literal(
-                "Стр. "+(page+1)+"/"+pageCount),
+                tier + " " + (page+1)+"/"+pageCount),
                 b -> {}).bounds(x+99,y+104,112,20).build()).active=false;
 
         Button next = addRenderableWidget(Button.builder(Component.literal("Далее ▶"),
