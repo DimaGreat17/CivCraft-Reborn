@@ -1,6 +1,6 @@
 # P1 — Диагностика Housing, причины отказов и матрица проверки
 
-**Статус: DESIGN_SELECTED_DELEGATED / DRAFT · 2026-11-18. Не реализовано.** UI — только представление server-authoritative данных [G2-10](../03-system-design/G2_10_HOUSING_INTEGRATED_DOMAIN_CONTRACT.md).
+**Статус: DESIGN_SELECTED_DELEGATED / DRAFT · 2026-11-18. Не реализовано.** UI — только представление server-authoritative данных [G2-10](../03-system-design/G2_P1_HOUSING_INTEGRATED_DOMAIN_CONTRACT.md).
 
 ## 1. Игрок должен видеть причинность
 
