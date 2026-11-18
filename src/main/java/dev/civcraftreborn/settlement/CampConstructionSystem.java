@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -147,7 +146,10 @@ public final class CampConstructionSystem {
 
     private static boolean hasHoe(Container container) {
         for(int slot=0;slot<container.getContainerSize();slot++) {
-            if(container.getItem(slot).getItem() instanceof HoeItem)return true;
+            Item item=container.getItem(slot).getItem();
+            if(item==Items.WOODEN_HOE||item==Items.STONE_HOE||item==Items.IRON_HOE
+                    ||item==Items.GOLDEN_HOE||item==Items.DIAMOND_HOE
+                    ||item==Items.NETHERITE_HOE)return true;
         }
         return false;
     }
