@@ -26,6 +26,10 @@ public final class CivCraftRebornClient implements ClientModInitializer {
             Identifier.fromNamespaceAndPath("civcraft_reborn","controls"));
     private static KeyMapping openMenu;
 
+    public static boolean matchesOpenMenu(net.minecraft.client.input.KeyEvent event) {
+        return openMenu!=null && openMenu.matches(event);
+    }
+
     @Override
     public void onInitializeClient() {
         CampBlueprintProjection.register();
