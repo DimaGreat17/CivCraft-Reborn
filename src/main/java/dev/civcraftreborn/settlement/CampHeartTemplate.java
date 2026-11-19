@@ -41,6 +41,8 @@ public final class CampHeartTemplate {
     public record Check(int matched,int total,boolean loaded) {
         public boolean complete() { return loaded && matched == total; }
     }
+    /** A world cell that still needs a physical change; never force-load chunks. */
+    public record Missing(BlockPos pos,BlockState expected,BlockState actual) {}
     private static final List<Cell> CELLS = create();
 
     private static List<Cell> create() {
@@ -99,8 +101,12 @@ public final class CampHeartTemplate {
 
     public static BlockState expected(BlockPos core,int shiftX,int shiftZ,
             int turns,Cell cell) {
+        return expected(core,shiftX,0,shiftZ,turns,cell);
+    }
+
+    public static BlockState expected(BlockPos core,int shiftX,int shiftY,int shiftZ,
+            int turns,Cell cell) {
         BlockState state=cell.state();
-        BlockPos target=position(core,shiftX,shiftZ,turns,cell);
         // No requirement for the foundation block to occupy the building footprint.
         if(state.hasProperty(HorizontalDirectionalBlock.FACING)) {
             state=state.setValue(HorizontalDirectionalBlock.FACING,
@@ -138,9 +144,31 @@ public final class CampHeartTemplate {
         for(Cell cell:CELLS) {
             BlockPos pos=position(core,shiftX,shiftY,shiftZ,turns,cell);
             if(!level.hasChunkAt(pos))return new Check(matched,CELLS.size(),false);
-            if(matching(level.getBlockState(pos),expected(core,shiftX,shiftZ,turns,cell)))matched++;
+            if(matching(level.getBlockState(pos),expected(core,shiftX,shiftY,shiftZ,turns,cell)))matched++;
         }
         return new Check(matched,CELLS.size(),true);
+    }
+
+    /**
+     * Return a bounded sample of problems, including precise world coordinates
+     * and BlockStates (for stairs, door facing and upper/lower slab). Inspect
+     * is read-only and deliberately scans only already loaded chunks.
+     */
+    public static List<Missing> firstMissing(ServerLevel level,BlockPos core,
+            int shiftX,int shiftY,int shiftZ,int turns,int limit) {
+        if(limit<=0)return List.of();
+        List<Missing> problems=new ArrayList<>();
+        for(Cell cell:CELLS) {
+            BlockPos pos=position(core,shiftX,shiftY,shiftZ,turns,cell);
+            if(!level.hasChunkAt(pos))continue;
+            BlockState actual=level.getBlockState(pos);
+            BlockState required=expected(core,shiftX,shiftY,shiftZ,turns,cell);
+            if(!matching(actual,required)) {
+                problems.add(new Missing(pos,required,actual));
+                if(problems.size()>=limit)break;
+            }
+        }
+        return List.copyOf(problems);
     }
 
     public static boolean transformValid(int dx,int dz,int turns) {
