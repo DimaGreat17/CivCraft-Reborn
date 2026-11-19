@@ -90,6 +90,7 @@ public final class CampBlueprintProjection {
     // -2 pending response, -1 no owned camp, 0 CAMP, 1 SETTLEMENT.
     private static int serverStage = -2;
     private static int offsetX = 12;
+    private static int offsetY = 0;
     private static int offsetZ = 0;
     private static boolean heartConfirmed;
     private static int rotation = 0;
@@ -107,16 +108,18 @@ public final class CampBlueprintProjection {
         activePlan = null;
         serverStage = -2;
         offsetX = 12;
+        offsetY = 0;
         offsetZ = 0;
         rotation = 0;
         heartConfirmed = false;
     }
 
-    public static void setHeartPlacement(BlockPos core,int shiftX,int shiftZ,
+    public static void setHeartPlacement(BlockPos core,int shiftX,int shiftY,int shiftZ,
             int turns,boolean confirmed) {
         if(coreAnchor==null||!coreAnchor.equals(core))return;
-        if(!CampHeartTemplate.transformValid(shiftX,shiftZ,turns))return;
+        if(!CampHeartTemplate.transformValid(shiftX,shiftY,shiftZ,turns))return;
         offsetX=shiftX;
+        offsetY=shiftY;
         offsetZ=shiftZ;
         rotation=turns;
         heartConfirmed=confirmed;
@@ -143,6 +146,7 @@ public final class CampBlueprintProjection {
         if (coreAnchor == null || !unlocked(plan)) return false;
         if (activePlan != plan && plan != Plan.HEART) {
             offsetX = 3;
+            offsetY = 0;
             offsetZ = 3;
             rotation = 0;
         }
@@ -160,6 +164,7 @@ public final class CampBlueprintProjection {
         activePlan=null;
         serverStage=-2;
         offsetX=12;
+        offsetY=0;
         offsetZ=0;
         rotation=0;
         heartConfirmed=false;
@@ -168,9 +173,10 @@ public final class CampBlueprintProjection {
     public static BlockPos anchor() { return coreAnchor; }
     public static int rotationDegrees() { return rotation * 90; }
     public static int offsetX() { return offsetX; }
+    public static int offsetY() { return offsetY; }
     /** NW floor-level origin used by server construction and acceptance. */
     public static BlockPos placedOrigin() {
-        return coreAnchor == null ? null : coreAnchor.offset(offsetX,0,offsetZ);
+        return coreAnchor == null ? null : coreAnchor.offset(offsetX,offsetY,offsetZ);
     }
 
     public static int offsetZ() { return offsetZ; }
@@ -203,19 +209,19 @@ public final class CampBlueprintProjection {
         if (coreAnchor == null) return null;
         if (plan == Plan.HEART) {
             var p=BlueprintTransform.rotate(step.dx(),step.dz(),7,7,rotation);
-            return coreAnchor.offset(-3+offsetX+p.x(),step.dy(),-3+offsetZ+p.z());
+            return coreAnchor.offset(-3+offsetX+p.x(),offsetY+step.dy(),-3+offsetZ+p.z());
         }
         Bounds bounds = bounds(plan);
         int x=step.dx()-bounds.minX(), z=step.dz()-bounds.minZ();
         BlueprintTransform.Point point = BlueprintTransform.rotate(
                 x,z,bounds.width(),bounds.depth(),rotation);
-        return coreAnchor.offset(offsetX + point.x(), step.dy(), offsetZ + point.z());
+        return coreAnchor.offset(offsetX + point.x(), offsetY + step.dy(), offsetZ + point.z());
     }
 
     private static boolean validPlacement() {
         if (activePlan == null || coreAnchor == null) return false;
         if(activePlan==Plan.HEART)
-            return CampHeartTemplate.transformValid(offsetX,offsetZ,rotation);
+            return CampHeartTemplate.transformValid(offsetX,offsetY,offsetZ,rotation);
         for (Step step : steps(activePlan)) {
             BlockPos pos = worldPosition(activePlan, step);
             if (!BlueprintTransform.inCampRadius(pos.getX()-coreAnchor.getX(),
@@ -233,6 +239,17 @@ public final class CampBlueprintProjection {
                 CampHeartTemplate.transformValid(offsetX,offsetZ,rotation))) return true;
         offsetX -= dx;
         offsetZ -= dz;
+        return false;
+    }
+
+    /** Raise or lower the unconfirmed blueprint by one or more block layers. */
+    public static boolean moveVertical(int deltaY) {
+        if(activePlan==null || coreAnchor==null
+                || (activePlan==Plan.HEART && heartConfirmed))return false;
+        int oldY=offsetY;
+        offsetY+=deltaY;
+        if(validPlacement())return true;
+        offsetY=oldY;
         return false;
     }
 
