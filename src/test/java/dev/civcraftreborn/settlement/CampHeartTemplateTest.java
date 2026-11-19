@@ -59,7 +59,7 @@ final class CampHeartTemplateTest {
                 CampHeartTemplate.expected(anchor,64,0,0,coreCell).getBlock());
         for(var cell:CampHeartTemplate.cells()) {
             assertNotEquals(anchor,CampHeartTemplate.position(anchor,64,0,0,cell));
-            assertFalse(CampHeartTemplate.expected(anchor,64,0,0,cell).is(CampBlocks.CAMP_CORE));
+            assertFalse(CampHeartTemplate.expected(anchor,64,0,0,cell).isAir());
         }
     }
 
