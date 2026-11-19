@@ -31,7 +31,7 @@ def list_tag(key, element, payloads):
 
 
 def compound_tag(key, fields):
-    return tagged(10,key,b"".join(fields)+b"\\x00")
+    return tagged(10,key,b"".join(fields)+b"\x00")
 
 
 def sample_nbt():
