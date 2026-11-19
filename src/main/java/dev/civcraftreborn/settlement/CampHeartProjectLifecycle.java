@@ -1,6 +1,9 @@
 package dev.civcraftreborn.settlement;
 
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
+import dev.civcraftreborn.CivCraftReborn;
 
 import net.minecraft.network.chat.Component;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -15,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
  * are all covered by inspecting the real block state on the server.
  */
 public final class CampHeartProjectLifecycle {
+    private static final Set<String> MISSING_SCHEMAS_WARNED=new HashSet<>();
     private CampHeartProjectLifecycle() {}
 
     public static void register() {
@@ -41,8 +45,20 @@ public final class CampHeartProjectLifecycle {
                 // Completion belongs to the building, not to the player being
                 // online or standing in a particular dimension. SavedData
                 // therefore reflects the physical world even on a server.
-                var check=CampHeartTemplate.inspect(site.blueprintId(),level,site.core(),site.shiftX(),
-                        site.shiftY(),site.shiftZ(),site.turns());
+                CampHeartTemplate.Check check;
+                try {
+                    check=CampHeartTemplate.inspect(site.blueprintId(),level,site.core(),
+                            site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
+                } catch(IllegalStateException missingBlueprint) {
+                    // Do not silently switch a persisted project to another
+                    // definition: it could require rebuilding a different house.
+                    // Skip this site without crashing server ticks or erasing it.
+                    if(MISSING_SCHEMAS_WARNED.add(site.id()))
+                        CivCraftReborn.LOGGER.error(
+                                "Construction {} is frozen: packaged blueprint {} missing; restore resource",
+                                site.id(),site.blueprintId(),missingBlueprint);
+                    continue;
+                }
                 if(!check.loaded())continue; // Never mark damaged because of unloaded chunks.
                 boolean complete=check.complete();
                 if(complete != site.completed()) {
