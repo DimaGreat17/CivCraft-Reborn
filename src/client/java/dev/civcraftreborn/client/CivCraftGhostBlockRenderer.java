@@ -71,7 +71,7 @@ public final class CivCraftGhostBlockRenderer {
             // Show an occupied required-air cell as a red translucent glass
             // marker so the player knows exactly which block to remove.
             BlockState visual=desired.isAir()
-                    ? Blocks.RED_STAINED_GLASS.defaultBlockState():desired;
+                    ? Blocks.GLASS.defaultBlockState():desired;
             List<BlockStateModelPart> parts=new ArrayList<>();
             models.get(visual).collectParts(
                     RandomSource.create(visual.getSeed(position)),parts);
