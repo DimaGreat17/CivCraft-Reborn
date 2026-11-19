@@ -17,6 +17,8 @@ public final class BlueprintNetworking {
                 BlueprintStatusResponse.TYPE, BlueprintStatusResponse.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacementResponse.TYPE, HeartPlacementResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartPlacedNotice.TYPE, HeartPlacedNotice.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(BlueprintStatusRequest.TYPE,
                 (request, context) -> {
