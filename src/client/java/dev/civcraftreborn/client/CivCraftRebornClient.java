@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.civcraftreborn.settlement.CampBlocks;
 import dev.civcraftreborn.settlement.BlueprintStatusRequest;
 import dev.civcraftreborn.settlement.BlueprintStatusResponse;
+import dev.civcraftreborn.settlement.HeartPlacementResponse;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -29,6 +30,12 @@ public final class CivCraftRebornClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(BlueprintStatusResponse.TYPE,
                 (payload, context) -> context.client().execute(() ->
                         CampBlueprintProjection.setServerStage(payload.core(), payload.stage())));
+
+        ClientPlayNetworking.registerGlobalReceiver(HeartPlacementResponse.TYPE,
+                (payload, context) -> context.client().execute(() ->
+                        CampBlueprintProjection.setHeartPlacement(payload.core(),
+                                payload.shiftX(),payload.shiftZ(),payload.turns(),
+                                payload.confirmed())));
 
         openMenu=KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.civcraft_reborn.open_menu",InputConstants.Type.KEYBOARD,
