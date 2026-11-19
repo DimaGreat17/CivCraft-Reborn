@@ -222,7 +222,7 @@ public final class CampCommands {
             try {
                 promoted = CampRules.promote(camp, housing.roomCount(),
                         CitizenSavedData.get(source.getServer()).atCamp(camp).size(),
-                        food.food(), food.storageBlocks() > 0,
+                        food.food(), food.storageBlocks() > 0 && facilities.granary(),
                         facilities.workshop(), facilities.farm());
             } catch (IllegalStateException e) {
                 return fail(source, e.getMessage());
