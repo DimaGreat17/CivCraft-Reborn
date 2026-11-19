@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Client-only visual projection. The server owns all permissions, settlement
@@ -262,32 +263,27 @@ public final class CampBlueprintProjection {
         return false;
     }
 
+    /**
+     * Exact predicted BlockState, shared by visual model and server validation.
+     * Essential for correctly oriented stairs, doors and upper slabs.
+     */
+    public static BlockState expectedState(Plan plan,Step step) {
+        if(plan==Plan.HEART && coreAnchor!=null) {
+            for(var cell:CampHeartTemplate.cells()) {
+                if(cell.x()==step.dx() && cell.y()==step.dy() && cell.z()==step.dz())
+                    return CampHeartTemplate.expected(coreAnchor,offsetX,offsetZ,rotation,cell);
+            }
+        }
+        return step.block().defaultBlockState();
+    }
+
     public static boolean matches(Plan plan, Step step) {
         Minecraft client = Minecraft.getInstance();
         if (client.level == null || coreAnchor == null) return false;
         BlockPos pos = worldPosition(plan, step);
         if(pos==null||!client.level.hasChunkAt(pos))return false;
-        if(plan==Plan.HEART) {
-            var real=client.level.getBlockState(pos);
-            // The construction starter is never a physical cell of the house.
-            if(step.block()==Blocks.OAK_DOOR) {
-                return real.is(Blocks.OAK_DOOR)
-                        && real.getValue(net.minecraft.world.level.block.DoorBlock.HALF)
-                        ==(step.dy()==1
-                                ?net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER
-                                :net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER);
-            }
-            if(step.block()==Blocks.SPRUCE_STAIRS) {
-                var direction=step.dx()==0?net.minecraft.core.Direction.WEST:
-                        net.minecraft.core.Direction.EAST;
-                // The original left/right slopes are at X=0,1,2 / 4,5,6.
-                if(step.dx()>=4) direction=net.minecraft.core.Direction.EAST;
-                for(int i=0;i<rotation;i++)direction=direction.getClockWise();
-                return real.is(Blocks.SPRUCE_STAIRS)
-                        && real.getValue(net.minecraft.world.level.block.StairBlock.FACING)==direction;
-            }
-            return real.is(step.block());
-        }
+        if(plan==Plan.HEART)
+            return CampHeartTemplate.matching(client.level.getBlockState(pos),expectedState(plan,step));
         return step.matchesAt(client.level,pos);
     }
 
