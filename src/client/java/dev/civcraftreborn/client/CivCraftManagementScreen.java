@@ -13,6 +13,8 @@ import net.minecraft.network.chat.Component;
 public final class CivCraftManagementScreen extends Screen {
     private final Screen parent;
     private boolean civilizationTab;
+    private Button foundingButton;
+    private Button progressLabel;
 
     public CivCraftManagementScreen(Screen parent) {
         super(Component.literal("CivCraft — управление"));
@@ -32,30 +34,35 @@ public final class CivCraftManagementScreen extends Screen {
                 .bounds(left + 142, top, 138, 20).build());
 
         if (!civilizationTab) {
-            addRenderableWidget(Button.builder(Component.literal("Основать лагерь"),
+            foundingButton=addRenderableWidget(Button.builder(Component.literal("Основать лагерь"),
                     b -> command("civcraft camp found"))
                     .bounds(left, top + 32, 138, 20).build());
+            foundingButton.active=CampBlueprintProjection.heartReadyToFound();
             addRenderableWidget(Button.builder(Component.literal("Проверить постройку"),
                     b -> command("civcraft camp heart inspect"))
                     .bounds(left + 142, top + 32, 138, 20).build());
+            progressLabel=addRenderableWidget(Button.builder(
+                    Component.literal(CampBlueprintProjection.heartProgressLabel()),
+                    b -> {}).bounds(left,top+58,280,20).build());
+            progressLabel.active=false;
             addRenderableWidget(Button.builder(Component.literal("Схема строительства"),
                     b -> Minecraft.getInstance().gui.setScreen(new CivCraftBlueprintScreen(this)))
-                    .bounds(left, top + 58, 280, 20).build());
+                    .bounds(left, top + 82, 280, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Принять жителя"),
                     b -> command("civcraft camp recruit"))
-                    .bounds(left, top + 84, 138, 20).build());
+                    .bounds(left, top + 108, 138, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Повысить поселение"),
                     b -> command("civcraft camp promote"))
-                    .bounds(left + 142, top + 84, 138, 20).build());
+                    .bounds(left + 142, top + 108, 138, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Жители и профессии"),
                     b -> Minecraft.getInstance().gui.setScreen(new CivCraftResidentsScreen(this)))
-                    .bounds(left, top + 110, 280, 20).build());
+                    .bounds(left, top + 134, 280, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Рабочие здания / стройка"),
                     b -> command("civcraft camp building list"))
-                    .bounds(left, top + 136, 138, 20).build());
+                    .bounds(left, top + 160, 138, 20).build());
             addRenderableWidget(Button.builder(Component.literal("Заказы на строительство"),
                     b -> command("civcraft camp construction list"))
-                    .bounds(left + 142, top + 136, 138, 20).build());
+                    .bounds(left + 142, top + 160, 138, 20).build());
         } else {
             Button future = addRenderableWidget(Button.builder(
                     Component.literal("Цивилизации — в следующем этапе"),
@@ -63,7 +70,17 @@ public final class CivCraftManagementScreen extends Screen {
             future.active = false;
         }
         addRenderableWidget(Button.builder(Component.literal("Закрыть"),
-                b -> onClose()).bounds(left, top + 168, 280, 20).build());
+                b -> onClose()).bounds(left, top + 192, 280, 20).build());
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if(foundingButton!=null)
+            foundingButton.active=CampBlueprintProjection.heartReadyToFound();
+        if(progressLabel!=null)
+            progressLabel.setMessage(Component.literal(
+                    CampBlueprintProjection.heartProgressLabel()));
     }
 
     private void command(String command) {
