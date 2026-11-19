@@ -36,7 +36,7 @@ public final class CivCraftPlanningCamera {
         south=key("planning_south",InputConstants.KEY_DOWN,category);
         west=key("planning_west",InputConstants.KEY_LEFT,category);
         east=key("planning_east",InputConstants.KEY_RIGHT,category);
-        zoomIn=key("planning_zoom_in",org.lwjgl.glfw.GLFW.GLFW_KEY_EQUAL,category);
+        zoomIn=key("planning_zoom_in",61 /* GLFW_KEY_EQUAL; LWJGL class not on compile classpath */,category);
         zoomOut=key("planning_zoom_out",InputConstants.KEY_MINUS,category);
         turnLeft=key("planning_rotate_left",InputConstants.KEY_Z,category);
         turnRight=key("planning_rotate_right",InputConstants.KEY_X,category);
