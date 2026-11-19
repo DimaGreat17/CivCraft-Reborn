@@ -5,7 +5,8 @@
   "client": [
     "CreateWorldWorldTabMixin",
     "CivCraftGhostRendererCleanupMixin",
-    "CivCraftPauseMenuMixin"
+    "CivCraftPauseMenuMixin",
+    "CivCraftPlanningCameraMixin"
   ],
   "injectors": {
     "defaultRequire": 1
