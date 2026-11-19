@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import dev.civcraftreborn.foundation.WorldSettingsSavedData;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 /**
  * Authoritative player construction-site positioning. All commands require a
@@ -76,6 +77,7 @@ public final class CampHeartCommands {
             if(!clear((ServerLevel)player.level(),updated))
                 return fail(source,"Blocked or unsupported footprint; clear/level the area first");
             CampHeartSavedData.get(source.getServer()).replace(old,updated);
+            sync(player,updated);
             source.sendSuccess(()->Component.literal("Camp Heart preview: shift ("
                     +x+","+z+"), rotation "+(turns*90)+" degrees; not confirmed"),false);
             return 1;
@@ -98,6 +100,7 @@ public final class CampHeartCommands {
                     site.x(),site.z(),true,true))
                 return fail(source,"Too close to another settlement");
             CampHeartSavedData.get(source.getServer()).replace(site,site.confirm());
+            sync(player,site.confirm());
             source.sendSuccess(()->Component.literal(
                     "Camp Heart construction site confirmed. Build the whole hologram manually; "
                     +"check /civcraft camp heart inspect and then found the camp."),false);
@@ -126,6 +129,11 @@ public final class CampHeartCommands {
         }catch(com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source,"Players only");
         }
+    }
+
+    private static void sync(ServerPlayer player,CampHeartSite site){
+        ServerPlayNetworking.send(player,new HeartPlacementResponse(site.core(),
+                site.shiftX(),site.shiftZ(),site.turns(),site.confirmed()));
     }
 
     private static int fail(CommandSourceStack source,String reason){
