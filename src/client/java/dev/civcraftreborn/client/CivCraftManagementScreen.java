@@ -101,7 +101,8 @@ public final class CivCraftManagementScreen extends Screen {
     public void tick() {
         super.tick();
         // This is a read-only server query, never a client-computed completion.
-        if(!civilizationTab && ++progressRefreshTicks>=40) {
+        int refreshInterval=CivCraftOverviewState.latest().exists()?100:40;
+        if(++progressRefreshTicks>=refreshInterval) {
             progressRefreshTicks=0;
             requestProgress();
         }
