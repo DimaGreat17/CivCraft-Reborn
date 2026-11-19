@@ -79,13 +79,22 @@ public final class CampHeartTemplate {
 
     /** NW corner of footprint after placement; the physical core never moves. */
     public static BlockPos origin(BlockPos core,int shiftX,int shiftZ) {
-        return core.offset(-3+shiftX,0,-3+shiftZ);
+        return origin(core,shiftX,0,shiftZ);
+    }
+
+    public static BlockPos origin(BlockPos core,int shiftX,int shiftY,int shiftZ) {
+        return core.offset(-3+shiftX,shiftY,-3+shiftZ);
     }
 
     public static BlockPos position(BlockPos core,int shiftX,int shiftZ,
             int turns,Cell cell) {
+        return position(core,shiftX,0,shiftZ,turns,cell);
+    }
+
+    public static BlockPos position(BlockPos core,int shiftX,int shiftY,int shiftZ,
+            int turns,Cell cell) {
         var rotated=BlueprintTransform.rotate(cell.x(),cell.z(),SIZE,SIZE,turns);
-        return origin(core,shiftX,shiftZ).offset(rotated.x(),cell.y(),rotated.z());
+        return origin(core,shiftX,shiftY,shiftZ).offset(rotated.x(),cell.y(),rotated.z());
     }
 
     public static BlockState expected(BlockPos core,int shiftX,int shiftZ,
@@ -120,9 +129,14 @@ public final class CampHeartTemplate {
     }
 
     public static Check inspect(ServerLevel level,BlockPos core,int shiftX,int shiftZ,int turns) {
+        return inspect(level,core,shiftX,0,shiftZ,turns);
+    }
+
+    public static Check inspect(ServerLevel level,BlockPos core,int shiftX,int shiftY,
+            int shiftZ,int turns) {
         int matched=0;
         for(Cell cell:CELLS) {
-            BlockPos pos=position(core,shiftX,shiftZ,turns,cell);
+            BlockPos pos=position(core,shiftX,shiftY,shiftZ,turns,cell);
             if(!level.hasChunkAt(pos))return new Check(matched,CELLS.size(),false);
             if(matching(level.getBlockState(pos),expected(core,shiftX,shiftZ,turns,cell)))matched++;
         }
@@ -130,6 +144,11 @@ public final class CampHeartTemplate {
     }
 
     public static boolean transformValid(int dx,int dz,int turns) {
-        return dx>=-128&&dx<=128&&dz>=-128&&dz<=128&&turns>=0&&turns<4;
+        return transformValid(dx,0,dz,turns);
+    }
+
+    public static boolean transformValid(int dx,int dy,int dz,int turns) {
+        return dx>=-128&&dx<=128&&dy>=-64&&dy<=64
+                &&dz>=-128&&dz<=128&&turns>=0&&turns<4;
     }
 }
