@@ -45,8 +45,8 @@ public final class BlueprintNetworking {
                                 .orElse(-1);
                         ServerPlayNetworking.send(player,new BlueprintStatusResponse(s.core(),stage));
                         ServerPlayNetworking.send(player,new HeartPlacementResponse(s.core(),
-                                s.shiftX(),s.shiftY(),s.shiftZ(),s.turns(),s.confirmed()));
-                        var progress=CampHeartTemplate.inspect(
+                                s.shiftX(),s.shiftY(),s.shiftZ(),s.turns(),s.confirmed(),s.blueprintId()));
+                        var progress=CampHeartTemplate.inspect(s.blueprintId(),
                                 (net.minecraft.server.level.ServerLevel)player.level(),
                                 s.core(),s.shiftX(),s.shiftY(),s.shiftZ(),s.turns());
                         ServerPlayNetworking.send(player,new HeartProgressResponse(s.core(),
@@ -78,7 +78,7 @@ public final class BlueprintNetworking {
                             .filter(s->s.owner().equals(player.getUUID().toString()))
                             .ifPresent(site->ServerPlayNetworking.send(player,
                                     new HeartPlacementResponse(core,site.shiftX(),site.shiftY(),
-                                            site.shiftZ(),site.turns(),site.confirmed())));
+                                            site.shiftZ(),site.turns(),site.confirmed(),site.blueprintId())));
                 });
     }
 }
