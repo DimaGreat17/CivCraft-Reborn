@@ -6,6 +6,7 @@ import dev.civcraftreborn.settlement.BlueprintStatusRequest;
 import dev.civcraftreborn.settlement.BlueprintStatusResponse;
 import dev.civcraftreborn.settlement.HeartPlacementResponse;
 import dev.civcraftreborn.settlement.HeartPlacedNotice;
+import dev.civcraftreborn.settlement.HeartSiteRequest;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -29,8 +30,14 @@ public final class CivCraftRebornClient implements ClientModInitializer {
         CampBlueprintProjection.register();
         CivCraftGhostBlockRenderer.register();
         ClientPlayNetworking.registerGlobalReceiver(BlueprintStatusResponse.TYPE,
-                (payload, context) -> context.client().execute(() ->
-                        CampBlueprintProjection.setServerStage(payload.core(), payload.stage())));
+                (payload, context) -> context.client().execute(() -> {
+                    Minecraft client=context.client();
+                    if(client.level==null)return;
+                    if(!payload.core().equals(CampBlueprintProjection.anchor()))
+                        CampBlueprintProjection.useCore(payload.core(),
+                                client.level.dimension().identifier().toString());
+                    CampBlueprintProjection.setServerStage(payload.core(),payload.stage());
+                }));
 
         ClientPlayNetworking.registerGlobalReceiver(HeartPlacementResponse.TYPE,
                 (payload, context) -> context.client().execute(() ->
@@ -56,30 +63,10 @@ public final class CivCraftRebornClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while(openMenu.consumeClick()) {
                 if(client.player==null||client.level==null||client.gui.screen()!=null)continue;
-                prepareNearbyFoundation(client);
+                ClientPlayNetworking.send(new HeartSiteRequest());
                 client.gui.setScreen(new CivCraftManagementScreen(null));
             }
         });
     }
 
-    private static void prepareNearbyFoundation(Minecraft client) {
-        BlockPos center=client.player.blockPosition();
-        BlockPos nearest=null;
-        double distance=Double.POSITIVE_INFINITY;
-        // Local bounded scan; never request or force-load remote chunks.
-        for(BlockPos pos:BlockPos.betweenClosed(
-                center.offset(-12,-5,-12),center.offset(12,5,12))) {
-            if(!client.level.hasChunkAt(pos))continue;
-            if(!client.level.getBlockState(pos).is(CampBlocks.CAMP_CORE))continue;
-            double d=pos.distSqr(center);
-            if(d<distance) {nearest=pos.immutable();distance=d;}
-        }
-        if(nearest!=null){
-            if(!nearest.equals(CampBlueprintProjection.anchor())) {
-                CampBlueprintProjection.useCore(nearest,
-                        client.level.dimension().identifier().toString());
-            }
-            ClientPlayNetworking.send(new BlueprintStatusRequest(nearest));
-        }
-    }
 }
