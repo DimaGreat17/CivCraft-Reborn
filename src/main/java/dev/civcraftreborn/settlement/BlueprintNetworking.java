@@ -43,7 +43,7 @@ public final class BlueprintNetworking {
                                 .orElse(-1);
                         ServerPlayNetworking.send(player,new BlueprintStatusResponse(s.core(),stage));
                         ServerPlayNetworking.send(player,new HeartPlacementResponse(s.core(),
-                                s.shiftX(),s.shiftZ(),s.turns(),s.confirmed()));
+                                s.shiftX(),s.shiftY(),s.shiftZ(),s.turns(),s.confirmed()));
                     });
                 });
 
@@ -70,7 +70,7 @@ public final class BlueprintNetworking {
                     CampHeartSavedData.get(context.server()).byCore(dimension,core)
                             .filter(s->s.owner().equals(player.getUUID().toString()))
                             .ifPresent(site->ServerPlayNetworking.send(player,
-                                    new HeartPlacementResponse(core,site.shiftX(),
+                                    new HeartPlacementResponse(core,site.shiftX(),site.shiftY(),
                                             site.shiftZ(),site.turns(),site.confirmed())));
                 });
     }
