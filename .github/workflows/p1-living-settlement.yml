@@ -29,6 +29,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.8.0'
+      - name: Validate manual Minecraft structure importer
+        run: python3 scripts/test_import_structure_nbt.py -v
       - name: Render-pass crash regression guard
         run: python3 scripts/verify_ghost_renderer_lifecycle.py
       - name: Build and unit tests
