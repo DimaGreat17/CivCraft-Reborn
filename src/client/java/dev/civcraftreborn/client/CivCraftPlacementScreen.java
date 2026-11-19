@@ -8,11 +8,12 @@ import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
 
 /**
  * Move/rotate a ghost plan without changing physical Minecraft blocks.
- * Shift is bounded inside the camp radius; heart stays attached to its core.
+ * Camp Heart moves independently of the consumed construction starter.
  */
 public final class CivCraftPlacementScreen extends Screen {
     private final Screen parent;
     private Button positionInfo;
+    private int movementStep=1;
 
     public CivCraftPlacementScreen(Screen parent) {
         super(Component.literal("CivCraft — размещение схемы"));
@@ -37,16 +38,16 @@ public final class CivCraftPlacementScreen extends Screen {
         positionInfo.active=false;
 
         Button north = addRenderableWidget(Button.builder(Component.literal("Север -Z"),
-                b -> shift(0,-1))
+                b -> shift(0,-movementStep))
                 .bounds(x+105,y+50,100,20).build());
         Button west = addRenderableWidget(Button.builder(Component.literal("Запад -X"),
-                b -> shift(-1,0))
+                b -> shift(-movementStep,0))
                 .bounds(x,y+75,100,20).build());
         Button south = addRenderableWidget(Button.builder(Component.literal("Юг +Z"),
-                b -> shift(0,1))
+                b -> shift(0,movementStep))
                 .bounds(x+105,y+75,100,20).build());
         Button east = addRenderableWidget(Button.builder(Component.literal("Восток +X"),
-                b -> shift(1,0))
+                b -> shift(movementStep,0))
                 .bounds(x+210,y+75,100,20).build());
 
         Button rotateLeft = addRenderableWidget(Button.builder(Component.literal("↶ 90°"),
@@ -62,31 +63,39 @@ public final class CivCraftPlacementScreen extends Screen {
             button.active = movable;
         }
 
+        if(plan==CampBlueprintProjection.Plan.HEART) {
+            Button step=addRenderableWidget(Button.builder(
+                    Component.literal("Шаг перемещения: "+movementStep+" блок(ов)"),
+                    b -> { movementStep=movementStep==1?8:movementStep==8?16:1;
+                        b.setMessage(Component.literal("Шаг перемещения: "+movementStep+" блок(ов)")); })
+                    .bounds(x,y+125,310,20).build());
+            step.active=!CampBlueprintProjection.heartConfirmed();
+        }
         addRenderableWidget(Button.builder(Component.literal("Материалы и остаток"),
                 b -> Minecraft.getInstance().gui.setScreen(new CivCraftMaterialsScreen(this)))
-                .bounds(x,y+125,310,20).build());
+                .bounds(x,y+150,310,20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Показать проекцию в мире"),
                 b -> Minecraft.getInstance().gui.setScreen(null))
-                .bounds(x,y+150,310,20).build());
+                .bounds(x,y+175,310,20).build());
         if(plan == CampBlueprintProjection.Plan.HEART) {
             Button confirm = addRenderableWidget(Button.builder(
                     Component.literal(CampBlueprintProjection.heartConfirmed()
                             ? "Площадка подтверждена"
                             : "Подтвердить площадку лагеря"),
                     b -> heartCommand("civcraft camp heart confirm"))
-                    .bounds(x,y+176,310,20).build());
+                    .bounds(x,y+200,310,20).build());
             confirm.active = !CampBlueprintProjection.heartConfirmed();
         }
 
         Button order = addRenderableWidget(Button.builder(
                 Component.literal("Поручить строительство NPC"),
                 b -> sendBuildingCommand(false))
-                .bounds(x,y+176,310,20).build());
+                .bounds(x,y+200,310,20).build());
         Button register = addRenderableWidget(Button.builder(
                 Component.literal("Принять готовое здание"),
                 b -> sendBuildingCommand(true))
-                .bounds(x,y+201,310,20).build());
+                .bounds(x,y+225,310,20).build());
 
         boolean functional = plan != CampBlueprintProjection.Plan.HEART;
         try { FunctionalBuildingTemplates.Type.valueOf(plan.name()); }
@@ -95,7 +104,7 @@ public final class CivCraftPlacementScreen extends Screen {
         register.active=functional;
 
         addRenderableWidget(Button.builder(Component.literal("Назад к каталогу"),
-                b -> onClose()).bounds(x,y+226,310,20).build());
+                b -> onClose()).bounds(x,y+250,310,20).build());
     }
 
     private void heartCommand(String command) {
@@ -143,7 +152,7 @@ public final class CivCraftPlacementScreen extends Screen {
     }
 
     private String positionLabel() {
-        return "Сдвиг: X="+CampBlueprintProjection.offsetX()
+        return "Проект: X="+CampBlueprintProjection.offsetX()
                 +" Z="+CampBlueprintProjection.offsetZ()
                 +" | Поворот: "+CampBlueprintProjection.rotationDegrees()+"°";
     }
