@@ -5,14 +5,10 @@ import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.block.state.properties.SlabType;
 
 /**
  * The original 7x7x6 Camp Heart schematic, shared by authoritative server
@@ -25,57 +21,22 @@ public final class CampHeartTemplate {
     public static final int HEIGHT = 6;
     private CampHeartTemplate() {}
 
-    // Each row is north (-Z) to south (+Z); columns west (-X) to east (+X).
-    // C is a historical drafting marker, now treated as ordinary oak flooring.
-    // The physical foundation block is a construction starter only.
-    private static final String[][] LAYERS = {
-        {"SSSSSSS", "SPPPPPS", "SPPPPPS", "SPPCPPS", "SPPPPPS", "SPPPPPS", "SSSSSSS"},
-        {"LPPPPPL", "P.....P", "P.....P", "P.....P", "P.....P", "P.....P", "LPPDPPL"},
-        {"LPPWPPL", "P.....P", "P.....P", "W.....W", "P.....P", "P.....P", "LPPDPPL"},
-        {"<PPPPP>", "<.....>", "<.....>", "<.....>", "<.....>", "<.....>", "<PPPPP>"},
-        {".<PPP>.", ".<...>.", ".<...>.", ".<...>.", ".<...>.", ".<...>.", ".<PPP>."},
-        {"..<=>..", "..<=>..", "..<=>..", "..<=>..", "..<=>..", "..<=>..", "..<=>.."}
-    };
-
+    public static final String LEGACY_BLUEPRINT_ID="camp_heart_v1";
     public record Cell(int x,int y,int z,BlockState state,boolean coreMarker) {}
     public record Check(int matched,int total,boolean loaded) {
-        public boolean complete() { return loaded && matched == total; }
+        public boolean complete() { return loaded && matched==total; }
     }
     /** A world cell that still needs a physical change; never force-load chunks. */
     public record Missing(BlockPos pos,BlockState expected,BlockState actual) {}
-    private static final List<Cell> CELLS = create();
 
-    private static List<Cell> create() {
-        List<Cell> cells = new ArrayList<>();
-        for (int y=0;y<HEIGHT;y++) for (int z=0;z<SIZE;z++) {
-            if (LAYERS[y][z].length()!=SIZE) throw new IllegalStateException("Bad Heart row");
-            for (int x=0;x<SIZE;x++) {
-                char symbol=LAYERS[y][z].charAt(x);
-                if (symbol!='.') cells.add(new Cell(x,y,z,block(symbol,y),symbol=='C'));
-            }
-        }
-        return List.copyOf(cells);
-    }
-
-    private static BlockState block(char symbol,int y) {
-        return switch(symbol) {
-            case 'S' -> Blocks.COBBLESTONE.defaultBlockState();
-            case 'P' -> Blocks.OAK_PLANKS.defaultBlockState();
-            case 'C' -> Blocks.OAK_PLANKS.defaultBlockState(); // lazy physical core marker
-            case 'L' -> Blocks.OAK_LOG.defaultBlockState();
-            case 'W' -> Blocks.GLASS_PANE.defaultBlockState();
-            case 'D' -> Blocks.OAK_DOOR.defaultBlockState()
-                    .setValue(DoorBlock.FACING,Direction.SOUTH)
-                    .setValue(DoorBlock.HALF,y==1?DoubleBlockHalf.LOWER:DoubleBlockHalf.UPPER);
-            case '<' -> Blocks.SPRUCE_STAIRS.defaultBlockState()
-                    .setValue(StairBlock.FACING,Direction.WEST);
-            case '>' -> Blocks.SPRUCE_STAIRS.defaultBlockState()
-                    .setValue(StairBlock.FACING,Direction.EAST);
-            case '=' -> Blocks.SPRUCE_SLAB.defaultBlockState()
-                    .setValue(SlabBlock.TYPE,SlabType.TOP);
-            default -> throw new IllegalArgumentException("Unknown symbol: "+symbol);
-        };
-    }
+    // v1 stays identical for existing projects. The source of each block and
+    // every property is now the same JSON format produced from user NBT.
+    private static final CampBlueprintCatalog.Definition DEFINITION=
+            CampBlueprintCatalog.loadBundled(LEGACY_BLUEPRINT_ID);
+    private static final List<Cell> CELLS=DEFINITION.cells().stream()
+            .map(c -> new Cell(c.x(),c.y(),c.z(),c.state(),
+                    c.x()==3 && c.y()==0 && c.z()==3))
+            .toList();
 
     public static List<Cell> cells() { return CELLS; }
 
