@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 
 /** Read-only server snapshot of the owned Camp Heart construction placement. */
 public record HeartPlacementResponse(BlockPos core,int shiftX,int shiftY,int shiftZ,
-        int turns,boolean confirmed) implements CustomPacketPayload {
+        int turns,boolean confirmed,String blueprintId) implements CustomPacketPayload {
     public static final Type<HeartPlacementResponse> TYPE=new Type<>(
             Identifier.fromNamespaceAndPath(CivCraftReborn.MOD_ID,"heart_placement"));
     public static final StreamCodec<RegistryFriendlyByteBuf,HeartPlacementResponse> CODEC=
@@ -21,6 +21,7 @@ public record HeartPlacementResponse(BlockPos core,int shiftX,int shiftY,int shi
                     ByteBufCodecs.INT,HeartPlacementResponse::shiftZ,
                     ByteBufCodecs.INT,HeartPlacementResponse::turns,
                     ByteBufCodecs.BOOL,HeartPlacementResponse::confirmed,
+                    ByteBufCodecs.STRING_UTF8,HeartPlacementResponse::blueprintId,
                     HeartPlacementResponse::new);
     @Override public Type<? extends CustomPacketPayload> type(){return TYPE;}
 }
