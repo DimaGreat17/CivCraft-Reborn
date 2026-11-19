@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import dev.civcraftreborn.settlement.HeartSiteRequest;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 /**
  * Separate management surface for the player's camp. All mutations are
@@ -15,6 +17,7 @@ public final class CivCraftManagementScreen extends Screen {
     private boolean civilizationTab;
     private Button foundingButton;
     private Button progressLabel;
+    private int progressRefreshTicks;
 
     public CivCraftManagementScreen(Screen parent) {
         super(Component.literal("CivCraft — управление"));
@@ -23,6 +26,8 @@ public final class CivCraftManagementScreen extends Screen {
 
     @Override
     protected void init() {
+        progressRefreshTicks=0;
+        requestProgress();
         int left = width / 2 - 140;
         int top = Math.max(30, height / 2 - 100);
 
@@ -73,9 +78,20 @@ public final class CivCraftManagementScreen extends Screen {
                 b -> onClose()).bounds(left, top + 192, 280, 20).build());
     }
 
+    private void requestProgress() {
+        var client=Minecraft.getInstance();
+        if(client.getConnection()!=null && client.level!=null)
+            ClientPlayNetworking.send(new HeartSiteRequest());
+    }
+
     @Override
     public void tick() {
         super.tick();
+        // This is a read-only server query, never a client-computed completion.
+        if(!civilizationTab && ++progressRefreshTicks>=40) {
+            progressRefreshTicks=0;
+            requestProgress();
+        }
         if(foundingButton!=null)
             foundingButton.active=CampBlueprintProjection.heartReadyToFound();
         if(progressLabel!=null)
