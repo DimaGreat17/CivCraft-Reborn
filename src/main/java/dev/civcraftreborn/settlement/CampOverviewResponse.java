@@ -14,19 +14,25 @@ public record CampOverviewResponse(boolean exists,int stage,int residents,
     public static final Type<CampOverviewResponse> TYPE=new Type<>(
             Identifier.fromNamespaceAndPath(CivCraftReborn.MOD_ID,"camp_overview"));
     public static final StreamCodec<RegistryFriendlyByteBuf,CampOverviewResponse> CODEC=
-            StreamCodec.composite(
-                    ByteBufCodecs.BOOL,CampOverviewResponse::exists,
-                    ByteBufCodecs.INT,CampOverviewResponse::stage,
-                    ByteBufCodecs.INT,CampOverviewResponse::residents,
-                    ByteBufCodecs.INT,CampOverviewResponse::rooms,
-                    ByteBufCodecs.INT,CampOverviewResponse::beds,
-                    ByteBufCodecs.INT,CampOverviewResponse::food,
-                    ByteBufCodecs.INT,CampOverviewResponse::storages,
-                    ByteBufCodecs.BOOL,CampOverviewResponse::workshop,
-                    ByteBufCodecs.BOOL,CampOverviewResponse::farm,
-                    ByteBufCodecs.BOOL,CampOverviewResponse::complete,
-                    CampOverviewResponse::new);
-
+            new StreamCodec<>() {
+                @Override public CampOverviewResponse decode(RegistryFriendlyByteBuf buf) {
+                    return new CampOverviewResponse(buf.readBoolean(),buf.readInt(),buf.readInt(),
+                            buf.readInt(),buf.readInt(),buf.readInt(),buf.readInt(),
+                            buf.readBoolean(),buf.readBoolean(),buf.readBoolean());
+                }
+                @Override public void encode(RegistryFriendlyByteBuf buf,CampOverviewResponse value) {
+                    buf.writeBoolean(value.exists());
+                    buf.writeInt(value.stage());
+                    buf.writeInt(value.residents());
+                    buf.writeInt(value.rooms());
+                    buf.writeInt(value.beds());
+                    buf.writeInt(value.food());
+                    buf.writeInt(value.storages());
+                    buf.writeBoolean(value.workshop());
+                    buf.writeBoolean(value.farm());
+                    buf.writeBoolean(value.complete());
+                }
+            };
     @Override public Type<? extends CustomPacketPayload> type(){return TYPE;}
     public static CampOverviewResponse absent(){
         return new CampOverviewResponse(false,-1,0,0,0,0,0,false,false,false);
