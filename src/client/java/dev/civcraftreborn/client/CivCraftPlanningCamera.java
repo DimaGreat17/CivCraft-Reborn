@@ -39,7 +39,7 @@ public final class CivCraftPlanningCamera {
         zoomIn=key("planning_zoom_in",InputConstants.KEY_EQUAL,category);
         zoomOut=key("planning_zoom_out",InputConstants.KEY_MINUS,category);
         turnLeft=key("planning_rotate_left",InputConstants.KEY_Z,category);
-        turnRight=key("planning_rotate_right",InputConstants.KEY_E,category);
+        turnRight=key("planning_rotate_right",InputConstants.KEY_X,category);
         ClientTickEvents.END_CLIENT_TICK.register(CivCraftPlanningCamera::tick);
     }
 
