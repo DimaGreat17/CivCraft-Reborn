@@ -37,7 +37,7 @@ public final class CampHeartTemplate {
         {"..<=>..", "..<=>..", "..<=>..", "..<=>..", "..<=>..", "..<=>..", "..<=>.."}
     };
 
-    public record Cell(int x,int y,int z,BlockState state) {}
+    public record Cell(int x,int y,int z,BlockState state,boolean coreMarker) {}
     public record Check(int matched,int total,boolean loaded) {
         public boolean complete() { return loaded && matched == total; }
     }
@@ -49,7 +49,7 @@ public final class CampHeartTemplate {
             if (LAYERS[y][z].length()!=SIZE) throw new IllegalStateException("Bad Heart row");
             for (int x=0;x<SIZE;x++) {
                 char symbol=LAYERS[y][z].charAt(x);
-                if (symbol!='.') cells.add(new Cell(x,y,z,block(symbol,y)));
+                if (symbol!='.') cells.add(new Cell(x,y,z,block(symbol,y),symbol=='C'));
             }
         }
         return List.copyOf(cells);
@@ -59,7 +59,7 @@ public final class CampHeartTemplate {
         return switch(symbol) {
             case 'S' -> Blocks.COBBLESTONE.defaultBlockState();
             case 'P' -> Blocks.OAK_PLANKS.defaultBlockState();
-            case 'C' -> CampBlocks.CAMP_CORE.defaultBlockState();
+            case 'C' -> Blocks.OAK_PLANKS.defaultBlockState(); // lazy physical core marker
             case 'L' -> Blocks.OAK_LOG.defaultBlockState();
             case 'W' -> Blocks.GLASS_PANE.defaultBlockState();
             case 'D' -> Blocks.OAK_DOOR.defaultBlockState()
@@ -93,7 +93,6 @@ public final class CampHeartTemplate {
         BlockState state=cell.state();
         BlockPos target=position(core,shiftX,shiftZ,turns,cell);
         if(target.equals(core)) return CampBlocks.CAMP_CORE.defaultBlockState();
-        if(state.is(CampBlocks.CAMP_CORE)) state=Blocks.OAK_PLANKS.defaultBlockState();
         if(state.hasProperty(HorizontalDirectionalBlock.FACING)) {
             state=state.setValue(HorizontalDirectionalBlock.FACING,
                     rotate(state.getValue(HorizontalDirectionalBlock.FACING),turns));
