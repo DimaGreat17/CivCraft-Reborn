@@ -62,15 +62,23 @@ public final class CampCommands {
             var finished = CampHeartTemplate.inspect((net.minecraft.server.level.ServerLevel)level,
                     pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             if (!finished.complete()) {
-                return fail(source, "Complete the physical Camp Heart building first: "
+                var problems=CampHeartTemplate.firstMissing((net.minecraft.server.level.ServerLevel)level,
+                        pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),1);
+                String hint=problems.isEmpty()?"":" First mismatch at "+
+                        problems.getFirst().pos().toShortString()+": expected="+
+                        problems.getFirst().expected()+" actual="+problems.getFirst().actual();
+                return fail(source, "Camp Heart incomplete: "
                         + finished.matched() + "/" + finished.total()
-                        + (finished.loaded() ? " blocks." : " (unloaded chunks)."));
+                        + (finished.loaded() ? "." : " (unloaded chunks).")
+                        + hint + " Run /civcraft camp heart inspect for more details.");
             }
             BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ())
                     .offset(3,0,3);
             boolean withinBorder = level.getWorldBorder().isWithinBounds(buildingCenter);
-            boolean supported = level.hasChunkAt(buildingCenter)
-                    && level.getBlockState(buildingCenter.below()).isSolid();
+            // A fully verified 162-cell structure is already physical.
+            // Requiring extra solid terrain below its center would reject
+            // legitimate raised buildings even when every required cell matches.
+            boolean supported = finished.complete();
             if (!CampRules.canFoundAt(store.all(), dimension,
                     CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ()).getX()+3,
                     CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ()).getZ()+3,
