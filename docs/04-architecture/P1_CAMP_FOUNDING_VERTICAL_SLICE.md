@@ -55,7 +55,7 @@
 ### D — complete and found
 
 - Only when all compulsory physical positions/room and control-block criteria pass does the structure enter `PHYSICALLY_COMPLETE`.
-- The UI now exposes a separate **«Основать лагерь»** action. Server verifies unchanged building/rights/world restrictions and creates a persistent CampId, owner membership and initial CAMP stage atomically. Prevent duplicate founding by retry.
+- The **global Camp / Civilization menu** is opened by a dedicated on-screen button (and a configurable keybind on desktop), never by right-clicking the Camp Heart block. This menu exposes a separate **«Основать лагерь»** action. Server verifies unchanged building/rights/world restrictions and creates a persistent CampId, owner membership and initial CAMP stage atomically. Prevent duplicate founding by retry.
 - Then `ACTIVE` enables camp management, naming, building catalog and recruitment prerequisites. The founding action should be idempotent; interrupted save/restart must not duplicate CampId.
 - First inhabitants are not created out of thin air; invitations/recruitment require real eligible residents and actual housing conditions.
 - Destruction of required parts of an ACTIVE Heart marks it damaged and temporarily suspends dependent functions, with a recovery path after rebuilding. Existing CampId persists; do not automatically delete a civilization or orphan citizens due to one missing block.
@@ -88,7 +88,7 @@
 6. Save/restart: confirmed placement, per-block construction and ownership survive.
 7. Complete all physical structure blocks; check status becomes physically complete.
 8. Use «Основать лагерь», choose name, confirm active CAMP identity; trying before complete is rejected.
-9. Open real management UI; see camp identity and new building options. Try to recruit NPC: no free residents, actual housing and existing NPC are still required.
+9. Open real management UI via its dedicated HUD button; see camp identity and new building options. Try to recruit NPC: no free residents, actual housing and existing NPC are still required.
 10. Break a compulsory Heart block: diagnostics flag damaged; restore block: active functions resume without new CampId or duplication.
 11. Test 2-player authorization, invalid dimensions, unloaded chunks, dedicated-server bootstrap, actual client renders and known STORAGE schematic regression.
 
@@ -108,3 +108,11 @@
 - Obsidian placement reward / exploit behavior; no silent replacement of existing rule.
 - Naming flow and founding cost, initial claim radius / 96-block rule, joining/ownership and claim boundaries.
 - Whether to permit prebuilt matching world blocks to count; recommendation above says yes only inside approved footprint with full permissions.
+
+## Confirmed UI access decision (2026-11-19)
+
+- The overarching **Camp / Civilization menu opens from a dedicated HUD button**. On desktop a rebindable hotkey may provide the same action. Access must not depend on proximity to the Camp Heart, its visibility or its right-click interaction.
+- Before founding, that menu presents available founding-site / construction status and locked civilization controls; after founding, it shows authorized camp management and progression.
+- The Camp Heart block remains the physical structure anchor, not a required UI trigger. Construction-site details and blueprint controls can be entered from the global menu.
+- The server still validates ownership, membership, distance-sensitive physical construction actions and permissions; opening a screen does not grant authority.
+- Prior prototype UI activated from Camp Core right-click is **superseded** and must be refactored during implementation.
