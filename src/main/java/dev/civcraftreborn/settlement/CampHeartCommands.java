@@ -84,8 +84,10 @@ public final class CampHeartCommands {
             int z=dz==null?old.shiftZ():dz;
             int turns=rotation==null?old.turns():rotation;
             CampHeartSite updated=old.withPlacement(x,z,turns);
-            if(!clear((ServerLevel)player.level(),updated))
+            if(!clear((ServerLevel)player.level(),updated)) {
+                sync(player,old);
                 return fail(source,"Blocked, unsupported or unloaded footprint; approach the proposed site and clear/level it");
+            }
             CampHeartSavedData.get(source.getServer()).replace(old,updated);
             sync(player,updated);
             source.sendSuccess(()->Component.literal("Camp Heart preview: shift ("
