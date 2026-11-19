@@ -109,17 +109,21 @@ public final class CampHeartTemplate {
         return dir;
     }
 
+    /**
+     * Compare all player-controlled orientation/placement properties, but
+     * ignore neighbor-derived connections and transient redstone/open states.
+     * Vanilla stairs shape and glass-pane arms are computed by Minecraft and
+     * must not block a valid structure from reaching 100%.
+     */
     public static boolean matching(BlockState actual,BlockState required) {
         if(!actual.is(required.getBlock()))return false;
-        // Glass panes receive derived neighbour connection properties; allow
-        // those to vary, but validate directional blocks and doors exactly.
-        if(required.hasProperty(HorizontalDirectionalBlock.FACING)
-                &&!actual.getValue(HorizontalDirectionalBlock.FACING)
-                    .equals(required.getValue(HorizontalDirectionalBlock.FACING)))return false;
-        if(required.hasProperty(DoorBlock.HALF)
-                &&actual.getValue(DoorBlock.HALF)!=required.getValue(DoorBlock.HALF))return false;
-        if(required.hasProperty(SlabBlock.TYPE)
-                &&actual.getValue(SlabBlock.TYPE)!=required.getValue(SlabBlock.TYPE))return false;
+        var placementProperties=java.util.Set.of(
+                "facing","axis","half","type","hinge","face","rotation","part");
+        for(var property:required.getProperties()) {
+            if(placementProperties.contains(property.getName())
+                    &&!actual.getValue(property).equals(required.getValue(property)))
+                return false;
+        }
         return true;
     }
 
