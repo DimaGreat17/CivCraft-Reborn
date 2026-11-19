@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
@@ -74,9 +74,9 @@ public final class CampMigrationCommands {
             }
             if(entry==null)return fail(source,"No loaded, unobstructed ground for migrant arrival.");
 
-            Villager villager=EntityType.VILLAGER.create(player.level(),EntitySpawnReason.EVENT);
+            Villager villager=EntityTypes.VILLAGER.create(player.level(),EntitySpawnReason.EVENT);
             if(villager==null)return fail(source,"Could not create migrant entity.");
-            villager.moveTo(entry.getX()+0.5,entry.getY(),entry.getZ()+0.5,0.0f,0.0f);
+            villager.setPos(entry.getX()+0.5,entry.getY(),entry.getZ()+0.5);
             villager.setPersistenceRequired();
             if(!player.level().addFreshEntity(villager))
                 return fail(source,"Migrant arrival was rejected by the world.");
