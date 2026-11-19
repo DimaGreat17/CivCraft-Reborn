@@ -1,0 +1,62 @@
+{
+  "schema": "civcraft_reborn:blueprint/v1",
+  "id": "test_small",
+  "size": [
+    3,
+    2,
+    5
+  ],
+  "required_cells": 4,
+  "ignored_air_cells": 26,
+  "cells": [
+    {
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "state": {
+        "id": "minecraft:cobblestone",
+        "properties": {}
+      }
+    },
+    {
+      "pos": [
+        1,
+        0,
+        2
+      ],
+      "state": {
+        "id": "minecraft:oak_planks",
+        "properties": {}
+      }
+    },
+    {
+      "pos": [
+        2,
+        1,
+        4
+      ],
+      "state": {
+        "id": "minecraft:oak_log",
+        "properties": {
+          "axis": "x"
+        }
+      }
+    },
+    {
+      "pos": [
+        1,
+        1,
+        4
+      ],
+      "state": {
+        "id": "minecraft:oak_stairs",
+        "properties": {
+          "facing": "north",
+          "half": "top"
+        }
+      }
+    }
+  ]
+}
