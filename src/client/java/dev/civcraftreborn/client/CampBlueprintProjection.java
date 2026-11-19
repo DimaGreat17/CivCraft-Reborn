@@ -241,6 +241,22 @@ public final class CampBlueprintProjection {
             if(pos.equals(coreAnchor))return real.is(dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE);
             if(step.block()==dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE)
                 return real.is(Blocks.OAK_PLANKS);
+            if(step.block()==Blocks.OAK_DOOR) {
+                return real.is(Blocks.OAK_DOOR)
+                        && real.getValue(net.minecraft.world.level.block.DoorBlock.HALF)
+                        ==(step.dy()==1
+                                ?net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER
+                                :net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER);
+            }
+            if(step.block()==Blocks.SPRUCE_STAIRS) {
+                var direction=step.dx()==0?net.minecraft.core.Direction.WEST:
+                        net.minecraft.core.Direction.EAST;
+                // The original left/right slopes are at X=0,1,2 / 4,5,6.
+                if(step.dx()>=4) direction=net.minecraft.core.Direction.EAST;
+                for(int i=0;i<rotation;i++)direction=direction.getClockWise();
+                return real.is(Blocks.SPRUCE_STAIRS)
+                        && real.getValue(net.minecraft.world.level.block.StairBlock.FACING)==direction;
+            }
             return real.is(step.block());
         }
         return step.matchesAt(client.level,pos);
@@ -258,6 +274,8 @@ public final class CampBlueprintProjection {
         Map<String, int[]> amounts = new LinkedHashMap<>();
         Map<String, Count> materials = new LinkedHashMap<>();
         for (Step step : steps(plan)) {
+            // A vanilla door consumes one item but occupies two block states.
+            if(plan==Plan.HEART&&step.block()==Blocks.OAK_DOOR&&step.dy()==2)continue;
             String key = step.anyBed() ? "ANY_BED" : step.block().getName().getString();
             amounts.computeIfAbsent(key, k -> new int[2])[0]++;
             materials.putIfAbsent(key, new Count(step.block(), step.anyBed(),
@@ -267,7 +285,10 @@ public final class CampBlueprintProjection {
                                     : step.block() == Blocks.WATER
                                             ? "Ведро воды"
                                             : step.block().getName().getString()));
-            if (matches(plan, step)) amounts.get(key)[1]++;
+            boolean built=matches(plan,step);
+            if(plan==Plan.HEART&&step.block()==Blocks.OAK_DOOR&&step.dy()==1)
+                built=built&&matches(plan,new Step(step.dx(),2,step.dz(),Blocks.OAK_DOOR));
+            if (built) amounts.get(key)[1]++;
         }
         Minecraft client = Minecraft.getInstance();
         List<MaterialLine> lines = new ArrayList<>();
