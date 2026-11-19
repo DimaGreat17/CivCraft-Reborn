@@ -59,10 +59,10 @@ public final class CampCommands {
             if (!site.confirmed()) {
                 return fail(source, "Confirm your Camp Heart placement before building.");
             }
-            var finished = CampHeartTemplate.inspect((net.minecraft.server.level.ServerLevel)level,
+            var finished = CampHeartTemplate.inspect(site.blueprintId(),(net.minecraft.server.level.ServerLevel)level,
                     pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             if (!finished.complete()) {
-                var problems=CampHeartTemplate.firstMissing((net.minecraft.server.level.ServerLevel)level,
+                var problems=CampHeartTemplate.firstMissing(site.blueprintId(),(net.minecraft.server.level.ServerLevel)level,
                         pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),1);
                 String hint=problems.isEmpty()?"":" First mismatch at "+
                         problems.getFirst().pos().toShortString()+": expected="+
@@ -72,8 +72,12 @@ public final class CampCommands {
                         + (finished.loaded() ? "." : " (unloaded chunks).")
                         + hint + " Run /civcraft camp heart inspect for more details.");
             }
-            BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ())
-                    .offset(3,0,3);
+            var blueprint=CampHeartTemplate.definition(site.blueprintId());
+            var origin=CampHeartTemplate.origin(site.blueprintId(),pos,
+                    site.shiftX(),site.shiftY(),site.shiftZ());
+            int centerX=(site.turns()%2==0?blueprint.width():blueprint.depth())/2;
+            int centerZ=(site.turns()%2==0?blueprint.depth():blueprint.width())/2;
+            BlockPos buildingCenter=origin.offset(centerX,0,centerZ);
             boolean withinBorder = level.getWorldBorder().isWithinBounds(buildingCenter);
             // A fully verified 162-cell structure is already physical.
             // Requiring extra solid terrain below its center would reject
