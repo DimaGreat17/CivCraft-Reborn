@@ -64,6 +64,26 @@ final class CampHeartTemplateTest {
     }
 
     @Test
+    void verticalBlueprintPlacementAndPersistence() {
+        BlockPos foundation=new BlockPos(10,72,20);
+        var owner=UUID.randomUUID();
+        var pending=CampHeartSite.placed(owner,"minecraft:overworld",foundation);
+        var moved=pending.withPlacement(20,5,-12,1);
+        assertEquals(5,moved.shiftY());
+        var centerCell=CampHeartTemplate.cells().stream()
+                .filter(CampHeartTemplate.Cell::coreMarker).findFirst().orElseThrow();
+        assertEquals(foundation.offset(20,5,-12),
+                CampHeartTemplate.position(foundation,20,5,-12,1,centerCell));
+        assertEquals(foundation.offset(17,5,-15),
+                CampHeartTemplate.origin(foundation,20,5,-12));
+        assertEquals(5,moved.confirm().shiftY());
+        assertThrows(IllegalArgumentException.class,
+                ()->pending.withPlacement(20,65,-12,0));
+        assertThrows(IllegalArgumentException.class,
+                ()->pending.withPlacement(20,-65,-12,0));
+    }
+
+    @Test
     void mismatchedTerrainMustBeClearedBeforeCompletion() {
         var required=Blocks.OAK_PLANKS.defaultBlockState();
         // Occupied terrain is legal at planning time, but does not complete
