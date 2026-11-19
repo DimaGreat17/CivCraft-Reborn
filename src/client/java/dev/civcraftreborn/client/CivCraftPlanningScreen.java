@@ -98,8 +98,8 @@ public final class CivCraftPlanningScreen extends Screen {
             double[] delta=CivCraftPlanningCamera.dragToWorld(dragX,dragY);
             shiftBlueprint(delta[0],delta[1]);
         } else if(event.button()==3) { // SDL3 right button
-            double[] delta=CivCraftPlanningCamera.dragToWorld(dragX,dragY);
-            CivCraftPlanningCamera.pan(-delta[0],-delta[1]);
+            double blocksPerPixel=Math.max(0.02,CivCraftPlanningCamera.distance()/580.0);
+            CivCraftPlanningCamera.pan(-dragX*blocksPerPixel,dragY*blocksPerPixel);
         }
         return true;
     }
