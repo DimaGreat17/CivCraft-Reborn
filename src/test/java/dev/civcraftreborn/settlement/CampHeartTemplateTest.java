@@ -22,6 +22,20 @@ final class CampHeartTemplateTest {
     }
 
     @Test
+    void legacyBlueprintResourceIsSharedAndPreservesOriginalStructure() {
+        var definition=CampBlueprintCatalog.loadBundled("camp_heart_v1");
+        assertEquals(7,definition.width());
+        assertEquals(6,definition.height());
+        assertEquals(7,definition.depth());
+        assertEquals(162,definition.cells().size());
+        assertEquals(definition.cells().size(),CampHeartTemplate.cells().size());
+        var cells=CampHeartTemplate.cells();
+        assertEquals(1,cells.stream().filter(CampHeartTemplate.Cell::coreMarker).count());
+        assertEquals(2,cells.stream().filter(cell->
+                cell.state().is(Blocks.OAK_DOOR)).count());
+    }
+
+    @Test
     void exactBuildingContains162NonOverlappingPhysicalCells(){
         var cells=CampHeartTemplate.cells();
         assertEquals(162,cells.size());
