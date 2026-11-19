@@ -80,6 +80,7 @@ public final class CivCraftPlanningScreen extends Screen {
         else if(key==InputConstants.KEY_LEFT)CivCraftPlanningCamera.pan(-pan,0);
         else if(key==InputConstants.KEY_Z)CivCraftPlanningCamera.rotate(-15f);
         else if(key==InputConstants.KEY_X)CivCraftPlanningCamera.rotate(15f);
+        else if(key==InputConstants.KEY_R)rotateBlueprint();
         else if(key==InputConstants.KEY_MINUS)CivCraftPlanningCamera.zoom(2);
         else if(key==61)CivCraftPlanningCamera.zoom(-2); // SDL '=' scan code
         else if(key==InputConstants.KEY_G) {
@@ -90,6 +91,21 @@ public final class CivCraftPlanningScreen extends Screen {
         // Explicitly swallow W/A/S/D, jump, attack/use hotkeys, etc. while
         // the planner overlay is active. The player stays put.
         return true;
+    }
+
+    private void rotateBlueprint() {
+        if(CampBlueprintProjection.selected()==null)return;
+        // Finish any pending drag before rotating, so server commands
+        // are applied in their original placement order.
+        sendPosition();
+        dragRemainderX=dragRemainderZ=0;
+        if(!CampBlueprintProjection.rotate(1))return;
+        if(CampBlueprintProjection.selected()==CampBlueprintProjection.Plan.HEART) {
+            Minecraft client=Minecraft.getInstance();
+            if(client.getConnection()!=null)
+                client.getConnection().sendCommand("civcraft camp heart rotate "
+                        +CampBlueprintProjection.rotationDegrees()/90);
+        }
     }
 
     @Override
