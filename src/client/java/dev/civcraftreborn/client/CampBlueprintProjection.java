@@ -94,6 +94,9 @@ public final class CampBlueprintProjection {
     private static int offsetY = 0;
     private static int offsetZ = 0;
     private static boolean heartConfirmed;
+    private static int heartMatched=-1;
+    private static int heartTotal=0;
+    private static boolean heartChunksLoaded=false;
     private static int rotation = 0;
 
     private CampBlueprintProjection() {}
@@ -113,6 +116,7 @@ public final class CampBlueprintProjection {
         offsetZ = 0;
         rotation = 0;
         heartConfirmed = false;
+        clearHeartProgress();
     }
 
     public static void setHeartPlacement(BlockPos core,int shiftX,int shiftY,int shiftZ,
@@ -125,6 +129,32 @@ public final class CampBlueprintProjection {
         rotation=turns;
         heartConfirmed=confirmed;
     }
+    private static void clearHeartProgress() {
+        heartMatched=-1;
+        heartTotal=0;
+        heartChunksLoaded=false;
+    }
+
+    public static void setHeartProgress(BlockPos core,int matched,int total,boolean loaded) {
+        if(coreAnchor==null||!coreAnchor.equals(core))return;
+        if(total<1 || matched<0 || matched>total)return;
+        heartMatched=matched;
+        heartTotal=total;
+        heartChunksLoaded=loaded;
+    }
+    public static boolean heartReadyToFound() {
+        return heartConfirmed && heartChunksLoaded && heartTotal>0
+                && heartMatched==heartTotal && serverStage==-1;
+    }
+    public static String heartProgressLabel() {
+        if(coreAnchor==null)return "Нет активной стройки";
+        if(heartMatched<0)return "Проверяем состояние постройки…";
+        if(!heartConfirmed)return "Площадка не подтверждена";
+        if(!heartChunksLoaded)return "Не все чанки постройки загружены";
+        return heartMatched+"/"+heartTotal+
+                (heartMatched==heartTotal?" — ЗАВЕРШЕНО":" — строительство");
+    }
+
     public static boolean heartConfirmed(){return heartConfirmed;}
 
     public static void setServerStage(BlockPos core, int stage) {
@@ -169,6 +199,7 @@ public final class CampBlueprintProjection {
         offsetZ=0;
         rotation=0;
         heartConfirmed=false;
+        clearHeartProgress();
     }
     public static Plan selected() { return activePlan; }
     public static BlockPos anchor() { return coreAnchor; }
