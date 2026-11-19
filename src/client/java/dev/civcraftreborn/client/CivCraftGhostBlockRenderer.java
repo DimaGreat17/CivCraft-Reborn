@@ -28,10 +28,8 @@ import org.joml.Matrix4fc;
 public final class CivCraftGhostBlockRenderer {
     private static final int MAX_GHOST_BLOCKS = 256;
     private static final float INSET = 0.018f;
-    private static final float RED = 0.19f;
-    private static final float GREEN = 0.81f;
-    private static final float BLUE = 1.0f;
-    private static final float ALPHA = 0.30f;
+    private static final float ALPHA = 0.34f;
+    private record Ghost(BlockPos pos, boolean obstructed) {}
 
     private CivCraftGhostBlockRenderer() {}
 
@@ -52,14 +50,17 @@ public final class CivCraftGhostBlockRenderer {
 
         // World data is read while Minecraft is collecting submits, never
         // from the deferred GPU execution callback.
-        List<BlockPos> missing = new ArrayList<>();
+        List<Ghost> missing = new ArrayList<>();
         for (CampBlueprintProjection.Step step : CampBlueprintProjection.steps(plan)) {
             BlockPos position = CampBlueprintProjection.worldPosition(plan, step);
             if (position == null || !client.level.hasChunkAt(position)
                     || CampBlueprintProjection.matches(plan, step)) {
                 continue;
             }
-            missing.add(position.immutable());
+            // Red marks occupied incorrect cells that the player must clear.
+            // Cyan marks empty positions waiting for the required block.
+            boolean obstructed=!client.level.getBlockState(position).isAir();
+            missing.add(new Ghost(position.immutable(),obstructed));
             if (missing.size() >= MAX_GHOST_BLOCKS) break;
         }
         if (missing.isEmpty()) return;
@@ -72,36 +73,43 @@ public final class CivCraftGhostBlockRenderer {
         // submitCustomGeometry records the immutable geometry callback. The
         // vanilla feature dispatcher handles buffer upload and render-pass
         // lifetime; do NOT upload manually inside COLLECT_SUBMITS or render.
-        List<BlockPos> positions = List.copyOf(missing);
+        List<Ghost> positions = List.copyOf(missing);
         context.submitNodeCollector().submitCustomGeometry(
                 poseStack, RenderTypes.debugFilledBox(), (pose, vertices) -> {
                     Matrix4fc matrix = pose.pose();
-                    for (BlockPos position : positions) {
-                        cube(vertices, matrix, position.getX(), position.getY(), position.getZ());
+                    for (Ghost ghost : positions) {
+                        BlockPos position=ghost.pos();
+                        cube(vertices, matrix, position.getX(), position.getY(),
+                                position.getZ(),ghost.obstructed());
                     }
                 });
         poseStack.popPose();
     }
 
-    private static void cube(VertexConsumer vertices, Matrix4fc matrix, int x, int y, int z) {
+    private static void cube(VertexConsumer vertices, Matrix4fc matrix,
+            int x, int y, int z,boolean obstructed) {
         float x0=x+INSET, y0=y+INSET, z0=z+INSET;
         float x1=x+1-INSET, y1=y+1-INSET, z1=z+1-INSET;
-        // Six complete faces show a full semitransparent 3D block, not points.
-        face(vertices,matrix,x0,y0,z1,x1,y0,z1,x1,y1,z1,x0,y1,z1);
-        face(vertices,matrix,x1,y0,z0,x0,y0,z0,x0,y1,z0,x1,y1,z0);
-        face(vertices,matrix,x0,y0,z0,x0,y0,z1,x0,y1,z1,x0,y1,z0);
-        face(vertices,matrix,x1,y0,z1,x1,y0,z0,x1,y1,z0,x1,y1,z1);
-        face(vertices,matrix,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0);
-        face(vertices,matrix,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1);
+        // Six full ghost faces; red cells are occupied by incorrect terrain.
+        float red=obstructed?1.0f:0.19f;
+        float green=obstructed?0.18f:0.81f;
+        float blue=obstructed?0.14f:1.0f;
+        face(vertices,matrix,red,green,blue,x0,y0,z1,x1,y0,z1,x1,y1,z1,x0,y1,z1);
+        face(vertices,matrix,red,green,blue,x1,y0,z0,x0,y0,z0,x0,y1,z0,x1,y1,z0);
+        face(vertices,matrix,red,green,blue,x0,y0,z0,x0,y0,z1,x0,y1,z1,x0,y1,z0);
+        face(vertices,matrix,red,green,blue,x1,y0,z1,x1,y0,z0,x1,y1,z0,x1,y1,z1);
+        face(vertices,matrix,red,green,blue,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0);
+        face(vertices,matrix,red,green,blue,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1);
     }
 
     private static void face(VertexConsumer vertices, Matrix4fc matrix,
+            float red,float green,float blue,
             float ax,float ay,float az,float bx,float by,float bz,
             float cx,float cy,float cz,float dx,float dy,float dz) {
-        vertices.addVertex(matrix,ax,ay,az).setColor(RED,GREEN,BLUE,ALPHA);
-        vertices.addVertex(matrix,bx,by,bz).setColor(RED,GREEN,BLUE,ALPHA);
-        vertices.addVertex(matrix,cx,cy,cz).setColor(RED,GREEN,BLUE,ALPHA);
-        vertices.addVertex(matrix,dx,dy,dz).setColor(RED,GREEN,BLUE,ALPHA);
+        vertices.addVertex(matrix,ax,ay,az).setColor(red,green,blue,ALPHA);
+        vertices.addVertex(matrix,bx,by,bz).setColor(red,green,blue,ALPHA);
+        vertices.addVertex(matrix,cx,cy,cz).setColor(red,green,blue,ALPHA);
+        vertices.addVertex(matrix,dx,dy,dz).setColor(red,green,blue,ALPHA);
     }
 
     /** Kept for backward-compatible GameRenderer close mixin. No GPU-owned buffers. */
