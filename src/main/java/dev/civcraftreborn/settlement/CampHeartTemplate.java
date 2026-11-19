@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -100,6 +101,15 @@ public final class CampHeartTemplate {
         if(state.hasProperty(HorizontalDirectionalBlock.FACING)) {
             state=state.setValue(HorizontalDirectionalBlock.FACING,
                     rotate(state.getValue(HorizontalDirectionalBlock.FACING),turns));
+        }
+        // Authored logs and pillars rotate their axis with the whole structure;
+        // otherwise a valid 90-degree placement would never validate.
+        if((turns&1)!=0 && state.hasProperty(RotatedPillarBlock.AXIS)) {
+            Direction.Axis axis=state.getValue(RotatedPillarBlock.AXIS);
+            if(axis==Direction.Axis.X)state=state.setValue(
+                    RotatedPillarBlock.AXIS,Direction.Axis.Z);
+            else if(axis==Direction.Axis.Z)state=state.setValue(
+                    RotatedPillarBlock.AXIS,Direction.Axis.X);
         }
         return state;
     }
