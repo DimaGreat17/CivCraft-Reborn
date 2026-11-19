@@ -84,8 +84,8 @@ public final class CampCommands {
             // legitimate raised buildings even when every required cell matches.
             boolean supported = finished.complete();
             if (!CampRules.canFoundAt(store.all(), dimension,
-                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ()).getX()+3,
-                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ()).getZ()+3,
+                    buildingCenter.getX(),
+                    buildingCenter.getZ(),
                     withinBorder, supported)) {
                 return fail(source, "Invalid site: collision, border, terrain or nearby settlement.");
             }
