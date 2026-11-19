@@ -13,8 +13,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 /**
  * Authoritative player construction-site positioning. All commands require a
- * real owned Camp Heart block and a loaded site. The core remains physically
- * fixed: the proposed 7x7 footprint can shift by up to two blocks around it.
+ * real owned Camp Heart block and a loaded site. The foundation only authorizes starting a project. The finished building may
+ * stand separately at any valid loaded site in a bounded 128-block preview area.
  */
 public final class CampHeartCommands {
     private CampHeartCommands() {}
@@ -24,7 +24,7 @@ public final class CampHeartCommands {
                 .then(Commands.literal("inspect").executes(c->inspect(c.getSource())))
                 .then(Commands.literal("confirm").executes(c->confirm(c.getSource())))
                 .then(Commands.literal("move")
-                        .then(Commands.argument("x",IntegerArgumentType.integer(-2,2))
+                        .then(Commands.argument("x",IntegerArgumentType.integer(-128,128))
                         .then(Commands.argument("z",IntegerArgumentType.integer(-2,2))
                         .executes(c->change(c.getSource(),
                                 IntegerArgumentType.getInteger(c,"x"),
@@ -38,7 +38,10 @@ public final class CampHeartCommands {
     private static CampHeartSite current(ServerPlayer player){
         String dim=player.level().dimension().identifier().toString();
         return CampHeartSavedData.get(player.level().getServer())
-                .nearby(player.getUUID(),dim,player.blockPosition(),24).orElse(null);
+                .ownedBy(player.getUUID(),dim).stream().filter(s ->
+                        CampSavedData.get(player.level().getServer()).ownedBy(player.getUUID()).isEmpty()
+                        || CampSavedData.get(player.level().getServer()).at(dim,s.x(),s.y(),s.z()).isPresent())
+                        .findFirst().orElse(null);
     }
 
     private static boolean validWorld(ServerPlayer player){
@@ -58,6 +61,8 @@ public final class CampHeartCommands {
             var expected=CampHeartTemplate.expected(core,site.shiftX(),
                     site.shiftZ(),site.turns(),cell);
             if(!CampHeartTemplate.matching(state,expected)&&!state.isAir())return false;
+            // The starter foundation must never be swallowed into the building.
+            if(pos.equals(core))return false;
             if(cell.y()==0&&!level.getBlockState(pos.below()).isSolid())return false;
         }
         return true;
@@ -96,8 +101,9 @@ public final class CampHeartCommands {
             if(!clear((ServerLevel)player.level(),site))
                 return fail(source,"Cannot confirm: footprint is obstructed/unsupported/unloaded");
             String dim=site.dimension();
+            BlockPos center=CampHeartTemplate.origin(site.core(),site.shiftX(),site.shiftZ()).offset(3,0,3);
             if(!CampRules.canFoundAt(CampSavedData.get(source.getServer()).all(),dim,
-                    site.x(),site.z(),true,true))
+                    center.getX(),center.getZ(),true,true))
                 return fail(source,"Too close to another settlement");
             CampHeartSavedData.get(source.getServer()).replace(site,site.confirm());
             sync(player,site.confirm());
