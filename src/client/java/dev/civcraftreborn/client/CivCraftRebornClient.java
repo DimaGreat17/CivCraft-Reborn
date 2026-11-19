@@ -55,7 +55,7 @@ public final class CivCraftRebornClient implements ClientModInitializer {
                 (payload, context) -> context.client().execute(() ->
                         CampBlueprintProjection.setHeartPlacement(payload.core(),
                                 payload.shiftX(),payload.shiftY(),payload.shiftZ(),payload.turns(),
-                                payload.confirmed())));
+                                payload.confirmed(),payload.blueprintId())));
 
         ClientPlayNetworking.registerGlobalReceiver(HeartProjectCancelled.TYPE,
                 (payload,context) -> context.client().execute(() -> {
