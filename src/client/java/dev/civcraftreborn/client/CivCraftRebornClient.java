@@ -75,8 +75,10 @@ public final class CivCraftRebornClient implements ClientModInitializer {
             if(d<distance) {nearest=pos.immutable();distance=d;}
         }
         if(nearest!=null){
-            CampBlueprintProjection.useCore(nearest,
-                    client.level.dimension().identifier().toString());
+            if(!nearest.equals(CampBlueprintProjection.anchor())) {
+                CampBlueprintProjection.useCore(nearest,
+                        client.level.dimension().identifier().toString());
+            }
             ClientPlayNetworking.send(new BlueprintStatusRequest(nearest));
         }
     }
