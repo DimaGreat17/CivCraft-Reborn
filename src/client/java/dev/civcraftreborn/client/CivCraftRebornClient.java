@@ -28,6 +28,7 @@ public final class CivCraftRebornClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CampBlueprintProjection.register();
+        CivCraftPlanningCamera.register(CATEGORY);
         CivCraftGhostBlockRenderer.register();
         ClientPlayNetworking.registerGlobalReceiver(BlueprintStatusResponse.TYPE,
                 (payload, context) -> context.client().execute(() -> {
