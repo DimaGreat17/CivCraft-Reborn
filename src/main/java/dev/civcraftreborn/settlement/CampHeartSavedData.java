@@ -41,7 +41,7 @@ public final class CampHeartSavedData extends SavedData {
     public Optional<CampHeartSite> nearby(UUID owner,String dimension,BlockPos player,int maxDistance){
         return ownedBy(owner,dimension).stream()
                 .filter(s->s.core().distSqr(player)<=(long)maxDistance*maxDistance)
-                .min((a,b)->Long.compare(a.core().distSqr(player),b.core().distSqr(player)));
+                .min((a,b)->Double.compare(a.core().distSqr(player),b.core().distSqr(player)));
     }
     public void add(CampHeartSite site){
         if(byCore(site.dimension(),site.core()).isPresent()||
