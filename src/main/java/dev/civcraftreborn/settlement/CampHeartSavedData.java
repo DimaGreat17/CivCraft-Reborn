@@ -31,6 +31,7 @@ public final class CampHeartSavedData extends SavedData {
     public static CampHeartSavedData get(MinecraftServer server){
         return server.overworld().getDataStorage().computeIfAbsent(TYPE);
     }
+    public List<CampHeartSite> all(){ return List.copyOf(sites); }
     public Optional<CampHeartSite> byCore(String dimension,BlockPos core){
         return sites.stream().filter(s->s.dimension().equals(dimension)&&s.core().equals(core)).findFirst();
     }
