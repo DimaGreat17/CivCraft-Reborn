@@ -37,26 +37,27 @@ public final class CivCraftPlacementScreen extends Screen {
         positionInfo.active=false;
 
         Button north = addRenderableWidget(Button.builder(Component.literal("Север -Z"),
-                b -> { CampBlueprintProjection.move(0,-1); refresh(); })
+                b -> shift(0,-1))
                 .bounds(x+105,y+50,100,20).build());
         Button west = addRenderableWidget(Button.builder(Component.literal("Запад -X"),
-                b -> { CampBlueprintProjection.move(-1,0); refresh(); })
+                b -> shift(-1,0))
                 .bounds(x,y+75,100,20).build());
         Button south = addRenderableWidget(Button.builder(Component.literal("Юг +Z"),
-                b -> { CampBlueprintProjection.move(0,1); refresh(); })
+                b -> shift(0,1))
                 .bounds(x+105,y+75,100,20).build());
         Button east = addRenderableWidget(Button.builder(Component.literal("Восток +X"),
-                b -> { CampBlueprintProjection.move(1,0); refresh(); })
+                b -> shift(1,0))
                 .bounds(x+210,y+75,100,20).build());
 
         Button rotateLeft = addRenderableWidget(Button.builder(Component.literal("↶ 90°"),
-                b -> { CampBlueprintProjection.rotate(-1); refresh(); })
+                b -> turn(-1))
                 .bounds(x,y+100,153,20).build());
         Button rotateRight = addRenderableWidget(Button.builder(Component.literal("90° ↷"),
-                b -> { CampBlueprintProjection.rotate(1); refresh(); })
+                b -> turn(1))
                 .bounds(x+157,y+100,153,20).build());
 
-        boolean movable = plan != CampBlueprintProjection.Plan.HEART;
+        boolean movable = plan != CampBlueprintProjection.Plan.HEART
+                || !CampBlueprintProjection.heartConfirmed();
         for (Button button : new Button[]{north,west,south,east,rotateLeft,rotateRight}) {
             button.active = movable;
         }
@@ -68,6 +69,15 @@ public final class CivCraftPlacementScreen extends Screen {
         addRenderableWidget(Button.builder(Component.literal("Показать проекцию в мире"),
                 b -> Minecraft.getInstance().gui.setScreen(null))
                 .bounds(x,y+150,310,20).build());
+        if(plan == CampBlueprintProjection.Plan.HEART) {
+            Button confirm = addRenderableWidget(Button.builder(
+                    Component.literal(CampBlueprintProjection.heartConfirmed()
+                            ? "Площадка подтверждена"
+                            : "Подтвердить площадку лагеря"),
+                    b -> heartCommand("civcraft camp heart confirm"))
+                    .bounds(x,y+176,310,20).build());
+            confirm.active = !CampBlueprintProjection.heartConfirmed();
+        }
 
         Button order = addRenderableWidget(Button.builder(
                 Component.literal("Поручить строительство NPC"),
@@ -86,6 +96,37 @@ public final class CivCraftPlacementScreen extends Screen {
 
         addRenderableWidget(Button.builder(Component.literal("Назад к каталогу"),
                 b -> onClose()).bounds(x,y+226,310,20).build());
+    }
+
+    private void heartCommand(String command) {
+        Minecraft game=Minecraft.getInstance();
+        if(game.getConnection()!=null)game.getConnection().sendCommand(command);
+    }
+
+    private void shift(int x,int z) {
+        if(CampBlueprintProjection.move(x,z)) {
+            if(CampBlueprintProjection.selected()==CampBlueprintProjection.Plan.HEART) {
+                heartCommand("civcraft camp heart move "+
+                        CampBlueprintProjection.offsetX()+" "+
+                        CampBlueprintProjection.offsetZ());
+            }
+            refresh();
+        }
+    }
+
+    private void turn(int turns) {
+        if(CampBlueprintProjection.rotate(turns)) {
+            if(CampBlueprintProjection.selected()==CampBlueprintProjection.Plan.HEART)
+                heartCommand("civcraft camp heart rotate "+
+                        CampBlueprintProjection.rotationDegrees()/90);
+            refresh();
+        }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        refresh();
     }
 
     private void sendBuildingCommand(boolean register) {
