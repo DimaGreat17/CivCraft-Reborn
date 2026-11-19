@@ -226,6 +226,7 @@ def main() -> int:
     p.add_argument("input", type=Path, help="Minecraft Java structure .nbt")
     p.add_argument("--id", required=True, help="Versioned logical blueprint name")
     p.add_argument("--output", required=True, type=Path, help="Staging JSON destination")
+    p.add_argument("--index", type=Path, help="Blueprint index.json to register this variant")
     p.add_argument("--require-air", action="store_true",
                    help="Require explicit air blocks to be cleared inside the structure")
     args = p.parse_args()
@@ -236,6 +237,25 @@ def main() -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(blueprint, ensure_ascii=False, indent=2)+"\n",
                            encoding="utf-8")
+    index_path = args.index
+    if index_path is None and args.output.parent.name == "blueprints" \
+            and args.output.parent.parent.name == "civcraft_reborn":
+        index_path = args.output.parent / "index.json"
+    if index_path is not None:
+        if index_path.exists():
+            manifest = json.loads(index_path.read_text(encoding="utf-8"))
+            if manifest.get("schema") != "civcraft_reborn:blueprint-index/v1" \
+                    or not isinstance(manifest.get("ids"), list):
+                p.error("Invalid blueprint index schema")
+        else:
+            manifest = {"schema": "civcraft_reborn:blueprint-index/v1",
+                        "ids": ["camp_heart_v1"]}
+        ids = manifest["ids"]
+        if args.id not in ids:
+            ids.append(args.id)
+        index_path.parent.mkdir(parents=True, exist_ok=True)
+        index_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+"\n",
+                              encoding="utf-8")
     print(f"Blueprint {args.id}: {blueprint['required_cells']} required cells, "
           f"{blueprint['ignored_air_cells']} ignored air cells -> {args.output}")
     return 0
