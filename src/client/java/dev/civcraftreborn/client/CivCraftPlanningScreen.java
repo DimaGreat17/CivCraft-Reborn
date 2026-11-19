@@ -1,6 +1,5 @@
 package dev.civcraftreborn.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -91,7 +90,9 @@ public final class CivCraftPlanningScreen extends Screen {
             }
         }
         if(nearest==null)
-            return "ЛКМ: переместить · R: повернуть · PgUp/PgDn: высота";
+            return "Перенос: мышью · Поворот: "+CivCraftPlanningKeys.boundRotate()
+                    +" · Высота: "+CivCraftPlanningKeys.boundRaise()
+                    +"/"+CivCraftPlanningKeys.boundLower();
         var state=CampBlueprintProjection.expectedState(plan,nearest);
         String extra="";
         if(state.hasProperty(StairBlock.FACING))
@@ -143,31 +144,32 @@ public final class CivCraftPlanningScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        int key=event.key();
-        if(key==InputConstants.KEY_ESCAPE||key==InputConstants.KEY_F7) {
+        // Escape is the one vanilla GUI close operation and always remains
+        // available; every CivCraft action follows the saved key mappings.
+        if(event.isEscape() || CivCraftPlanningCamera.matchesToggle(event)) {
             sendPosition();
             exit();
             return true;
         }
         double pan=Math.max(1.0,CivCraftPlanningCamera.distance()/15.0);
-        if(key==InputConstants.KEY_UP)CivCraftPlanningCamera.pan(0,pan);
-        else if(key==InputConstants.KEY_DOWN)CivCraftPlanningCamera.pan(0,-pan);
-        else if(key==InputConstants.KEY_RIGHT)CivCraftPlanningCamera.pan(pan,0);
-        else if(key==InputConstants.KEY_LEFT)CivCraftPlanningCamera.pan(-pan,0);
-        else if(key==InputConstants.KEY_Z)CivCraftPlanningCamera.rotate(-15f);
-        else if(key==InputConstants.KEY_X)CivCraftPlanningCamera.rotate(15f);
-        else if(key==InputConstants.KEY_R)rotateBlueprint();
-        else if(key==InputConstants.KEY_PAGEUP)moveVertical(1);
-        else if(key==InputConstants.KEY_PAGEDOWN)moveVertical(-1);
-        else if(key==InputConstants.KEY_MINUS)CivCraftPlanningCamera.zoom(2);
-        else if(key==61)CivCraftPlanningCamera.zoom(-2); // SDL '=' scan code
-        else if(key==InputConstants.KEY_G) {
+        if(CivCraftPlanningKeys.panUp(event))CivCraftPlanningCamera.pan(0,pan);
+        else if(CivCraftPlanningKeys.panDown(event))CivCraftPlanningCamera.pan(0,-pan);
+        else if(CivCraftPlanningKeys.panRight(event))CivCraftPlanningCamera.pan(pan,0);
+        else if(CivCraftPlanningKeys.panLeft(event))CivCraftPlanningCamera.pan(-pan,0);
+        else if(CivCraftPlanningKeys.viewLeft(event))CivCraftPlanningCamera.rotate(-15f);
+        else if(CivCraftPlanningKeys.viewRight(event))CivCraftPlanningCamera.rotate(15f);
+        else if(CivCraftPlanningKeys.blueprintRotate(event))rotateBlueprint();
+        else if(CivCraftPlanningKeys.raise(event))moveVertical(1);
+        else if(CivCraftPlanningKeys.lower(event))moveVertical(-1);
+        else if(CivCraftPlanningKeys.zoomOut(event))CivCraftPlanningCamera.zoom(2);
+        else if(CivCraftPlanningKeys.zoomIn(event))CivCraftPlanningCamera.zoom(-2);
+        else if(CivCraftRebornClient.matchesOpenMenu(event)) {
             sendPosition();
             exit();
             Minecraft.getInstance().gui.setScreen(new CivCraftManagementScreen(null));
         }
-        // Explicitly swallow W/A/S/D, jump, attack/use hotkeys, etc. while
-        // the planner overlay is active. The player stays put.
+        // Swallow all other keys, including vanilla WASD/actions, so the
+        // detached camera cannot move the actual player.
         return true;
     }
 
@@ -207,10 +209,10 @@ public final class CivCraftPlanningScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event,double dragX,double dragY) {
-        if(event.button()==1) { // SDL3 left button
+        if(CivCraftPlanningKeys.dragBlueprint(event)) {
             double[] delta=CivCraftPlanningCamera.dragToWorld(dragX,dragY);
             shiftBlueprint(delta[0],delta[1]);
-        } else if(event.button()==3) { // SDL3 right button
+        } else if(CivCraftPlanningKeys.dragCamera(event)) {
             double blocksPerPixel=Math.max(0.02,CivCraftPlanningCamera.distance()/580.0);
             CivCraftPlanningCamera.pan(-dragX*blocksPerPixel,dragY*blocksPerPixel);
         }
@@ -219,7 +221,7 @@ public final class CivCraftPlanningScreen extends Screen {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if(event.button()==1) {
+        if(CivCraftPlanningKeys.dragBlueprint(event)) {
             sendPosition();
             dragRemainderX=dragRemainderZ=0;
         }
