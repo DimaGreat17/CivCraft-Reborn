@@ -133,11 +133,11 @@ Do **not** advise reusing the pre-hotfix 3D GPU JAR for construction testing, an
 ## NOT implemented; release blockers
 
 1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
-2. Real work-ticket planner, crafting/harvesting/economy operations and exclusive inventory reservation/commit/reconciliation. Vanilla villagers may continue vanilla AI but this is **not** the promised CivCraft job system.
+2. **Starter physical work exists** (builder, farmer, craftsman, storekeeper, watchman, water-carrier). Still missing: complete work-ticket priority planner, exclusive inventory reservations, crash-safe journal/commit/reconciliation, complex multi-step crafting, NPC skill progression and loaded/virtual parity. This is not the final CivCraft job system.
 3. Persistent food/REST/SAFETY/HOUSING need transitions and citizen satisfaction, happiness diagnostics.
 4. Verified room segmentation, exclusive cell ownership, fully physical slabs/stairs collision, private-only transit, comfort, safe split/merge/reassignment.
-5. Proper server rights/ACL, claim/permission boundary, recipe balance, functional MODULES building catalog, UI.
-6. Loaded↔Virtual identity, job/resource parity, no forced chunk loads, crash resilience and hostile world interactions.
+5. Proper multiplayer ACL/claims, final recipe balance, **freeform** MODULES recognition beyond the 10 fixed full structural templates, and production-grade camp/civilization UI. The existing UI/commands and fixed templates are development-grade.
+6. Loaded↔Virtual identity and job/resource parity, crash resilience, comprehensive hostility/defense; current prototype already avoids forcing unloaded chunks and has a basic loaded-only watchman alert.
 7. Real NPC camp and player camp coexistence/integration, client & dedicated tests, full 0.2 acceptance suite, performance/profile and persistence migration.
 8. Finalize and accept P0; branch P1 is based on **unmerged** PR #6 and not ready for deployment over existing worlds without backup.
 
@@ -151,12 +151,14 @@ Do **not** advise reusing the pre-hotfix 3D GPU JAR for construction testing, an
 
 ## Player testing once CI is green
 
-1. Back up existing saves. Install **both client and server** with matching Fabric 26.3 dependencies.
-2. Obtain `civcraft_reborn:camp_core` via crafting or creative inventory; place on solid terrain.
-3. Bring 16 oak logs, 16 cobblestone and 8 bread, stand within four blocks, run `/civcraft camp found`.
-4. Place real beds in enclosed shelters and chests with food, farmland+composter, craft table+furnace.
-5. Check `/civcraft camp inspect`, recruit **existing** nearby villagers with additional bread and `/civcraft camp recruit`.
-6. Check `/civcraft camp promote` once the requirements show as fulfilled.
-7. Quit/restart **a disposable world** and inspect `/civcraft camp status`; send crash logs if validation fails.
+1. Back up old saves; use a disposable world and matching Minecraft 26.3/Fabric dependencies.
+2. Craft a physical Camp Core from the included shaped recipe; placing it grants four obsidian **each time**. Physically place four obsidian around the core. Found with real oak logs, cobblestone and bread.
+3. Select a **full** blueprint from the separate CivCraft management UI. Build all structural blocks (walls/roof/floor/function blocks) yourself or assign a recruited builder with real resources in nearby chests/barrels.
+4. Register fully built facilities with the placement UI or `/civcraft camp building register TYPE ROTATION X Y Z`; a standalone chest, crop plot or furnace does **not** qualify.
+5. Recruit actual villagers (or invite a paid migrant with free verified bed), then assign roles via the residents screen. Verify actual farmer, crafting, storage and construction actions, plus resource consumption.
+6. Restart the disposable world and verify CampId, CitizenId, BuildingId, work order identity and inventory — no duplication after restart.
+7. Complete the server-verified storage, workshop, farm, three rooms, three citizens and food requirements before promoting the camp.
+
+**Full player testing instructions:** [P1_0_2_GAMEPLAY_TEST_GUIDE.md](../05-roadmap/P1_0_2_GAMEPLAY_TEST_GUIDE.md).
 
 **NO RELEASE 0.2:** the codebase is only a first implemented slice. Do not merge or tag as released until all P1 gates are objectively satisfied.
