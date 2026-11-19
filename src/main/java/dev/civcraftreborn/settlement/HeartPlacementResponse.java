@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 /** Read-only server snapshot of the owned Camp Heart construction placement. */
-public record HeartPlacementResponse(BlockPos core,int shiftX,int shiftZ,
+public record HeartPlacementResponse(BlockPos core,int shiftX,int shiftY,int shiftZ,
         int turns,boolean confirmed) implements CustomPacketPayload {
     public static final Type<HeartPlacementResponse> TYPE=new Type<>(
             Identifier.fromNamespaceAndPath(CivCraftReborn.MOD_ID,"heart_placement"));
@@ -17,6 +17,7 @@ public record HeartPlacementResponse(BlockPos core,int shiftX,int shiftZ,
             StreamCodec.composite(
                     BlockPos.STREAM_CODEC,HeartPlacementResponse::core,
                     ByteBufCodecs.INT,HeartPlacementResponse::shiftX,
+                    ByteBufCodecs.INT,HeartPlacementResponse::shiftY,
                     ByteBufCodecs.INT,HeartPlacementResponse::shiftZ,
                     ByteBufCodecs.INT,HeartPlacementResponse::turns,
                     ByteBufCodecs.BOOL,HeartPlacementResponse::confirmed,
