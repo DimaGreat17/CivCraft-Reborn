@@ -2,6 +2,8 @@ package dev.civcraftreborn.settlement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -31,14 +33,23 @@ public final class CampHeartTemplate {
 
     // v1 stays identical for existing projects. The source of each block and
     // every property is now the same JSON format produced from user NBT.
-    private static final CampBlueprintCatalog.Definition DEFINITION=
-            CampBlueprintCatalog.loadBundled(LEGACY_BLUEPRINT_ID);
-    private static final List<Cell> CELLS=DEFINITION.cells().stream()
-            .map(c -> new Cell(c.x(),c.y(),c.z(),c.state(),
-                    c.x()==3 && c.y()==0 && c.z()==3))
-            .toList();
+    private static final Map<String,CampBlueprintCatalog.Definition> DEFINITIONS=
+            new ConcurrentHashMap<>();
+    private static final Map<String,List<Cell>> TEMPLATES=new ConcurrentHashMap<>();
+    public static CampBlueprintCatalog.Definition definition(String id) {
+        return DEFINITIONS.computeIfAbsent(id,CampBlueprintCatalog::loadBundled);
+    }
+    public static List<Cell> cells(String id) {
+        return TEMPLATES.computeIfAbsent(id,key -> {
+            var def=definition(key);
+            return def.cells().stream()
+                .map(c -> new Cell(c.x(),c.y(),c.z(),c.state(),
+                    c.x()==def.width()/2 && c.y()==0 && c.z()==def.depth()/2))
+                .toList();
+        });
+    }
 
-    public static List<Cell> cells() { return CELLS; }
+    public static List<Cell> cells() { return cells(LEGACY_BLUEPRINT_ID); }
 
     /** NW corner of footprint after placement; the physical core never moves. */
     public static BlockPos origin(BlockPos core,int shiftX,int shiftZ) {
@@ -46,7 +57,12 @@ public final class CampHeartTemplate {
     }
 
     public static BlockPos origin(BlockPos core,int shiftX,int shiftY,int shiftZ) {
-        return core.offset(-3+shiftX,shiftY,-3+shiftZ);
+        return origin(LEGACY_BLUEPRINT_ID,core,shiftX,shiftY,shiftZ);
+    }
+
+    public static BlockPos origin(String blueprint,BlockPos core,int shiftX,int shiftY,int shiftZ) {
+        var def=definition(blueprint);
+        return core.offset(-def.width()/2+shiftX,shiftY,-def.depth()/2+shiftZ);
     }
 
     public static BlockPos position(BlockPos core,int shiftX,int shiftZ,
@@ -56,8 +72,15 @@ public final class CampHeartTemplate {
 
     public static BlockPos position(BlockPos core,int shiftX,int shiftY,int shiftZ,
             int turns,Cell cell) {
-        var rotated=BlueprintTransform.rotate(cell.x(),cell.z(),SIZE,SIZE,turns);
-        return origin(core,shiftX,shiftY,shiftZ).offset(rotated.x(),cell.y(),rotated.z());
+        return position(LEGACY_BLUEPRINT_ID,core,shiftX,shiftY,shiftZ,turns,cell);
+    }
+
+    public static BlockPos position(String blueprint,BlockPos core,int shiftX,int shiftY,int shiftZ,
+            int turns,Cell cell) {
+        var def=definition(blueprint);
+        var rotated=BlueprintTransform.rotate(cell.x(),cell.z(),def.width(),def.depth(),turns);
+        return origin(blueprint,core,shiftX,shiftY,shiftZ)
+                .offset(rotated.x(),cell.y(),rotated.z());
     }
 
     public static BlockState expected(BlockPos core,int shiftX,int shiftZ,
@@ -66,6 +89,11 @@ public final class CampHeartTemplate {
     }
 
     public static BlockState expected(BlockPos core,int shiftX,int shiftY,int shiftZ,
+            int turns,Cell cell) {
+        return expected(LEGACY_BLUEPRINT_ID,core,shiftX,shiftY,shiftZ,turns,cell);
+    }
+
+    public static BlockState expected(String blueprint,BlockPos core,int shiftX,int shiftY,int shiftZ,
             int turns,Cell cell) {
         BlockState state=cell.state();
         // No requirement for the foundation block to occupy the building footprint.
@@ -101,13 +129,20 @@ public final class CampHeartTemplate {
 
     public static Check inspect(ServerLevel level,BlockPos core,int shiftX,int shiftY,
             int shiftZ,int turns) {
+        return inspect(LEGACY_BLUEPRINT_ID,level,core,shiftX,shiftY,shiftZ,turns);
+    }
+
+    public static Check inspect(String blueprint,ServerLevel level,BlockPos core,int shiftX,
+            int shiftY,int shiftZ,int turns) {
+        List<Cell> required=cells(blueprint);
         int matched=0;
-        for(Cell cell:CELLS) {
-            BlockPos pos=position(core,shiftX,shiftY,shiftZ,turns,cell);
-            if(!level.hasChunkAt(pos))return new Check(matched,CELLS.size(),false);
-            if(matching(level.getBlockState(pos),expected(core,shiftX,shiftY,shiftZ,turns,cell)))matched++;
+        for(Cell cell:required) {
+            BlockPos pos=position(blueprint,core,shiftX,shiftY,shiftZ,turns,cell);
+            if(!level.hasChunkAt(pos))return new Check(matched,required.size(),false);
+            if(matching(level.getBlockState(pos),
+                    expected(blueprint,core,shiftX,shiftY,shiftZ,turns,cell)))matched++;
         }
-        return new Check(matched,CELLS.size(),true);
+        return new Check(matched,required.size(),true);
     }
 
     /**
@@ -117,13 +152,17 @@ public final class CampHeartTemplate {
      */
     public static List<Missing> firstMissing(ServerLevel level,BlockPos core,
             int shiftX,int shiftY,int shiftZ,int turns,int limit) {
+        return firstMissing(LEGACY_BLUEPRINT_ID,level,core,shiftX,shiftY,shiftZ,turns,limit);
+    }
+    public static List<Missing> firstMissing(String blueprint,ServerLevel level,BlockPos core,
+            int shiftX,int shiftY,int shiftZ,int turns,int limit) {
         if(limit<=0)return List.of();
         List<Missing> problems=new ArrayList<>();
-        for(Cell cell:CELLS) {
-            BlockPos pos=position(core,shiftX,shiftY,shiftZ,turns,cell);
+        for(Cell cell:cells(blueprint)) {
+            BlockPos pos=position(blueprint,core,shiftX,shiftY,shiftZ,turns,cell);
             if(!level.hasChunkAt(pos))continue;
             BlockState actual=level.getBlockState(pos);
-            BlockState required=expected(core,shiftX,shiftY,shiftZ,turns,cell);
+            BlockState required=expected(blueprint,core,shiftX,shiftY,shiftZ,turns,cell);
             if(!matching(actual,required)) {
                 problems.add(new Missing(pos,required,actual));
                 if(problems.size()>=limit)break;
