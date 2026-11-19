@@ -27,11 +27,15 @@ public final class CampHeartCommands {
                         .then(Commands.argument("x",IntegerArgumentType.integer(-128,128))
                         .then(Commands.argument("z",IntegerArgumentType.integer(-128,128))
                         .executes(c->change(c.getSource(),
-                                IntegerArgumentType.getInteger(c,"x"),
+                                IntegerArgumentType.getInteger(c,"x"),null,
                                 IntegerArgumentType.getInteger(c,"z"),null)))))
+                .then(Commands.literal("height")
+                        .then(Commands.argument("y",IntegerArgumentType.integer(-64,64))
+                        .executes(c->change(c.getSource(),null,
+                                IntegerArgumentType.getInteger(c,"y"),null,null))))
                 .then(Commands.literal("rotate")
                         .then(Commands.argument("turns",IntegerArgumentType.integer(0,3))
-                        .executes(c->change(c.getSource(),null,null,
+                        .executes(c->change(c.getSource(),null,null,null,
                                 IntegerArgumentType.getInteger(c,"turns")))));
     }
 
@@ -43,8 +47,8 @@ public final class CampHeartCommands {
                         .ownedBy(player.getUUID()).isEmpty()
                         || CampSavedData.get(player.level().getServer())
                         .ownedBy(player.getUUID())
-                        .map(c -> c.x()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftZ()).getX()+3
-                            && c.z()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftZ()).getZ()+3)
+                        .map(c -> c.x()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftY(),s.shiftZ()).getX()+3
+                            && c.z()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftY(),s.shiftZ()).getZ()+3)
                         .orElse(false))
                 .findFirst().orElse(null);
     }
@@ -68,7 +72,7 @@ public final class CampHeartCommands {
                 || !level.getBlockState(foundation).is(CampBlocks.CAMP_CORE))return false;
         for(var cell:CampHeartTemplate.cells()) {
             BlockPos pos=CampHeartTemplate.position(foundation,site.shiftX(),
-                    site.shiftZ(),site.turns(),cell);
+                    site.shiftY(),site.shiftZ(),site.turns(),cell);
             if(!level.hasChunkAt(pos)
                     || !level.getWorldBorder().isWithinBounds(pos)
                     || pos.equals(foundation))return false;
@@ -76,7 +80,7 @@ public final class CampHeartCommands {
         return true;
     }
 
-    private static int change(CommandSourceStack source,Integer dx,Integer dz,Integer rotation){
+    private static int change(CommandSourceStack source,Integer dx,Integer dy,Integer dz,Integer rotation){
         try {
             ServerPlayer player=source.getPlayerOrException();
             if(!validWorld(player))return fail(source,"Not a CivCraft-enabled world");
@@ -84,9 +88,10 @@ public final class CampHeartCommands {
             if(old==null)return fail(source,"Place your Camp Heart foundation first");
             if(old.confirmed())return fail(source,"Construction position is already confirmed");
             int x=dx==null?old.shiftX():dx;
+            int y=dy==null?old.shiftY():dy;
             int z=dz==null?old.shiftZ():dz;
             int turns=rotation==null?old.turns():rotation;
-            CampHeartSite updated=old.withPlacement(x,z,turns);
+            CampHeartSite updated=old.withPlacement(x,y,z,turns);
             if(!siteAvailable((ServerLevel)player.level(),updated)) {
                 sync(player,old);
                 return fail(source,"Site outside loaded chunks, world border or overlapping the starter; approach the site");
@@ -94,7 +99,7 @@ public final class CampHeartCommands {
             CampHeartSavedData.get(source.getServer()).replace(old,updated);
             sync(player,updated);
             source.sendSuccess(()->Component.literal("Camp Heart preview: shift ("
-                    +x+","+z+"), rotation "+(turns*90)+" degrees; not confirmed"),false);
+                    +x+","+y+","+z+"), rotation "+(turns*90)+" degrees; not confirmed"),false);
             return 1;
         }catch(com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source,"Players only");
@@ -111,7 +116,7 @@ public final class CampHeartCommands {
             if(!siteAvailable((ServerLevel)player.level(),site))
                 return fail(source,"Cannot confirm: site is unloaded, outside world border or overlaps starter");
             String dim=site.dimension();
-            BlockPos center=CampHeartTemplate.origin(site.core(),site.shiftX(),site.shiftZ()).offset(3,0,3);
+            BlockPos center=CampHeartTemplate.origin(site.core(),site.shiftX(),site.shiftY(),site.shiftZ()).offset(3,0,3);
             if(!CampRules.canFoundAt(CampSavedData.get(source.getServer()).all(),dim,
                     center.getX(),center.getZ(),true,true))
                 return fail(source,"Too close to another settlement");
@@ -139,7 +144,7 @@ public final class CampHeartCommands {
                     !player.level().getBlockState(site.core()).is(CampBlocks.CAMP_CORE)))
                 return fail(source,"Camp Heart starter foundation is missing");
             var progress=CampHeartTemplate.inspect((ServerLevel)player.level(),
-                    site.core(),site.shiftX(),site.shiftZ(),site.turns());
+                    site.core(),site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             source.sendSuccess(()->Component.literal("Camp Heart: "+
                     progress.matched()+"/"+progress.total()+" required block positions, "
                     +(site.confirmed()?"site confirmed":"position not confirmed")+
@@ -153,7 +158,7 @@ public final class CampHeartCommands {
 
     private static void sync(ServerPlayer player,CampHeartSite site){
         ServerPlayNetworking.send(player,new HeartPlacementResponse(site.core(),
-                site.shiftX(),site.shiftZ(),site.turns(),site.confirmed()));
+                site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),site.confirmed()));
     }
 
     private static int fail(CommandSourceStack source,String reason){
