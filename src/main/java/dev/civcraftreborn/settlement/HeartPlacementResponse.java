@@ -14,14 +14,21 @@ public record HeartPlacementResponse(BlockPos core,int shiftX,int shiftY,int shi
     public static final Type<HeartPlacementResponse> TYPE=new Type<>(
             Identifier.fromNamespaceAndPath(CivCraftReborn.MOD_ID,"heart_placement"));
     public static final StreamCodec<RegistryFriendlyByteBuf,HeartPlacementResponse> CODEC=
-            StreamCodec.composite(
-                    BlockPos.STREAM_CODEC,HeartPlacementResponse::core,
-                    ByteBufCodecs.INT,HeartPlacementResponse::shiftX,
-                    ByteBufCodecs.INT,HeartPlacementResponse::shiftY,
-                    ByteBufCodecs.INT,HeartPlacementResponse::shiftZ,
-                    ByteBufCodecs.INT,HeartPlacementResponse::turns,
-                    ByteBufCodecs.BOOL,HeartPlacementResponse::confirmed,
-                    ByteBufCodecs.STRING_UTF8,HeartPlacementResponse::blueprintId,
-                    HeartPlacementResponse::new);
+            new StreamCodec<>() {
+                @Override public HeartPlacementResponse decode(RegistryFriendlyByteBuf buf) {
+                    return new HeartPlacementResponse(buf.readBlockPos(),buf.readInt(),
+                            buf.readInt(),buf.readInt(),buf.readInt(),buf.readBoolean(),
+                            buf.readUtf());
+                }
+                @Override public void encode(RegistryFriendlyByteBuf buf,HeartPlacementResponse value) {
+                    buf.writeBlockPos(value.core());
+                    buf.writeInt(value.shiftX());
+                    buf.writeInt(value.shiftY());
+                    buf.writeInt(value.shiftZ());
+                    buf.writeInt(value.turns());
+                    buf.writeBoolean(value.confirmed());
+                    buf.writeUtf(value.blueprintId());
+                }
+            };
     @Override public Type<? extends CustomPacketPayload> type(){return TYPE;}
 }
