@@ -19,6 +19,10 @@ public final class CampHeartProjectLifecycle {
         ServerTickEvents.END_SERVER_TICK.register(CampHeartProjectLifecycle::tick);
     }
 
+    static boolean shouldCancel(boolean confirmed,boolean chunkLoaded,boolean starterPresent) {
+        return !confirmed && chunkLoaded && !starterPresent;
+    }
+
     private static void tick(MinecraftServer server) {
         if(server.getTickCount()%10!=0)return;
         CampHeartSavedData saved=CampHeartSavedData.get(server);
@@ -31,8 +35,10 @@ public final class CampHeartProjectLifecycle {
                     break;
                 }
             }
-            if(level==null || !level.hasChunkAt(site.core()))continue;
-            if(level.getBlockState(site.core()).is(CampBlocks.CAMP_CORE))continue;
+            if(level==null)continue;
+            boolean loaded=level.hasChunkAt(site.core());
+            boolean stillPresent=loaded&&level.getBlockState(site.core()).is(CampBlocks.CAMP_CORE);
+            if(!shouldCancel(site.confirmed(),loaded,stillPresent))continue;
 
             // Deleting a pending project is an idempotent server-side mutation.
             saved.remove(site.dimension(),site.core());
