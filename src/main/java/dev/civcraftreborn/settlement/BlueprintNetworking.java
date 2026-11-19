@@ -13,12 +13,33 @@ public final class BlueprintNetworking {
     public static void register() {
         PayloadTypeRegistry.serverboundPlay().register(
                 BlueprintStatusRequest.TYPE, BlueprintStatusRequest.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(
+                HeartSiteRequest.TYPE, HeartSiteRequest.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 BlueprintStatusResponse.TYPE, BlueprintStatusResponse.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacementResponse.TYPE, HeartPlacementResponse.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacedNotice.TYPE, HeartPlacedNotice.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(HeartSiteRequest.TYPE,
+                (request,context) -> {
+                    ServerPlayer player=context.player();
+                    if(!WorldSettingsSavedData.get(context.server()).settings().civcraftWorld())return;
+                    String dimension=player.level().dimension().identifier().toString();
+                    var site=CampHeartSavedData.get(context.server())
+                            .ownedBy(player.getUUID(),dimension).stream().findFirst();
+                    site.ifPresent(s -> {
+                        int stage=CampSavedData.get(context.server())
+                                .ownedBy(player.getUUID())
+                                .filter(c -> c.dimension().equals(dimension))
+                                .map(c -> c.stage()==SettlementStage.SETTLEMENT?1:0)
+                                .orElse(-1);
+                        ServerPlayNetworking.send(player,new BlueprintStatusResponse(s.core(),stage));
+                        ServerPlayNetworking.send(player,new HeartPlacementResponse(s.core(),
+                                s.shiftX(),s.shiftZ(),s.turns(),s.confirmed()));
+                    });
+                });
 
         ServerPlayNetworking.registerGlobalReceiver(BlueprintStatusRequest.TYPE,
                 (request, context) -> {
