@@ -21,6 +21,8 @@ public final class BlueprintNetworking {
                 HeartPlacementResponse.TYPE, HeartPlacementResponse.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacedNotice.TYPE, HeartPlacedNotice.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartProjectCancelled.TYPE, HeartProjectCancelled.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(HeartSiteRequest.TYPE,
                 (request,context) -> {
@@ -29,6 +31,10 @@ public final class BlueprintNetworking {
                     String dimension=player.level().dimension().identifier().toString();
                     var site=CampHeartSavedData.get(context.server())
                             .ownedBy(player.getUUID(),dimension).stream().findFirst();
+                    if(site.isEmpty()) {
+                        ServerPlayNetworking.send(player,new HeartProjectCancelled(BlockPos.ZERO));
+                        return;
+                    }
                     site.ifPresent(s -> {
                         int stage=CampSavedData.get(context.server())
                                 .ownedBy(player.getUUID())
