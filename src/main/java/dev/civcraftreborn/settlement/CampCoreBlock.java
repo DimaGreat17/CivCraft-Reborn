@@ -1,6 +1,7 @@
 package dev.civcraftreborn.settlement;
 
 import dev.civcraftreborn.foundation.WorldSettingsSavedData;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,6 +42,7 @@ public final class CampCoreBlock extends Block {
         // never carry a former player's ownership or completed placement forward.
         sites.remove(dimension,pos);
         sites.add(CampHeartSite.placed(player.getUUID(),dimension,pos));
+        ServerPlayNetworking.send(player,new HeartPlacedNotice(pos));
         ItemStack obsidian = new ItemStack(Items.OBSIDIAN, STARTER_OBSIDIAN);
         if (!player.getInventory().add(obsidian) && !obsidian.isEmpty()) {
             // Inventory insertion can be partial; only drop the remainder.
