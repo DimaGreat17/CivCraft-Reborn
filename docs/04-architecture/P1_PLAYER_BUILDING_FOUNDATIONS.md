@@ -78,3 +78,7 @@ The initial Camp Heart remains manual. Physical resources and the full structure
 - Progress pauses rather than completing magically when there is insufficient stock, obstructed placement, missing permission, unloaded chunk or absent work production. The next retry must be safe and idempotent. For multi-block vanilla structures, atomic correct-state placement is required; no duplicate items or orphaned halves.
 - `ACTIVE` can occur only when all required blocks physically match the server-validated construction, the material ledger is reconciled, and the required construction work criteria are satisfied.
 - Test at 0%, intermediate progress and 100%; manually add/remove a correct block, stop builders, exhaust materials, unload/reload, crash/restart and use two players, proving stable real-world blocks, no instant prefab, no duplication and correct ghost disappearance.
+
+## Confirmed GUI access rule (2026-11-19)
+
+The **Camp / Civilization management interface opens from a persistent dedicated screen/HUD button**, with an optional configurable desktop keybind. It must **not** require right-clicking `camp_core` or being near the structure. The physical foundation block is only the anchored construction/control identity, and the main menu includes project status and construction controls. Server-side access restrictions on actions remain mandatory. Any older documented right-click-to-open management interaction is superseded.
