@@ -3,6 +3,11 @@ package dev.civcraftreborn.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -18,6 +23,7 @@ import net.minecraft.network.chat.Component;
 public final class CivCraftPlanningScreen extends Screen {
     private double dragRemainderX,dragRemainderZ;
     private boolean blueprintMoved;
+    private Button blockHint;
 
     public CivCraftPlanningScreen() {
         super(Component.literal("CivCraft — градостроительство"));
@@ -26,8 +32,78 @@ public final class CivCraftPlanningScreen extends Screen {
     @Override public boolean isPauseScreen() { return false; }
 
     @Override
+    protected void init() {
+        blockHint=addRenderableWidget(Button.builder(
+                Component.literal("Наведите курсор на чертёж: покажу нужный блок"),
+                b -> {}).bounds(Math.max(5,width/2-230),height-28,
+                        Math.min(460,width-10),20).build());
+        blockHint.active=false;
+    }
+
+    @Override
     public void extractBackground(GuiGraphicsExtractor graphics,int mouseX,int mouseY,float partialTick) {
         // Keep the actual world visible: do not dim, blur or draw a menu panel.
+        if(blockHint!=null)blockHint.setMessage(Component.literal(hoveredHint(mouseX,mouseY)));
+    }
+
+    /**
+     * Approximate vanilla perspective projection of the expected block
+     * centres. Only read-only client data is used: never interact with blocks
+     * or send server mutations from a hover.
+     */
+    private String hoveredHint(int mouseX,int mouseY) {
+        var plan=CampBlueprintProjection.selected();
+        Minecraft client=Minecraft.getInstance();
+        if(plan==null||client.level==null)
+            return "Нет активного чертежа";
+        double yaw=Math.toRadians(CivCraftPlanningCamera.yaw());
+        double forwardX=-Math.sin(yaw),forwardZ=Math.cos(yaw);
+        double rightX=-Math.cos(yaw),rightZ=-Math.sin(yaw);
+        double d=CivCraftPlanningCamera.distance();
+        double cameraX=CivCraftPlanningCamera.x()-Math.sin(yaw)*d*0.72;
+        double cameraY=CivCraftPlanningCamera.y()+d*0.85;
+        double cameraZ=CivCraftPlanningCamera.z()-Math.cos(yaw)*d*0.72;
+        double pitch=Math.toRadians(55.0);
+        double sinPitch=Math.sin(pitch),cosPitch=Math.cos(pitch);
+        double f=height/(2*Math.tan(Math.toRadians(70.0)/2));
+        double best=35*35;
+        CampBlueprintProjection.Step nearest=null;
+        BlockPos nearestPos=null;
+        for(var step:CampBlueprintProjection.steps(plan)) {
+            if(CampBlueprintProjection.matches(plan,step))continue;
+            BlockPos pos=CampBlueprintProjection.worldPosition(plan,step);
+            if(pos==null||!client.level.hasChunkAt(pos))continue;
+            double x=pos.getX()+0.5-cameraX;
+            double y=pos.getY()+0.5-cameraY;
+            double z=pos.getZ()+0.5-cameraZ;
+            double horizontal=x*forwardX+z*forwardZ;
+            double depth=horizontal*cosPitch-y*sinPitch;
+            if(depth<=0.5)continue;
+            double screenRight=x*rightX+z*rightZ;
+            double screenUp=y*cosPitch-horizontal*sinPitch;
+            double px=width*0.5+f*screenRight/depth;
+            double py=height*0.5-f*screenUp/depth;
+            double distanceSquared=(mouseX-px)*(mouseX-px)+(mouseY-py)*(mouseY-py);
+            if(distanceSquared<best) {
+                best=distanceSquared;
+                nearest=step;
+                nearestPos=pos;
+            }
+        }
+        if(nearest==null)
+            return "ЛКМ: переместить · R: повернуть · PgUp/PgDn: высота";
+        var state=CampBlueprintProjection.expectedState(plan,nearest);
+        String extra="";
+        if(state.hasProperty(StairBlock.FACING))
+            extra=" · направление: "+state.getValue(StairBlock.FACING);
+        if(state.hasProperty(DoorBlock.HALF))
+            extra=" · часть двери: "+state.getValue(DoorBlock.HALF);
+        if(state.hasProperty(SlabBlock.TYPE))
+            extra=" · плита: "+state.getValue(SlabBlock.TYPE);
+        var actual=client.level.getBlockState(nearestPos);
+        return (actual.isAir()?"Нужен: ":"Убрать препятствие → ")
+                +state.getBlock().getName().getString()+extra
+                +" · Y="+nearestPos.getY();
     }
 
     private void exit() {
