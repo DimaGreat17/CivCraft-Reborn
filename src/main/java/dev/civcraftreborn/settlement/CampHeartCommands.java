@@ -73,7 +73,8 @@ public final class CampHeartCommands {
         for(var cell:CampHeartTemplate.cells()) {
             BlockPos pos=CampHeartTemplate.position(foundation,site.shiftX(),
                     site.shiftY(),site.shiftZ(),site.turns(),cell);
-            if(!level.hasChunkAt(pos)
+            if(level.isOutsideBuildHeight(pos)
+                    || !level.hasChunkAt(pos)
                     || !level.getWorldBorder().isWithinBounds(pos)
                     || pos.equals(foundation))return false;
         }
