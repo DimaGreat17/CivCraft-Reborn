@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev.civcraftreborn.settlement.BlueprintAccess;
+import dev.civcraftreborn.settlement.CampHeartTemplate;
 import dev.civcraftreborn.settlement.CampRules;
 import dev.civcraftreborn.settlement.BlueprintTransform;
 import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
@@ -88,8 +89,9 @@ public final class CampBlueprintProjection {
     private static Plan activePlan;
     // -2 pending response, -1 no owned camp, 0 CAMP, 1 SETTLEMENT.
     private static int serverStage = -2;
-    private static int offsetX = 3;
-    private static int offsetZ = 3;
+    private static int offsetX = 0;
+    private static int offsetZ = 0;
+    private static boolean heartConfirmed;
     private static int rotation = 0;
 
     private CampBlueprintProjection() {}
@@ -104,10 +106,22 @@ public final class CampBlueprintProjection {
         dimension = dimensionId;
         activePlan = null;
         serverStage = -2;
-        offsetX = 3;
-        offsetZ = 3;
+        offsetX = 0;
+        offsetZ = 0;
         rotation = 0;
+        heartConfirmed = false;
     }
+
+    public static void setHeartPlacement(BlockPos core,int shiftX,int shiftZ,
+            int turns,boolean confirmed) {
+        if(coreAnchor==null||!coreAnchor.equals(core))return;
+        if(!CampHeartTemplate.transformValid(shiftX,shiftZ,turns))return;
+        offsetX=shiftX;
+        offsetZ=shiftZ;
+        rotation=turns;
+        heartConfirmed=confirmed;
+    }
+    public static boolean heartConfirmed(){return heartConfirmed;}
 
     public static void setServerStage(BlockPos core, int stage) {
         if (coreAnchor == null || !coreAnchor.equals(core)) return;
@@ -128,8 +142,8 @@ public final class CampBlueprintProjection {
     public static boolean show(Plan plan) {
         if (coreAnchor == null || !unlocked(plan)) return false;
         if (activePlan != plan) {
-            offsetX = 3;
-            offsetZ = 3;
+            offsetX = plan == Plan.HEART ? 0 : 3;
+            offsetZ = plan == Plan.HEART ? 0 : 3;
             rotation = 0;
         }
         activePlan = plan;
@@ -155,11 +169,9 @@ public final class CampBlueprintProjection {
 
     private static List<Step> buildSteps(Plan plan) {
         if (plan == Plan.HEART) {
-            return List.of(
-                    new Step(0,0,-1,Blocks.OBSIDIAN),
-                    new Step(0,0, 1,Blocks.OBSIDIAN),
-                    new Step(-1,0,0,Blocks.OBSIDIAN),
-                    new Step( 1,0,0,Blocks.OBSIDIAN));
+            return CampHeartTemplate.cells().stream()
+                    .map(cell -> new Step(cell.x(),cell.y(),cell.z(),
+                            cell.state().getBlock())).toList();
         }
         // All other 10 structures use the SAME full blueprint model for
         // client rendering, server validation and actual NPC construction.
@@ -176,7 +188,10 @@ public final class CampBlueprintProjection {
      */
     public static BlockPos worldPosition(Plan plan, Step step) {
         if (coreAnchor == null) return null;
-        if (plan == Plan.HEART) return step.position(coreAnchor);
+        if (plan == Plan.HEART) {
+            var p=BlueprintTransform.rotate(step.dx(),step.dz(),7,7,rotation);
+            return coreAnchor.offset(-3+offsetX+p.x(),step.dy(),-3+offsetZ+p.z());
+        }
         Bounds bounds = bounds(plan);
         int x=step.dx()-bounds.minX(), z=step.dz()-bounds.minZ();
         BlueprintTransform.Point point = BlueprintTransform.rotate(
@@ -190,23 +205,24 @@ public final class CampBlueprintProjection {
             BlockPos pos = worldPosition(activePlan, step);
             if (!BlueprintTransform.inCampRadius(pos.getX()-coreAnchor.getX(),
                     pos.getZ()-coreAnchor.getZ(), CampRules.CAMP_RADIUS)
-                    || pos.equals(coreAnchor)) return false;
+                    || (activePlan != Plan.HEART && pos.equals(coreAnchor))) return false;
         }
         return true;
     }
 
     public static boolean move(int dx, int dz) {
-        if (activePlan == null || activePlan == Plan.HEART) return false;
+        if (activePlan == null || (activePlan == Plan.HEART && heartConfirmed)) return false;
         offsetX += dx;
         offsetZ += dz;
-        if (validPlacement()) return true;
+        if (validPlacement() && (activePlan != Plan.HEART ||
+                CampHeartTemplate.transformValid(offsetX,offsetZ,rotation))) return true;
         offsetX -= dx;
         offsetZ -= dz;
         return false;
     }
 
     public static boolean rotate(int quarterTurns) {
-        if (activePlan == null || activePlan == Plan.HEART) return false;
+        if (activePlan == null || (activePlan == Plan.HEART && heartConfirmed)) return false;
         int previous = rotation;
         rotation = Math.floorMod(rotation + quarterTurns, 4);
         if (validPlacement()) return true;
@@ -218,7 +234,16 @@ public final class CampBlueprintProjection {
         Minecraft client = Minecraft.getInstance();
         if (client.level == null || coreAnchor == null) return false;
         BlockPos pos = worldPosition(plan, step);
-        return pos != null && step.matchesAt(client.level, pos);
+        if(pos==null||!client.level.hasChunkAt(pos))return false;
+        if(plan==Plan.HEART) {
+            var real=client.level.getBlockState(pos);
+            // The physical core remains fixed, even if the house is shifted.
+            if(pos.equals(coreAnchor))return real.is(dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE);
+            if(step.block()==dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE)
+                return real.is(Blocks.OAK_PLANKS);
+            return real.is(step.block());
+        }
+        return step.matchesAt(client.level,pos);
     }
 
     public static int completed(Plan plan) {
