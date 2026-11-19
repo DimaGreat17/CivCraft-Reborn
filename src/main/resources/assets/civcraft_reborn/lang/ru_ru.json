@@ -1,1 +1,6 @@
-{"block.civcraft_reborn.camp_core":"Центр лагеря","item.civcraft_reborn.camp_core":"Центр лагеря"}
+{
+  "block.civcraft_reborn.camp_core": "Центр лагеря",
+  "item.civcraft_reborn.camp_core": "Центр лагеря",
+  "key.civcraft_reborn.open_menu": "Открыть управление CivCraft",
+  "key.category.civcraft_reborn.controls": "CivCraft"
+}
