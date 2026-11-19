@@ -47,9 +47,17 @@ public final class CivCraftPlanningCamera {
             return false;
         BlockPos origin=CampBlueprintProjection.placedOrigin();
         if(origin==null)return false;
-        targetX=origin.getX()+3.5;
-        targetY=origin.getY()+2;
-        targetZ=origin.getZ()+3.5;
+        if(CampBlueprintProjection.selected()==CampBlueprintProjection.Plan.HEART) {
+            var def=dev.civcraftreborn.settlement.CampHeartTemplate.definition(
+                    CampBlueprintProjection.heartBlueprintId());
+            targetX=origin.getX()+def.width()/2.0;
+            targetY=origin.getY()+def.height()/2.0;
+            targetZ=origin.getZ()+def.depth()/2.0;
+        } else {
+            targetX=origin.getX()+3.5;
+            targetY=origin.getY()+2;
+            targetZ=origin.getZ()+3.5;
+        }
         distance=28;
         yaw=0;
         wantedYaw=0;
