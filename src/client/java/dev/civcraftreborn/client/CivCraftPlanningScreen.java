@@ -60,7 +60,7 @@ public final class CivCraftPlanningScreen extends Screen {
         double forwardX=-Math.sin(yaw),forwardZ=Math.cos(yaw);
         double rightX=-Math.cos(yaw),rightZ=-Math.sin(yaw);
         double d=CivCraftPlanningCamera.distance();
-        double cameraX=CivCraftPlanningCamera.x()-Math.sin(yaw)*d*0.72;
+        double cameraX=CivCraftPlanningCamera.x()+Math.sin(yaw)*d*0.72;
         double cameraY=CivCraftPlanningCamera.y()+d*0.85;
         double cameraZ=CivCraftPlanningCamera.z()-Math.cos(yaw)*d*0.72;
         double pitch=Math.toRadians(55.0);
