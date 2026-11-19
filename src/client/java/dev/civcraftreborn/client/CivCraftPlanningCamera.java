@@ -12,7 +12,7 @@ import net.minecraft.resources.Identifier;
  * Client-only city planning camera: a raised oblique view over the current
  * construction site. It neither teleports the player nor alters server rules.
  *
- * F7 toggles, arrow keys pan, plus/minus zoom, Q/E turn the view.
+ * F7 toggles, arrow keys pan, plus/minus zoom, Z/X turn the view.
  * Minecraft's normal camera is restored automatically when disabled.
  */
 public final class CivCraftPlanningCamera {
@@ -36,9 +36,9 @@ public final class CivCraftPlanningCamera {
         south=key("planning_south",InputConstants.KEY_DOWN,category);
         west=key("planning_west",InputConstants.KEY_LEFT,category);
         east=key("planning_east",InputConstants.KEY_RIGHT,category);
-        zoomIn=key("planning_zoom_in",InputConstants.KEY_EQUAL,category);
+        zoomIn=key("planning_zoom_in",InputConstants.KEY_XQUAL,category);
         zoomOut=key("planning_zoom_out",InputConstants.KEY_MINUS,category);
-        turnLeft=key("planning_rotate_left",InputConstants.KEY_Q,category);
+        turnLeft=key("planning_rotate_left",InputConstants.KEY_Z,category);
         turnRight=key("planning_rotate_right",InputConstants.KEY_E,category);
         ClientTickEvents.END_CLIENT_TICK.register(CivCraftPlanningCamera::tick);
     }
