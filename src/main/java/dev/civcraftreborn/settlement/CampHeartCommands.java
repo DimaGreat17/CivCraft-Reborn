@@ -180,7 +180,7 @@ public final class CampHeartCommands {
 
     private static void sync(ServerPlayer player,CampHeartSite site){
         ServerPlayNetworking.send(player,new HeartPlacementResponse(site.core(),
-                site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),site.confirmed()));
+                site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),site.confirmed(),site.blueprintId()));
     }
 
     private static int fail(CommandSourceStack source,String reason){
