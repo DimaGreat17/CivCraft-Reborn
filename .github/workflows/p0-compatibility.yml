@@ -29,7 +29,23 @@ jobs:
       - name: Static manifest validation
         run: python3 scripts/validate_p0_manifest.py
       - name: Compile and unit test foundation
-        run: gradle build --no-daemon --stacktrace
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            set +e
+            gradle build --no-daemon --stacktrace > /tmp/civcraft-gradle-build.log 2>&1
+            status=$?
+            set -e
+            tail -n 120 /tmp/civcraft-gradle-build.log
+            if [[ "$status" -eq 0 ]]; then exit 0; fi
+            # Retry only upstream Maven/Fabric metadata failures, not Java/test failures.
+            if ! grep -Eq "Could not resolve all artifacts|Received status code 429|Could not find com.google.code.gson|Could not find org.jetbrains.kotlin" /tmp/civcraft-gradle-build.log; then
+              exit "$status"
+            fi
+            if [[ "$attempt" -eq 3 ]]; then exit "$status"; fi
+            echo "Upstream Gradle dependency repository unavailable; retry $attempt/3"
+            sleep $((attempt * 30))
+          done
       - name: Smoke-test dedicated server boot and persisted settings
         shell: bash
         run: |
