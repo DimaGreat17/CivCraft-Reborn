@@ -112,6 +112,33 @@ final class CampHeartTemplateTest {
     }
 
     @Test
+    void completionIsPersistentAndDamageRevokesItWithoutReplacingProjectId() {
+        var site=CampHeartSite.placed(UUID.randomUUID(),"minecraft:overworld",
+                new BlockPos(12,80,34));
+        assertThrows(IllegalStateException.class,()->site.withCompletion(true));
+        var confirmed=site.confirm();
+        assertFalse(confirmed.completed());
+        var complete=confirmed.withCompletion(true);
+        assertTrue(complete.completed());
+        assertEquals(confirmed.id(),complete.id());
+        assertEquals(confirmed.core(),complete.core());
+        var damaged=complete.withCompletion(false);
+        assertFalse(damaged.completed());
+        assertEquals(confirmed.shiftY(),damaged.shiftY());
+    }
+
+    @Test
+    void allRotatedRequiredStatesAgreeWithPhysicalMatchingRules() {
+        BlockPos origin=new BlockPos(10,64,10);
+        for(int turns=0;turns<4;turns++)for(var cell:CampHeartTemplate.cells()) {
+            var state=CampHeartTemplate.expected(origin,9,4,-8,turns,cell);
+            assertTrue(CampHeartTemplate.matching(state,state));
+            assertEquals(CampHeartTemplate.position(origin,9,4,-8,turns,cell).getY(),
+                    origin.getY()+4+cell.y());
+        }
+    }
+
+    @Test
     void pendingSiteValidatesTransformsAndPreservesIdOnConfirm(){
         var site=CampHeartSite.placed(UUID.randomUUID(),"minecraft:overworld",
                 new BlockPos(0,64,0));
