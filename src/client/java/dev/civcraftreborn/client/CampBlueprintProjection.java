@@ -171,7 +171,7 @@ public final class CampBlueprintProjection {
         if (plan == Plan.HEART) {
             return CampHeartTemplate.cells().stream()
                     .map(cell -> new Step(cell.x(),cell.y(),cell.z(),
-                            cell.state().getBlock())).toList();
+                            cell.coreMarker() ? dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE : cell.state().getBlock())).toList();
         }
         // All other 10 structures use the SAME full blueprint model for
         // client rendering, server validation and actual NPC construction.
