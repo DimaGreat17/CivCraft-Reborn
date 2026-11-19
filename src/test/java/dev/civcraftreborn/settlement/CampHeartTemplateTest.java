@@ -42,7 +42,7 @@ final class CampHeartTemplateTest {
         var stair=CampHeartTemplate.cells().stream()
                 .filter(c->c.state().is(Blocks.SPRUCE_STAIRS)).findFirst().orElseThrow();
         for(int turn=0;turn<4;turn++){
-            assertEquals(anchor,CampHeartTemplate.position(anchor,3,3,turn,coreCell));
+            assertEquals(anchor.offset(3,0,3),CampHeartTemplate.position(anchor,3,3,turn,coreCell));
             assertNotNull(CampHeartTemplate.expected(anchor,0,0,turn,stair)
                     .getValue(StairBlock.FACING));
         }
