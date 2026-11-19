@@ -141,9 +141,9 @@ public final class CampBlueprintProjection {
 
     public static boolean show(Plan plan) {
         if (coreAnchor == null || !unlocked(plan)) return false;
-        if (activePlan != plan) {
-            offsetX = plan == Plan.HEART ? 0 : 3;
-            offsetZ = plan == Plan.HEART ? 0 : 3;
+        if (activePlan != plan && plan != Plan.HEART) {
+            offsetX = 3;
+            offsetZ = 3;
             rotation = 0;
         }
         activePlan = plan;
