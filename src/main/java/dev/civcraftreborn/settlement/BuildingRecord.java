@@ -12,7 +12,7 @@ public record BuildingRecord(String id, String campId, String dimension,
                     Codec.STRING.fieldOf("id").forGetter(BuildingRecord::id),
                     Codec.STRING.fieldOf("camp_id").forGetter(BuildingRecord::campId),
                     Codec.STRING.fieldOf("dimension").forGetter(BuildingRecord::dimension),
-                    Codec.STRING.fieldOf("type").xmap(
+                    Codec.STRING.xmap(
                             FunctionalBuildingTemplates.Type::valueOf,
                             FunctionalBuildingTemplates.Type::name)
                             .fieldOf("type").forGetter(BuildingRecord::type),
