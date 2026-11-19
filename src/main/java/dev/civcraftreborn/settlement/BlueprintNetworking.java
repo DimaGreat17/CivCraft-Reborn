@@ -15,6 +15,8 @@ public final class BlueprintNetworking {
                 BlueprintStatusRequest.TYPE, BlueprintStatusRequest.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 BlueprintStatusResponse.TYPE, BlueprintStatusResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartPlacementResponse.TYPE, HeartPlacementResponse.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(BlueprintStatusRequest.TYPE,
                 (request, context) -> {
@@ -36,6 +38,11 @@ public final class BlueprintNetworking {
                             .map(c -> c.stage() == SettlementStage.SETTLEMENT ? 1 : 0)
                             .orElse(-1);
                     ServerPlayNetworking.send(player, new BlueprintStatusResponse(core, stage));
+                    CampHeartSavedData.get(context.server()).byCore(dimension,core)
+                            .filter(s->s.owner().equals(player.getUUID().toString()))
+                            .ifPresent(site->ServerPlayNetworking.send(player,
+                                    new HeartPlacementResponse(core,site.shiftX(),
+                                            site.shiftZ(),site.turns(),site.confirmed())));
                 });
     }
 }
