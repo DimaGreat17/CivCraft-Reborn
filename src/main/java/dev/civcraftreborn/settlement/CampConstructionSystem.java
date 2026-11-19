@@ -114,6 +114,18 @@ public final class CampConstructionSystem {
                     core.offset(STOCK_RADIUS,3,STOCK_RADIUS))) {
                 if(!level.hasChunkAt(storagePos))continue;
                 if(!(level.getBlockEntity(storagePos) instanceof Container container))continue;
+
+                // If the player already placed the physical dirt foundation,
+                // till it with a real stored hoe instead of consuming a second
+                // dirt item. This matches manual survival construction costs.
+                if(cell.block()==Blocks.FARMLAND && state.is(Blocks.DIRT)
+                        && hasHoe(container)) {
+                    if(place(level,target,cell,ItemStack.EMPTY)) {
+                        damageHoeOnce(container);
+                    }
+                    return;
+                }
+
                 for(int slot=0;slot<container.getContainerSize();slot++) {
                     ItemStack stack=container.getItem(slot);
                     if(stack.isEmpty())continue;
@@ -152,6 +164,22 @@ public final class CampConstructionSystem {
                     ||item==Items.NETHERITE_HOE)return true;
         }
         return false;
+    }
+
+    private static void damageHoeOnce(Container stock) {
+        for(int slot=0;slot<stock.getContainerSize();slot++) {
+            ItemStack hoe=stock.getItem(slot);
+            Item item=hoe.getItem();
+            if(item!=Items.WOODEN_HOE&&item!=Items.STONE_HOE&&item!=Items.IRON_HOE
+                    &&item!=Items.GOLDEN_HOE&&item!=Items.DIAMOND_HOE
+                    &&item!=Items.NETHERITE_HOE)continue;
+            if(!hoe.isDamageableItem())return;
+            int wear=hoe.getDamageValue()+1;
+            if(wear>=hoe.getMaxDamage())hoe.shrink(1);
+            else hoe.setDamageValue(wear);
+            stock.setChanged();
+            return;
+        }
     }
 
     private static boolean place(ServerLevel world,BlockPos target,
