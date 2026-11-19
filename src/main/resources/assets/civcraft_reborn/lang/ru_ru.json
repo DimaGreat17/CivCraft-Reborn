@@ -4,12 +4,17 @@
   "key.civcraft_reborn.open_menu": "Открыть управление CivCraft",
   "key.category.civcraft_reborn.controls": "CivCraft",
   "key.civcraft_reborn.planning_camera": "Камера градостроительства",
-  "key.civcraft_reborn.planning_north": "Камера: север",
-  "key.civcraft_reborn.planning_south": "Камера: юг",
-  "key.civcraft_reborn.planning_west": "Камера: запад",
-  "key.civcraft_reborn.planning_east": "Камера: восток",
+  "key.civcraft_reborn.planning_north": "Камера: двигаться вверх по экрану",
+  "key.civcraft_reborn.planning_south": "Камера: двигаться вниз по экрану",
+  "key.civcraft_reborn.planning_west": "Камера: двигаться влево по экрану",
+  "key.civcraft_reborn.planning_east": "Камера: двигаться вправо по экрану",
   "key.civcraft_reborn.planning_zoom_in": "Камера: приблизить",
   "key.civcraft_reborn.planning_zoom_out": "Камера: отдалить",
   "key.civcraft_reborn.planning_rotate_left": "Камера: повернуть влево",
-  "key.civcraft_reborn.planning_rotate_right": "Камера: повернуть вправо"
+  "key.civcraft_reborn.planning_rotate_right": "Камера: повернуть вправо",
+  "key.civcraft_reborn.planning_blueprint_rotate": "Чертёж: повернуть на 90°",
+  "key.civcraft_reborn.planning_raise": "Чертёж: поднять на один блок",
+  "key.civcraft_reborn.planning_lower": "Чертёж: опустить на один блок",
+  "key.civcraft_reborn.planning_drag_blueprint": "Чертёж: перетаскивание",
+  "key.civcraft_reborn.planning_drag_camera": "Камера: перетаскивание обзора"
 }
