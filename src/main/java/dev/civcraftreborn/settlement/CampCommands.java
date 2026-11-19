@@ -59,9 +59,6 @@ public final class CampCommands {
             if (!site.confirmed()) {
                 return fail(source, "Confirm your Camp Heart placement before building.");
             }
-            if (!level.hasChunkAt(pos) || !level.getBlockState(pos).is(CampBlocks.CAMP_CORE)) {
-                return fail(source, "Camp Heart foundation is missing.");
-            }
             var finished = CampHeartTemplate.inspect((net.minecraft.server.level.ServerLevel)level,
                     pos,site.shiftX(),site.shiftZ(),site.turns());
             if (!finished.complete()) {
@@ -69,8 +66,11 @@ public final class CampCommands {
                         + finished.matched() + "/" + finished.total()
                         + (finished.loaded() ? " blocks." : " (unloaded chunks)."));
             }
-            boolean withinBorder = level.getWorldBorder().isWithinBounds(pos);
-            boolean supported = level.getBlockState(pos.below()).isSolid();
+            BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ())
+                    .offset(3,0,3);
+            boolean withinBorder = level.getWorldBorder().isWithinBounds(buildingCenter);
+            boolean supported = level.hasChunkAt(buildingCenter)
+                    && level.getBlockState(buildingCenter.below()).isSolid();
             if (!CampRules.canFoundAt(store.all(), dimension,
                     CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ()).getX()+3,
                     CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ()).getZ()+3,
@@ -79,14 +79,12 @@ public final class CampCommands {
             }
             // Materials have already been placed into the complete Heart by hand.
             // Never charge the player for the same wood and stone twice.
-            BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ())
-                    .offset(3,0,3);
             CampRecord camp = CampRules.found(player.getUUID(), dimension,
                     buildingCenter.getX(),buildingCenter.getY(),buildingCenter.getZ(),
                     player.getName().getString() + "'s Camp", level.getGameTime());
             store.add(camp);
             source.sendSuccess(() -> Component.literal(
-                    "Camp founded at " + pos.toShortString() + " (ID " + camp.id()
+                    "Camp founded at " + buildingCenter.toShortString() + " (ID " + camp.id()
                     + "). No residents or resources are spawned for free."), false);
             return 1;
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
