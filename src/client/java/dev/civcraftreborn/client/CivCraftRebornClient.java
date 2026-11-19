@@ -7,6 +7,7 @@ import dev.civcraftreborn.settlement.BlueprintStatusResponse;
 import dev.civcraftreborn.settlement.HeartPlacementResponse;
 import dev.civcraftreborn.settlement.HeartPlacedNotice;
 import dev.civcraftreborn.settlement.HeartSiteRequest;
+import dev.civcraftreborn.settlement.HeartProjectCancelled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -45,6 +46,16 @@ public final class CivCraftRebornClient implements ClientModInitializer {
                         CampBlueprintProjection.setHeartPlacement(payload.core(),
                                 payload.shiftX(),payload.shiftZ(),payload.turns(),
                                 payload.confirmed())));
+
+        ClientPlayNetworking.registerGlobalReceiver(HeartProjectCancelled.TYPE,
+                (payload,context) -> context.client().execute(() -> {
+                    CampBlueprintProjection.clearProject(payload.core());
+                    if(CivCraftPlanningCamera.active()) {
+                        CivCraftPlanningCamera.deactivate();
+                        if(context.client().gui.screen() instanceof CivCraftPlanningScreen)
+                            context.client().gui.setScreen(null);
+                    }
+                }));
 
         ClientPlayNetworking.registerGlobalReceiver(HeartPlacedNotice.TYPE,
                 (payload,context) -> context.client().execute(() -> {
