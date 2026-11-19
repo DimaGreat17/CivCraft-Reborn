@@ -2,5 +2,14 @@
   "block.civcraft_reborn.camp_core": "Camp Heart Foundation",
   "item.civcraft_reborn.camp_core": "Camp Heart Foundation",
   "key.civcraft_reborn.open_menu": "Open CivCraft management",
-  "key.category.civcraft_reborn.controls": "CivCraft"
+  "key.category.civcraft_reborn.controls": "CivCraft",
+  "key.civcraft_reborn.planning_camera": "City planning camera",
+  "key.civcraft_reborn.planning_north": "Camera pan north",
+  "key.civcraft_reborn.planning_south": "Camera pan south",
+  "key.civcraft_reborn.planning_west": "Camera pan west",
+  "key.civcraft_reborn.planning_east": "Camera pan east",
+  "key.civcraft_reborn.planning_zoom_in": "Camera zoom in",
+  "key.civcraft_reborn.planning_zoom_out": "Camera zoom out",
+  "key.civcraft_reborn.planning_rotate_left": "Camera rotate left",
+  "key.civcraft_reborn.planning_rotate_right": "Camera rotate right"
 }
