@@ -73,6 +73,14 @@ final class CampHeartTemplateTest {
     }
 
     @Test
+    void removingStarterCancelsOnlyPendingLoadedProjects() {
+        assertTrue(CampHeartProjectLifecycle.shouldCancel(false,true,false));
+        assertFalse(CampHeartProjectLifecycle.shouldCancel(false,true,true));
+        assertFalse(CampHeartProjectLifecycle.shouldCancel(false,false,false));
+        assertFalse(CampHeartProjectLifecycle.shouldCancel(true,true,false));
+    }
+
+    @Test
     void pendingSiteValidatesTransformsAndPreservesIdOnConfirm(){
         var site=CampHeartSite.placed(UUID.randomUUID(),"minecraft:overworld",
                 new BlockPos(0,64,0));
