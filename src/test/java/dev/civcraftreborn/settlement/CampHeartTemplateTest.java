@@ -22,6 +22,26 @@ final class CampHeartTemplateTest {
     }
 
     @Test
+    void importedVariantPreservesExactBlockStatesAndFootprintRotation() {
+        var d=CampHeartTemplate.definition("test_small");
+        assertEquals(3,d.width());
+        assertEquals(2,d.height());
+        assertEquals(5,d.depth());
+        assertEquals(4,CampHeartTemplate.cells("test_small").size());
+        var site=CampHeartSite.placed(UUID.randomUUID(),"minecraft:overworld",
+                new BlockPos(100,70,100)).withBlueprint("test_small");
+        assertEquals("test_small",site.confirm().blueprintId());
+        var log=CampHeartTemplate.cells("test_small").stream()
+                .filter(cell->cell.state().is(Blocks.OAK_LOG)).findFirst().orElseThrow();
+        assertEquals(net.minecraft.core.Direction.Axis.X,
+                log.state().getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS));
+        assertEquals(new BlockPos(99,70,98),
+                CampHeartTemplate.origin("test_small",site.core(),0,0,0));
+        assertEquals(new BlockPos(103,71,99),
+                CampHeartTemplate.position("test_small",site.core(),0,0,0,1,log));
+    }
+
+    @Test
     void legacyBlueprintResourceIsSharedAndPreservesOriginalStructure() {
         var definition=CampBlueprintCatalog.loadBundled("camp_heart_v1");
         assertEquals(7,definition.width());
