@@ -148,7 +148,9 @@ public final class CampHeartCommands {
                     site.core(),site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             source.sendSuccess(()->Component.literal("Camp Heart: "+
                     progress.matched()+"/"+progress.total()+" blocks; "+
-                    (site.confirmed()?"site confirmed":"site not yet confirmed")+
+                    (site.confirmed()?(progress.complete()
+                            ?"FINISHED — ready to found":"CONSTRUCTION INCOMPLETE")
+                            :"POSITION NOT CONFIRMED")+
                     (progress.loaded()?"":"; some chunks are NOT loaded")),false);
             if(progress.complete() && site.confirmed()) {
                 source.sendSuccess(()->Component.literal(
