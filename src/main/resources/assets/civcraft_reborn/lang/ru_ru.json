@@ -2,5 +2,14 @@
   "block.civcraft_reborn.camp_core": "Основание лагеря",
   "item.civcraft_reborn.camp_core": "Основание лагеря",
   "key.civcraft_reborn.open_menu": "Открыть управление CivCraft",
-  "key.category.civcraft_reborn.controls": "CivCraft"
+  "key.category.civcraft_reborn.controls": "CivCraft",
+  "key.civcraft_reborn.planning_camera": "Камера градостроительства",
+  "key.civcraft_reborn.planning_north": "Камера: север",
+  "key.civcraft_reborn.planning_south": "Камера: юг",
+  "key.civcraft_reborn.planning_west": "Камера: запад",
+  "key.civcraft_reborn.planning_east": "Камера: восток",
+  "key.civcraft_reborn.planning_zoom_in": "Камера: приблизить",
+  "key.civcraft_reborn.planning_zoom_out": "Камера: отдалить",
+  "key.civcraft_reborn.planning_rotate_left": "Камера: повернуть влево",
+  "key.civcraft_reborn.planning_rotate_right": "Камера: повернуть вправо"
 }
