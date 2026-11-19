@@ -139,7 +139,6 @@ public final class CampBlueprintProjection {
             heartBlueprintId=blueprintId;
             TEMPLATE_CACHE.remove(Plan.HEART);
             BOUNDS_CACHE.remove(Plan.HEART);
-            activePlan=null;
             clearHeartProgress();
         }
         offsetX=shiftX;
