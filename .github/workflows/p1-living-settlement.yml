@@ -29,6 +29,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.8.0'
+      - name: Validate manual Minecraft structure importer
+        run: python3 scripts/test_import_structure_nbt.py -v
       - name: Render-pass crash regression guard
         run: python3 scripts/verify_ghost_renderer_lifecycle.py
       - name: Build and unit tests
@@ -39,7 +41,12 @@ jobs:
             gradle build --no-daemon --stacktrace > /tmp/civcraft-gradle-build.log 2>&1
             status=$?
             set -e
-            tail -n 120 /tmp/civcraft-gradle-build.log
+            echo '=== Compiler/test errors ==='
+            grep -n -C 4 -E 'error:|cannot find symbol|FAILURE:|What went wrong|Execution failed for task|There were failing tests' /tmp/civcraft-gradle-build.log | head -n 180 || true
+            echo '=== JUnit failures (if any) ==='
+            grep -n -A 6 -B 2 '<failure\\|<error' build/test-results/test/*.xml | head -n 150 || true
+            echo '=== Final build lines ==='
+            tail -n 70 /tmp/civcraft-gradle-build.log
             if [[ "$status" -eq 0 ]]; then exit 0; fi
             # Retry only upstream Maven/Fabric metadata failures, not Java/test failures.
             if ! grep -Eq "Could not resolve all artifacts|Received status code 429|Could not find com.google.code.gson|Could not find org.jetbrains.kotlin" /tmp/civcraft-gradle-build.log; then
@@ -74,4 +81,20 @@ jobs:
         with:
           name: p1-dedicated-server-log
           path: /tmp/p1-development-server.log
+          if-no-files-found: warn
+
+      - name: Upload complete Gradle build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-gradle-build-log
+          path: /tmp/civcraft-gradle-build.log
+          if-no-files-found: warn
+
+      - name: Upload JUnit XML results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-junit-results
+          path: build/test-results/test/*.xml
           if-no-files-found: warn

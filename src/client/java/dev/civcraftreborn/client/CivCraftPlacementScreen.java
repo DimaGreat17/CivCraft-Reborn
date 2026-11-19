@@ -1,119 +1,122 @@
 package dev.civcraftreborn.client;
 
+import dev.civcraftreborn.settlement.CampBlueprintCatalog;
+import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
 
 /**
- * Move/rotate a ghost plan without changing physical Minecraft blocks.
- * Shift is bounded inside the camp radius; heart stays attached to its core.
+ * Building details and server-validated blueprint variant selection.
+ * Placement, rotation and vertical shift happen exclusively in the F7 camera.
  */
 public final class CivCraftPlacementScreen extends Screen {
     private final Screen parent;
-    private Button positionInfo;
+    private Button variantButton;
 
     public CivCraftPlacementScreen(Screen parent) {
-        super(Component.literal("CivCraft — размещение схемы"));
-        this.parent = parent;
+        super(Component.literal("CivCraft — проект строительства"));
+        this.parent=parent;
     }
 
-    @Override
-    protected void init() {
-        int x = width/2-155;
-        int y = Math.max(22, height/2-110);
-        CampBlueprintProjection.Plan plan = CampBlueprintProjection.selected();
-        if (plan == null || !CampBlueprintProjection.unlocked(plan)) {
+    @Override protected void init() {
+        int x=width/2-155;
+        int y=Math.max(22,height/2-90);
+        var plan=CampBlueprintProjection.selected();
+        if(plan==null || !CampBlueprintProjection.unlocked(plan)) {
             Minecraft.getInstance().gui.setScreen(parent);
             return;
         }
-
         addRenderableWidget(Button.builder(Component.literal(plan.title()),
                 b -> {}).bounds(x,y,310,20).build()).active=false;
+        addRenderableWidget(Button.builder(Component.literal(
+                "Перемещение и поворот — только в камере F7"),
+                b -> {}).bounds(x,y+25,310,20).build()).active=false;
 
-        positionInfo = addRenderableWidget(Button.builder(Component.literal(positionLabel()),
-                b -> {}).bounds(x,y+25,310,20).build());
-        positionInfo.active=false;
-
-        Button north = addRenderableWidget(Button.builder(Component.literal("Север -Z"),
-                b -> { CampBlueprintProjection.move(0,-1); refresh(); })
-                .bounds(x+105,y+50,100,20).build());
-        Button west = addRenderableWidget(Button.builder(Component.literal("Запад -X"),
-                b -> { CampBlueprintProjection.move(-1,0); refresh(); })
-                .bounds(x,y+75,100,20).build());
-        Button south = addRenderableWidget(Button.builder(Component.literal("Юг +Z"),
-                b -> { CampBlueprintProjection.move(0,1); refresh(); })
-                .bounds(x+105,y+75,100,20).build());
-        Button east = addRenderableWidget(Button.builder(Component.literal("Восток +X"),
-                b -> { CampBlueprintProjection.move(1,0); refresh(); })
-                .bounds(x+210,y+75,100,20).build());
-
-        Button rotateLeft = addRenderableWidget(Button.builder(Component.literal("↶ 90°"),
-                b -> { CampBlueprintProjection.rotate(-1); refresh(); })
-                .bounds(x,y+100,153,20).build());
-        Button rotateRight = addRenderableWidget(Button.builder(Component.literal("90° ↷"),
-                b -> { CampBlueprintProjection.rotate(1); refresh(); })
-                .bounds(x+157,y+100,153,20).build());
-
-        boolean movable = plan != CampBlueprintProjection.Plan.HEART;
-        for (Button button : new Button[]{north,west,south,east,rotateLeft,rotateRight}) {
-            button.active = movable;
+        int next=y+50;
+        if(plan==CampBlueprintProjection.Plan.HEART) {
+            List<String> versions=CampBlueprintCatalog.availableBundled();
+            variantButton=addRenderableWidget(Button.builder(
+                    Component.literal("Вариант: "+CampBlueprintProjection.heartBlueprintId()),
+                    b -> {
+                        if(CampBlueprintProjection.heartConfirmed())return;
+                        int current=versions.indexOf(CampBlueprintProjection.heartBlueprintId());
+                        String selected=versions.get((current+1+versions.size())%versions.size());
+                        var client=Minecraft.getInstance();
+                        if(client.getConnection()!=null)
+                            client.getConnection().sendCommand(
+                                    "civcraft camp heart variant "+selected);
+                    }).bounds(x,next,310,20).build());
+            variantButton.active=!CampBlueprintProjection.heartConfirmed()
+                    && versions.size()>1;
+            next+=25;
         }
-
+        final int cameraY=next;
+        addRenderableWidget(Button.builder(Component.literal("Камера градостроительства (F7)"),
+                b -> CivCraftPlanningCamera.activate(Minecraft.getInstance()))
+                .bounds(x,cameraY,310,20).build());
+        next+=25;
         addRenderableWidget(Button.builder(Component.literal("Материалы и остаток"),
                 b -> Minecraft.getInstance().gui.setScreen(new CivCraftMaterialsScreen(this)))
-                .bounds(x,y+125,310,20).build());
+                .bounds(x,next,310,20).build());
+        next+=25;
 
-        addRenderableWidget(Button.builder(Component.literal("Показать проекцию в мире"),
-                b -> Minecraft.getInstance().gui.setScreen(null))
-                .bounds(x,y+150,310,20).build());
-
-        Button order = addRenderableWidget(Button.builder(
-                Component.literal("Поручить строительство NPC"),
-                b -> sendBuildingCommand(false))
-                .bounds(x,y+176,310,20).build());
-        Button register = addRenderableWidget(Button.builder(
-                Component.literal("Принять готовое здание"),
-                b -> sendBuildingCommand(true))
-                .bounds(x,y+201,310,20).build());
-
-        boolean functional = plan != CampBlueprintProjection.Plan.HEART;
-        try { FunctionalBuildingTemplates.Type.valueOf(plan.name()); }
-        catch(IllegalArgumentException e) { functional=false; }
-        order.active=functional;
-        register.active=functional;
-
+        if(plan==CampBlueprintProjection.Plan.HEART) {
+            Button confirm=addRenderableWidget(Button.builder(
+                    Component.literal(CampBlueprintProjection.heartConfirmed()
+                            ? "Площадка подтверждена" : "Подтвердить площадку лагеря"),
+                    b -> sendCommand("civcraft camp heart confirm"))
+                    .bounds(x,next,310,20).build());
+            confirm.active=!CampBlueprintProjection.heartConfirmed();
+        } else {
+            boolean functional;
+            try {FunctionalBuildingTemplates.Type.valueOf(plan.name());functional=true;}
+            catch(IllegalArgumentException e) {functional=false;}
+            Button order=addRenderableWidget(Button.builder(
+                    Component.literal("Поручить строительство NPC"),
+                    b -> sendBuildingCommand(false)).bounds(x,next,310,20).build());
+            next+=25;
+            Button register=addRenderableWidget(Button.builder(
+                    Component.literal("Принять готовое здание"),
+                    b -> sendBuildingCommand(true)).bounds(x,next,310,20).build());
+            order.active=functional;
+            register.active=functional;
+        }
         addRenderableWidget(Button.builder(Component.literal("Назад к каталогу"),
-                b -> onClose()).bounds(x,y+226,310,20).build());
+                b -> onClose()).bounds(x,next+35,310,20).build());
+    }
+
+    @Override public void tick() {
+        super.tick();
+        if(variantButton!=null) {
+            variantButton.setMessage(Component.literal(
+                    "Вариант: "+CampBlueprintProjection.heartBlueprintId()));
+            variantButton.active=!CampBlueprintProjection.heartConfirmed()
+                    && CampBlueprintCatalog.availableBundled().size()>1;
+        }
+    }
+
+    private void sendCommand(String command) {
+        Minecraft client=Minecraft.getInstance();
+        if(client.getConnection()!=null)client.getConnection().sendCommand(command);
+        client.gui.setScreen(null);
     }
 
     private void sendBuildingCommand(boolean register) {
-        CampBlueprintProjection.Plan plan=CampBlueprintProjection.selected();
+        var plan=CampBlueprintProjection.selected();
         var origin=CampBlueprintProjection.placedOrigin();
-        Minecraft game=Minecraft.getInstance();
-        if(plan==null||origin==null||game.getConnection()==null)return;
-        int quarterTurns=CampBlueprintProjection.rotationDegrees()/90;
-        String action=register?"building register":"construction order";
-        game.getConnection().sendCommand("civcraft camp "+action+" "+
-                plan.name()+" "+quarterTurns+" "+origin.getX()+" "+
-                origin.getY()+" "+origin.getZ());
-        game.gui.setScreen(null); // Let owner read real server result.
+        if(plan==null||origin==null)return;
+        int turns=CampBlueprintProjection.rotationDegrees()/90;
+        String command="civcraft camp "+
+                (register?"building register":"construction order")+
+                " "+plan.name()+" "+turns+" "+origin.getX()+
+                " "+origin.getY()+" "+origin.getZ();
+        sendCommand(command);
     }
 
-    private String positionLabel() {
-        return "Сдвиг: X="+CampBlueprintProjection.offsetX()
-                +" Z="+CampBlueprintProjection.offsetZ()
-                +" | Поворот: "+CampBlueprintProjection.rotationDegrees()+"°";
-    }
-
-    private void refresh() {
-        if (positionInfo != null)
-            positionInfo.setMessage(Component.literal(positionLabel()));
-    }
-
-    @Override
-    public void onClose() {
+    @Override public void onClose() {
         Minecraft.getInstance().gui.setScreen(parent);
     }
 }

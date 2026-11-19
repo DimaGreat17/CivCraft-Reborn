@@ -4,107 +4,118 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.QuadInstance;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4fc;
 
 /**
- * Translucent full-volume block previews using Minecraft 26.3's native feature
- * submission path. In particular, we DO NOT create a nested RenderPass or call
- * StagedVertexBuffer.upload() from any level-render callback.
+ * World-space ghost made from the exact textured baked quads of each desired
+ * BlockState. Every quad, including un-tinted wood/stone sprites, receives
+ * an explicit translucent color through QuadInstance.
  *
- * Geometry is submitted during COLLECT_SUBMITS and Minecraft uploads/draws it
- * with its own properly ordered RenderType feature renderer. This resolves the
- * precise render-pass lifecycle violation in the user's 2026-11-18 crash.
+ * IMPORTANT: submitBlockModel(tintLayers) DOES NOT apply alpha to untinted
+ * model faces. That old path made the hologram look fully opaque regardless
+ * of the tint array alpha values.
  *
- * Shapes are intentionally ghosted cubes (all six faces), not yet exact baked
- * models for stairs, beds, slabs or directional properties.
+ * Geometry is submitted through vanilla COLLECT_SUBMITS; no manual GPU
+ * uploads or nested render passes are created (Renderpearl-safe lifecycle).
  */
 public final class CivCraftGhostBlockRenderer {
-    private static final int MAX_GHOST_BLOCKS = 256;
-    private static final float INSET = 0.018f;
-    private static final float RED = 0.19f;
-    private static final float GREEN = 0.81f;
-    private static final float BLUE = 1.0f;
-    private static final float ALPHA = 0.30f;
+    private static final int MAX_GHOST_BLOCKS=256;
+    private static final int LIGHT=0x00F000F0;
 
-    private CivCraftGhostBlockRenderer() {}
+    // Alpha is applied to EVERY quad (not just JSON tintindex faces).
+    // 0x60 = ~38% opacity; 0x90 = ~56% opacity.
+    private static final int NORMAL_COLOR=0x60FFFFFF;
+    private static final int OBSTRUCTED_COLOR=0x90FF7777;
+
+    private record GhostQuads(BlockPos pos,List<BakedQuad> quads,boolean obstructed) {}
+    private CivCraftGhostBlockRenderer(){}
 
     public static void register() {
         LevelRenderEvents.COLLECT_SUBMITS.register(CivCraftGhostBlockRenderer::submit);
     }
 
     private static void submit(LevelRenderContext context) {
-        Minecraft client = Minecraft.getInstance();
-        CampBlueprintProjection.Plan plan = CampBlueprintProjection.selected();
-        BlockPos anchor = CampBlueprintProjection.anchor();
-        if (plan == null || anchor == null || client.level == null
-                || client.player == null || !CampBlueprintProjection.unlocked(plan)
-                || client.player.blockPosition().distSqr(anchor) > 28 * 28) {
+        Minecraft client=Minecraft.getInstance();
+        var plan=CampBlueprintProjection.selected();
+        BlockPos anchor=CampBlueprintProjection.anchor();
+        if(plan==null||anchor==null||client.level==null||client.player==null
+                ||!CampBlueprintProjection.unlocked(plan)
+                ||(plan!=CampBlueprintProjection.Plan.HEART
+                    &&client.player.blockPosition().distSqr(anchor)>28*28))
             return;
-        }
 
-        // World data is read while Minecraft is collecting submits, never
-        // from the deferred GPU execution callback.
-        List<BlockPos> missing = new ArrayList<>();
-        for (CampBlueprintProjection.Step step : CampBlueprintProjection.steps(plan)) {
-            BlockPos position = CampBlueprintProjection.worldPosition(plan, step);
-            if (position == null || !client.level.hasChunkAt(position)
-                    || CampBlueprintProjection.matches(plan, step)) {
-                continue;
+        // Snapshot all world-dependent information on the extraction thread,
+        // before the deferred draw callback executes.
+        var models=client.getModelManager().getBlockStateModelSet();
+        List<GhostQuads> needed=new ArrayList<>();
+        for(var step:CampBlueprintProjection.steps(plan)) {
+            BlockPos position=CampBlueprintProjection.worldPosition(plan,step);
+            if(position==null||!client.level.hasChunkAt(position)
+                    ||CampBlueprintProjection.matches(plan,step))continue;
+            BlockState desired=CampBlueprintProjection.expectedState(plan,step);
+            // Authored blueprints may optionally REQUIRE empty air cells.
+            // Show an occupied required-air cell as a red translucent glass
+            // marker so the player knows exactly which block to remove.
+            BlockState visual=desired.isAir()
+                    ? Blocks.GLASS.defaultBlockState():desired;
+            List<BlockStateModelPart> parts=new ArrayList<>();
+            models.get(visual).collectParts(
+                    RandomSource.create(visual.getSeed(position)),parts);
+
+            List<BakedQuad> quads=new ArrayList<>();
+            for(BlockStateModelPart part:parts) {
+                quads.addAll(part.getQuads(null));
+                for(Direction direction:Direction.values())
+                    quads.addAll(part.getQuads(direction));
             }
-            missing.add(position.immutable());
-            if (missing.size() >= MAX_GHOST_BLOCKS) break;
+            if(quads.isEmpty())continue;
+            boolean obstructed=!client.level.getBlockState(position).isAir();
+            needed.add(new GhostQuads(position.immutable(),List.copyOf(quads),obstructed));
+            if(needed.size()>=MAX_GHOST_BLOCKS)break;
         }
-        if (missing.isEmpty()) return;
+        if(needed.isEmpty())return;
 
-        Vec3 camera = context.levelState().cameraRenderState.pos;
-        PoseStack poseStack = context.poseStack();
-        poseStack.pushPose();
-        poseStack.translate(-camera.x, -camera.y, -camera.z);
-
-        // submitCustomGeometry records the immutable geometry callback. The
-        // vanilla feature dispatcher handles buffer upload and render-pass
-        // lifetime; do NOT upload manually inside COLLECT_SUBMITS or render.
-        List<BlockPos> positions = List.copyOf(missing);
+        Vec3 camera=context.levelState().cameraRenderState.pos;
+        PoseStack stack=context.poseStack();
+        stack.pushPose();
+        stack.translate(-camera.x,-camera.y,-camera.z);
+        List<GhostQuads> snapshot=List.copyOf(needed);
         context.submitNodeCollector().submitCustomGeometry(
-                poseStack, RenderTypes.debugFilledBox(), (pose, vertices) -> {
-                    Matrix4fc matrix = pose.pose();
-                    for (BlockPos position : positions) {
-                        cube(vertices, matrix, position.getX(), position.getY(), position.getZ());
+                stack,RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS),
+                (pose,vertices)->{
+                    QuadInstance quad=new QuadInstance();
+                    quad.setLightCoords(LIGHT);
+                    quad.setOverlayCoords(OverlayTexture.NO_OVERLAY);
+                    for(GhostQuads ghost:snapshot) {
+                        // Vertex positions are in local model coordinates.
+                        // Translate using a copy of the extracted matrix, not
+                        // client world state or render-pass commands.
+                        PoseStack local=new PoseStack();
+                        local.last().pose().set(pose.pose());
+                        local.translate(ghost.pos().getX(),ghost.pos().getY(),ghost.pos().getZ());
+                        quad.setColor(ghost.obstructed()?OBSTRUCTED_COLOR:NORMAL_COLOR);
+                        for(BakedQuad baked:ghost.quads())
+                            vertices.putBakedQuad(local.last(),baked,quad);
                     }
                 });
-        poseStack.popPose();
+        stack.popPose();
     }
 
-    private static void cube(VertexConsumer vertices, Matrix4fc matrix, int x, int y, int z) {
-        float x0=x+INSET, y0=y+INSET, z0=z+INSET;
-        float x1=x+1-INSET, y1=y+1-INSET, z1=z+1-INSET;
-        // Six complete faces show a full semitransparent 3D block, not points.
-        face(vertices,matrix,x0,y0,z1,x1,y0,z1,x1,y1,z1,x0,y1,z1);
-        face(vertices,matrix,x1,y0,z0,x0,y0,z0,x0,y1,z0,x1,y1,z0);
-        face(vertices,matrix,x0,y0,z0,x0,y0,z1,x0,y1,z1,x0,y1,z0);
-        face(vertices,matrix,x1,y0,z1,x1,y0,z0,x1,y1,z0,x1,y1,z1);
-        face(vertices,matrix,x0,y1,z1,x1,y1,z1,x1,y1,z0,x0,y1,z0);
-        face(vertices,matrix,x0,y0,z0,x1,y0,z0,x1,y0,z1,x0,y0,z1);
-    }
-
-    private static void face(VertexConsumer vertices, Matrix4fc matrix,
-            float ax,float ay,float az,float bx,float by,float bz,
-            float cx,float cy,float cz,float dx,float dy,float dz) {
-        vertices.addVertex(matrix,ax,ay,az).setColor(RED,GREEN,BLUE,ALPHA);
-        vertices.addVertex(matrix,bx,by,bz).setColor(RED,GREEN,BLUE,ALPHA);
-        vertices.addVertex(matrix,cx,cy,cz).setColor(RED,GREEN,BLUE,ALPHA);
-        vertices.addVertex(matrix,dx,dy,dz).setColor(RED,GREEN,BLUE,ALPHA);
-    }
-
-    /** Kept for backward-compatible GameRenderer close mixin. No GPU-owned buffers. */
     public static void close() {
-        // All renderer-owned GPU resources were removed; vanilla owns buffers.
+        // Buffers and GPU passes belong to the Minecraft feature dispatcher.
     }
 }

@@ -1,1 +1,20 @@
-{"block.civcraft_reborn.camp_core":"Camp Core","item.civcraft_reborn.camp_core":"Camp Core"}
+{
+  "block.civcraft_reborn.camp_core": "Camp Heart Foundation",
+  "item.civcraft_reborn.camp_core": "Camp Heart Foundation",
+  "key.civcraft_reborn.open_menu": "Open CivCraft management",
+  "key.category.civcraft_reborn.controls": "CivCraft",
+  "key.civcraft_reborn.planning_camera": "City planning camera",
+  "key.civcraft_reborn.planning_north": "Camera: pan up on screen",
+  "key.civcraft_reborn.planning_south": "Camera: pan down on screen",
+  "key.civcraft_reborn.planning_west": "Camera: pan left on screen",
+  "key.civcraft_reborn.planning_east": "Camera: pan right on screen",
+  "key.civcraft_reborn.planning_zoom_in": "Camera zoom in",
+  "key.civcraft_reborn.planning_zoom_out": "Camera zoom out",
+  "key.civcraft_reborn.planning_rotate_left": "Camera rotate left",
+  "key.civcraft_reborn.planning_rotate_right": "Camera rotate right",
+  "key.civcraft_reborn.planning_blueprint_rotate": "Blueprint: rotate 90°",
+  "key.civcraft_reborn.planning_raise": "Blueprint: raise one block",
+  "key.civcraft_reborn.planning_lower": "Blueprint: lower one block",
+  "key.civcraft_reborn.planning_drag_blueprint": "Blueprint: drag",
+  "key.civcraft_reborn.planning_drag_camera": "Camera: drag view"
+}

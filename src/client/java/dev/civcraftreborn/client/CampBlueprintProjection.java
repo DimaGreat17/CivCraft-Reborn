@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev.civcraftreborn.settlement.BlueprintAccess;
+import dev.civcraftreborn.settlement.CampHeartTemplate;
 import dev.civcraftreborn.settlement.CampRules;
 import dev.civcraftreborn.settlement.BlueprintTransform;
 import dev.civcraftreborn.settlement.FunctionalBuildingTemplates;
@@ -18,8 +19,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Client-only visual projection. The server owns all permissions, settlement
@@ -88,8 +92,14 @@ public final class CampBlueprintProjection {
     private static Plan activePlan;
     // -2 pending response, -1 no owned camp, 0 CAMP, 1 SETTLEMENT.
     private static int serverStage = -2;
-    private static int offsetX = 3;
-    private static int offsetZ = 3;
+    private static int offsetX = 12;
+    private static int offsetY = 0;
+    private static int offsetZ = 0;
+    private static boolean heartConfirmed;
+    private static String heartBlueprintId=CampHeartTemplate.LEGACY_BLUEPRINT_ID;
+    private static int heartMatched=-1;
+    private static int heartTotal=0;
+    private static boolean heartChunksLoaded=false;
     private static int rotation = 0;
 
     private CampBlueprintProjection() {}
@@ -104,10 +114,69 @@ public final class CampBlueprintProjection {
         dimension = dimensionId;
         activePlan = null;
         serverStage = -2;
-        offsetX = 3;
-        offsetZ = 3;
+        offsetX = 12;
+        offsetY = 0;
+        offsetZ = 0;
         rotation = 0;
+        heartConfirmed = false;
+        heartBlueprintId=CampHeartTemplate.LEGACY_BLUEPRINT_ID;
+        TEMPLATE_CACHE.remove(Plan.HEART);
+        BOUNDS_CACHE.remove(Plan.HEART);
+        clearHeartProgress();
     }
+
+    public static void setHeartPlacement(BlockPos core,int shiftX,int shiftY,int shiftZ,
+            int turns,boolean confirmed,String blueprintId) {
+        if(coreAnchor==null||!coreAnchor.equals(core))return;
+        if(!CampHeartTemplate.transformValid(shiftX,shiftY,shiftZ,turns))return;
+        try {
+            CampHeartTemplate.definition(blueprintId);
+        } catch(RuntimeException missingResource) {
+            Minecraft.getInstance().player.sendSystemMessage(
+                    net.minecraft.network.chat.Component.literal(
+                        "CivCraft: blueprint "+blueprintId+" is not installed in this client."));
+            return;
+        }
+        if(!heartBlueprintId.equals(blueprintId)) {
+            heartBlueprintId=blueprintId;
+            TEMPLATE_CACHE.remove(Plan.HEART);
+            BOUNDS_CACHE.remove(Plan.HEART);
+            clearHeartProgress();
+        }
+        offsetX=shiftX;
+        offsetY=shiftY;
+        offsetZ=shiftZ;
+        rotation=turns;
+        heartConfirmed=confirmed;
+    }
+    private static void clearHeartProgress() {
+        heartMatched=-1;
+        heartTotal=0;
+        heartChunksLoaded=false;
+    }
+
+    public static void setHeartProgress(BlockPos core,int matched,int total,boolean loaded) {
+        if(coreAnchor==null||!coreAnchor.equals(core))return;
+        if(total<1 || matched<0 || matched>total)return;
+        heartMatched=matched;
+        heartTotal=total;
+        heartChunksLoaded=loaded;
+    }
+    public static boolean heartReadyToFound() {
+        return heartConfirmed && heartChunksLoaded && heartTotal>0
+                && heartMatched==heartTotal && serverStage==-1;
+    }
+    public static String heartProgressLabel() {
+        if(coreAnchor==null)return "Нет активной стройки";
+        if(heartMatched<0)return "Проверяем состояние постройки…";
+        if(!heartConfirmed)return "Площадка не подтверждена";
+        if(!heartChunksLoaded)return "Не все чанки постройки загружены";
+        return heartMatched+"/"+heartTotal+
+                (heartMatched==heartTotal?" — ЗАВЕРШЕНО":" — строительство");
+    }
+
+    public static boolean heartConfirmed(){return heartConfirmed;}
+    public static String heartBlueprintId(){return heartBlueprintId;}
 
     public static void setServerStage(BlockPos core, int stage) {
         if (coreAnchor == null || !coreAnchor.equals(core)) return;
@@ -127,8 +196,9 @@ public final class CampBlueprintProjection {
 
     public static boolean show(Plan plan) {
         if (coreAnchor == null || !unlocked(plan)) return false;
-        if (activePlan != plan) {
+        if (activePlan != plan && plan != Plan.HEART) {
             offsetX = 3;
+            offsetY = 0;
             offsetZ = 3;
             rotation = 0;
         }
@@ -137,13 +207,35 @@ public final class CampBlueprintProjection {
     }
 
     public static void hide() { activePlan = null; }
+    /** Forget an invalidated construction project, not merely its visible ghost. */
+    public static void clearProject(BlockPos foundation) {
+        if(coreAnchor==null || (!BlockPos.ZERO.equals(foundation)
+                && !coreAnchor.equals(foundation)))return;
+        coreAnchor=null;
+        dimension=null;
+        activePlan=null;
+        serverStage=-2;
+        offsetX=12;
+        offsetY=0;
+        offsetZ=0;
+        rotation=0;
+        heartConfirmed=false;
+        heartBlueprintId=CampHeartTemplate.LEGACY_BLUEPRINT_ID;
+        TEMPLATE_CACHE.remove(Plan.HEART);
+        BOUNDS_CACHE.remove(Plan.HEART);
+        clearHeartProgress();
+    }
     public static Plan selected() { return activePlan; }
     public static BlockPos anchor() { return coreAnchor; }
     public static int rotationDegrees() { return rotation * 90; }
     public static int offsetX() { return offsetX; }
+    public static int offsetY() { return offsetY; }
     /** NW floor-level origin used by server construction and acceptance. */
     public static BlockPos placedOrigin() {
-        return coreAnchor == null ? null : coreAnchor.offset(offsetX,0,offsetZ);
+        if(coreAnchor==null)return null;
+        return activePlan==Plan.HEART
+                ?CampHeartTemplate.origin(heartBlueprintId,coreAnchor,offsetX,offsetY,offsetZ)
+                :coreAnchor.offset(offsetX,offsetY,offsetZ);
     }
 
     public static int offsetZ() { return offsetZ; }
@@ -155,11 +247,9 @@ public final class CampBlueprintProjection {
 
     private static List<Step> buildSteps(Plan plan) {
         if (plan == Plan.HEART) {
-            return List.of(
-                    new Step(0,0,-1,Blocks.OBSIDIAN),
-                    new Step(0,0, 1,Blocks.OBSIDIAN),
-                    new Step(-1,0,0,Blocks.OBSIDIAN),
-                    new Step( 1,0,0,Blocks.OBSIDIAN));
+            return CampHeartTemplate.cells(heartBlueprintId).stream()
+                    .map(cell -> new Step(cell.x(),cell.y(),cell.z(),
+                            cell.state().getBlock())).toList();
         }
         // All other 10 structures use the SAME full blueprint model for
         // client rendering, server validation and actual NPC construction.
@@ -176,37 +266,58 @@ public final class CampBlueprintProjection {
      */
     public static BlockPos worldPosition(Plan plan, Step step) {
         if (coreAnchor == null) return null;
-        if (plan == Plan.HEART) return step.position(coreAnchor);
+        if (plan == Plan.HEART) {
+            var def=CampHeartTemplate.definition(heartBlueprintId);
+            var p=BlueprintTransform.rotate(step.dx(),step.dz(),
+                    def.width(),def.depth(),rotation);
+            var origin=CampHeartTemplate.origin(heartBlueprintId,coreAnchor,
+                    offsetX,offsetY,offsetZ);
+            return origin.offset(p.x(),step.dy(),p.z());
+        }
         Bounds bounds = bounds(plan);
         int x=step.dx()-bounds.minX(), z=step.dz()-bounds.minZ();
         BlueprintTransform.Point point = BlueprintTransform.rotate(
                 x,z,bounds.width(),bounds.depth(),rotation);
-        return coreAnchor.offset(offsetX + point.x(), step.dy(), offsetZ + point.z());
+        return coreAnchor.offset(offsetX + point.x(), offsetY + step.dy(), offsetZ + point.z());
     }
 
     private static boolean validPlacement() {
         if (activePlan == null || coreAnchor == null) return false;
+        if(activePlan==Plan.HEART)
+            return CampHeartTemplate.transformValid(offsetX,offsetY,offsetZ,rotation);
         for (Step step : steps(activePlan)) {
             BlockPos pos = worldPosition(activePlan, step);
             if (!BlueprintTransform.inCampRadius(pos.getX()-coreAnchor.getX(),
                     pos.getZ()-coreAnchor.getZ(), CampRules.CAMP_RADIUS)
-                    || pos.equals(coreAnchor)) return false;
+                    || (activePlan != Plan.HEART && pos.equals(coreAnchor))) return false;
         }
         return true;
     }
 
     public static boolean move(int dx, int dz) {
-        if (activePlan == null || activePlan == Plan.HEART) return false;
+        if (activePlan == null || (activePlan == Plan.HEART && heartConfirmed)) return false;
         offsetX += dx;
         offsetZ += dz;
-        if (validPlacement()) return true;
+        if (validPlacement() && (activePlan != Plan.HEART ||
+                CampHeartTemplate.transformValid(offsetX,offsetZ,rotation))) return true;
         offsetX -= dx;
         offsetZ -= dz;
         return false;
     }
 
+    /** Raise or lower the unconfirmed blueprint by one or more block layers. */
+    public static boolean moveVertical(int deltaY) {
+        if(activePlan==null || coreAnchor==null
+                || (activePlan==Plan.HEART && heartConfirmed))return false;
+        int oldY=offsetY;
+        offsetY+=deltaY;
+        if(validPlacement())return true;
+        offsetY=oldY;
+        return false;
+    }
+
     public static boolean rotate(int quarterTurns) {
-        if (activePlan == null || activePlan == Plan.HEART) return false;
+        if (activePlan == null || (activePlan == Plan.HEART && heartConfirmed)) return false;
         int previous = rotation;
         rotation = Math.floorMod(rotation + quarterTurns, 4);
         if (validPlacement()) return true;
@@ -214,11 +325,29 @@ public final class CampBlueprintProjection {
         return false;
     }
 
+    /**
+     * Exact predicted BlockState, shared by visual model and server validation.
+     * Essential for correctly oriented stairs, doors and upper slabs.
+     */
+    public static BlockState expectedState(Plan plan,Step step) {
+        if(plan==Plan.HEART && coreAnchor!=null) {
+            for(var cell:CampHeartTemplate.cells(heartBlueprintId)) {
+                if(cell.x()==step.dx() && cell.y()==step.dy() && cell.z()==step.dz())
+                    return CampHeartTemplate.expected(heartBlueprintId,coreAnchor,
+                            offsetX,offsetY,offsetZ,rotation,cell);
+            }
+        }
+        return step.block().defaultBlockState();
+    }
+
     public static boolean matches(Plan plan, Step step) {
         Minecraft client = Minecraft.getInstance();
         if (client.level == null || coreAnchor == null) return false;
         BlockPos pos = worldPosition(plan, step);
-        return pos != null && step.matchesAt(client.level, pos);
+        if(pos==null||!client.level.hasChunkAt(pos))return false;
+        if(plan==Plan.HEART)
+            return CampHeartTemplate.matching(client.level.getBlockState(pos),expectedState(plan,step));
+        return step.matchesAt(client.level,pos);
     }
 
     public static int completed(Plan plan) {
@@ -233,16 +362,33 @@ public final class CampBlueprintProjection {
         Map<String, int[]> amounts = new LinkedHashMap<>();
         Map<String, Count> materials = new LinkedHashMap<>();
         for (Step step : steps(plan)) {
-            String key = step.anyBed() ? "ANY_BED" : step.block().getName().getString();
+            // A two-block door counts as one crafted/placed item, regardless
+            // of the y-coordinate chosen by the author of the NBT schematic.
+            BlockState expected=expectedState(plan,step);
+            boolean isDoor=plan==Plan.HEART && step.block() instanceof DoorBlock;
+            if(isDoor && expected.hasProperty(DoorBlock.HALF)
+                    && expected.getValue(DoorBlock.HALF)==DoubleBlockHalf.UPPER)continue;
+            String key=step.block()==Blocks.AIR?"CLEAR_AIR":
+                    step.anyBed()?"ANY_BED":step.block().getName().getString();
             amounts.computeIfAbsent(key, k -> new int[2])[0]++;
             materials.putIfAbsent(key, new Count(step.block(), step.anyBed(),
-                    step.anyBed() ? "Любая кровать"
+                    step.block()==Blocks.AIR ? "Расчистить участок"
+                    :step.anyBed() ? "Любая кровать"
                             : step.block() == Blocks.FARMLAND
                                     ? "Земля для грядок (мотыга)"
                                     : step.block() == Blocks.WATER
                                             ? "Ведро воды"
                                             : step.block().getName().getString()));
-            if (matches(plan, step)) amounts.get(key)[1]++;
+            boolean built=matches(plan,step);
+            if(isDoor && expected.hasProperty(DoorBlock.HALF)
+                    && expected.getValue(DoorBlock.HALF)==DoubleBlockHalf.LOWER) {
+                var upper=steps(Plan.HEART).stream()
+                        .filter(s->s.dx()==step.dx()&&s.dz()==step.dz()
+                                &&s.dy()==step.dy()+1 &&s.block()==step.block())
+                        .findFirst();
+                built=built && upper.isPresent() && matches(plan,upper.get());
+            }
+            if (built) amounts.get(key)[1]++;
         }
         Minecraft client = Minecraft.getInstance();
         List<MaterialLine> lines = new ArrayList<>();
@@ -283,8 +429,7 @@ public final class CampBlueprintProjection {
             serverStage = -2;
             return;
         }
-        if (activePlan != null && (client.player.blockPosition().distSqr(coreAnchor) > 28*28
-                || !unlocked(activePlan))) hide();
+        if (activePlan != null && !unlocked(activePlan)) hide();
 
     }
 }

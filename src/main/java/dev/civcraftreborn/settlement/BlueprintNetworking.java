@@ -13,8 +13,49 @@ public final class BlueprintNetworking {
     public static void register() {
         PayloadTypeRegistry.serverboundPlay().register(
                 BlueprintStatusRequest.TYPE, BlueprintStatusRequest.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(
+                HeartSiteRequest.TYPE, HeartSiteRequest.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 BlueprintStatusResponse.TYPE, BlueprintStatusResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartPlacementResponse.TYPE, HeartPlacementResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartProgressResponse.TYPE, HeartProgressResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                CampOverviewResponse.TYPE, CampOverviewResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartPlacedNotice.TYPE, HeartPlacedNotice.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+                HeartProjectCancelled.TYPE, HeartProjectCancelled.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(HeartSiteRequest.TYPE,
+                (request,context) -> {
+                    ServerPlayer player=context.player();
+                    if(!WorldSettingsSavedData.get(context.server()).settings().civcraftWorld())return;
+                    String dimension=player.level().dimension().identifier().toString();
+                    ServerPlayNetworking.send(player,campOverview(player,dimension));
+                    var site=CampHeartSavedData.get(context.server())
+                            .ownedBy(player.getUUID(),dimension).stream().findFirst();
+                    if(site.isEmpty()) {
+                        ServerPlayNetworking.send(player,new HeartProjectCancelled(BlockPos.ZERO));
+                        return;
+                    }
+                    site.ifPresent(s -> {
+                        int stage=CampSavedData.get(context.server())
+                                .ownedBy(player.getUUID())
+                                .filter(c -> c.dimension().equals(dimension))
+                                .map(c -> c.stage()==SettlementStage.SETTLEMENT?1:0)
+                                .orElse(-1);
+                        ServerPlayNetworking.send(player,new BlueprintStatusResponse(s.core(),stage));
+                        ServerPlayNetworking.send(player,new HeartPlacementResponse(s.core(),
+                                s.shiftX(),s.shiftY(),s.shiftZ(),s.turns(),s.confirmed(),s.blueprintId()));
+                        var progress=CampHeartTemplate.inspect(s.blueprintId(),
+                                (net.minecraft.server.level.ServerLevel)player.level(),
+                                s.core(),s.shiftX(),s.shiftY(),s.shiftZ(),s.turns());
+                        ServerPlayNetworking.send(player,new HeartProgressResponse(s.core(),
+                                progress.matched(),progress.total(),progress.loaded()));
+                    });
+                });
 
         ServerPlayNetworking.registerGlobalReceiver(BlueprintStatusRequest.TYPE,
                 (request, context) -> {
@@ -36,6 +77,29 @@ public final class BlueprintNetworking {
                             .map(c -> c.stage() == SettlementStage.SETTLEMENT ? 1 : 0)
                             .orElse(-1);
                     ServerPlayNetworking.send(player, new BlueprintStatusResponse(core, stage));
+                    CampHeartSavedData.get(context.server()).byCore(dimension,core)
+                            .filter(s->s.owner().equals(player.getUUID().toString()))
+                            .ifPresent(site->ServerPlayNetworking.send(player,
+                                    new HeartPlacementResponse(core,site.shiftX(),site.shiftY(),
+                                            site.shiftZ(),site.turns(),site.confirmed(),site.blueprintId())));
                 });
     }
+    private static CampOverviewResponse campOverview(ServerPlayer player,String dimension) {
+        var server=player.level().getServer();
+        var camp=CampSavedData.get(server).ownedBy(player.getUUID()).orElse(null);
+        if(camp==null)return CampOverviewResponse.absent();
+        int stage=camp.stage()==SettlementStage.SETTLEMENT?1:0;
+        int residents=CitizenSavedData.get(server).atCamp(camp).size();
+        if(!camp.dimension().equals(dimension))
+            return new CampOverviewResponse(true,stage,residents,0,0,0,0,
+                    false,false,false);
+        var housing=HousingScanner.scan(player.level(),camp);
+        var stock=CampStorageScanner.scan(player.level(),camp);
+        var facilities=CampBuildingScanner.scan(player.level(),camp);
+        return new CampOverviewResponse(true,stage,residents,
+                housing.roomCount(),housing.bedCount(),stock.food(),
+                stock.storageBlocks(),facilities.workshop(),facilities.farm(),
+                housing.complete()&&stock.complete()&&facilities.complete());
+    }
+
 }

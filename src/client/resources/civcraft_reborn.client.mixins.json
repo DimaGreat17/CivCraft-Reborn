@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "CreateWorldWorldTabMixin",
-    "CivCraftGhostRendererCleanupMixin"
+    "CivCraftGhostRendererCleanupMixin",
+    "CivCraftPauseMenuMixin",
+    "CivCraftPlanningCameraMixin"
   ],
   "injectors": {
     "defaultRequire": 1

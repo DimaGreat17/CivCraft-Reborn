@@ -24,6 +24,7 @@ public final class CampCommands {
     public static LiteralArgumentBuilder<CommandSourceStack> command() {
         return Commands.literal("camp")
                 .then(Commands.literal("found").executes(ctx -> found(ctx.getSource())))
+                .then(CampHeartCommands.command())
                 .then(Commands.literal("status").executes(ctx -> status(ctx.getSource())))
                 .then(Commands.literal("inspect").executes(ctx -> inspect(ctx.getSource())))
                 .then(Commands.literal("plan").executes(ctx -> plan(ctx.getSource())))
@@ -47,40 +48,55 @@ public final class CampCommands {
                 return fail(source, "You already own a camp; its ID and resources persist.");
             }
 
-            Optional<BlockPos> anchor = findCore(player);
-            if (anchor.isEmpty()) {
-                return fail(source, "Place a CivCraft Camp Core within 4 blocks before founding.");
-            }
-            BlockPos pos = anchor.get();
-            if (!hasPhysicalHeart(level, pos)) {
-                return fail(source, "Build the Camp Heart: surround the placed Camp Core with "
-                        + "4 obsidian blocks to the north, south, east and west. "
-                        + "Each placement of a Camp Core provides four obsidian.");
-            }
             String dimension = level.dimension().identifier().toString();
-            boolean withinBorder = level.getWorldBorder().isWithinBounds(pos);
-            boolean supported = level.getBlockState(pos.below()).isSolid();
-            if (!CampRules.canFoundAt(store.all(), dimension, pos.getX(), pos.getZ(),
+            CampHeartSite site = CampHeartSavedData.get(source.getServer())
+                    .ownedBy(player.getUUID(),dimension).stream().filter(CampHeartSite::confirmed)
+                    .findFirst().orElse(null);
+            if(site == null) {
+                return fail(source, "Place your own Camp Heart foundation and confirm its site.");
+            }
+            BlockPos pos = site.core();
+            if (!site.confirmed()) {
+                return fail(source, "Confirm your Camp Heart placement before building.");
+            }
+            var finished = CampHeartTemplate.inspect(site.blueprintId(),(net.minecraft.server.level.ServerLevel)level,
+                    pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
+            if (!finished.complete()) {
+                var problems=CampHeartTemplate.firstMissing(site.blueprintId(),(net.minecraft.server.level.ServerLevel)level,
+                        pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),1);
+                String hint=problems.isEmpty()?"":" First mismatch at "+
+                        problems.getFirst().pos().toShortString()+": expected="+
+                        problems.getFirst().expected()+" actual="+problems.getFirst().actual();
+                return fail(source, "Camp Heart incomplete: "
+                        + finished.matched() + "/" + finished.total()
+                        + (finished.loaded() ? "." : " (unloaded chunks).")
+                        + hint + " Run /civcraft camp heart inspect for more details.");
+            }
+            var blueprint=CampHeartTemplate.definition(site.blueprintId());
+            var origin=CampHeartTemplate.origin(site.blueprintId(),pos,
+                    site.shiftX(),site.shiftY(),site.shiftZ());
+            int centerX=(site.turns()%2==0?blueprint.width():blueprint.depth())/2;
+            int centerZ=(site.turns()%2==0?blueprint.depth():blueprint.width())/2;
+            BlockPos buildingCenter=origin.offset(centerX,0,centerZ);
+            boolean withinBorder = level.getWorldBorder().isWithinBounds(buildingCenter);
+            // A fully verified 162-cell structure is already physical.
+            // Requiring extra solid terrain below its center would reject
+            // legitimate raised buildings even when every required cell matches.
+            boolean supported = finished.complete();
+            if (!CampRules.canFoundAt(store.all(), dimension,
+                    buildingCenter.getX(),
+                    buildingCenter.getZ(),
                     withinBorder, supported)) {
                 return fail(source, "Invalid site: collision, border, terrain or nearby settlement.");
             }
-            if (!has(player, Items.OAK_LOG, CampRules.REQUIRED_LOGS)
-                    || !has(player, Items.COBBLESTONE, CampRules.REQUIRED_STONE)
-                    || !has(player, Items.BREAD, CampRules.REQUIRED_FOOD)) {
-                return fail(source, "Founding requires 16 oak logs, 16 cobblestone and 8 bread in inventory.");
-            }
-
-            // On the authoritative server thread, validate all resource availability
-            // BEFORE mutation; never mint items, NPCs, land or settlement money.
+            // Materials have already been placed into the complete Heart by hand.
+            // Never charge the player for the same wood and stone twice.
             CampRecord camp = CampRules.found(player.getUUID(), dimension,
-                    pos.getX(), pos.getY(), pos.getZ(),
+                    buildingCenter.getX(),buildingCenter.getY(),buildingCenter.getZ(),
                     player.getName().getString() + "'s Camp", level.getGameTime());
-            remove(player, Items.OAK_LOG, CampRules.REQUIRED_LOGS);
-            remove(player, Items.COBBLESTONE, CampRules.REQUIRED_STONE);
-            remove(player, Items.BREAD, CampRules.REQUIRED_FOOD);
             store.add(camp);
             source.sendSuccess(() -> Component.literal(
-                    "Camp founded at " + pos.toShortString() + " (ID " + camp.id()
+                    "Camp founded at " + buildingCenter.toShortString() + " (ID " + camp.id()
                     + "). No residents or resources are spawned for free."), false);
             return 1;
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
@@ -102,8 +118,8 @@ public final class CampCommands {
             int residents = CitizenSavedData.get(source.getServer()).atCamp(camp).size();
 
             source.sendSuccess(() -> Component.literal(
-                    "CivCraft camp building plan: place a physical Camp Core, then place "
-                    + "4 obsidian blocks N/S/E/W around it; each core placement grants the obsidian."), false);
+                    "First craft and place the Camp Heart foundation, confirm its footprint "
+                    + "using /civcraft camp heart confirm, then build all schematic blocks by hand."), false);
             source.sendSuccess(() -> Component.literal(
                     "1. Sheltered bedrooms: " + rooms.roomCount() + "/3. "
                     + "Each NPC needs a physical bed and at least 4 valid private floor cells."), false);
@@ -248,26 +264,6 @@ public final class CampCommands {
                     + "," + camp.z() + " ID=" + camp.id()), false);
         }
         return store.all().size();
-    }
-
-    /** A small, literal starter blueprint assembled by the player in-world. */
-    private static boolean hasPhysicalHeart(net.minecraft.world.level.Level level, BlockPos core) {
-        for (Direction direction : Direction.Plane.HORIZONTAL) {
-            if (!level.getBlockState(core.relative(direction)).is(Blocks.OBSIDIAN)) return false;
-        }
-        return true;
-    }
-
-    private static Optional<BlockPos> findCore(ServerPlayer player) {
-        BlockPos center = player.blockPosition();
-        var level = player.level();
-        for (BlockPos candidate : BlockPos.betweenClosed(
-                center.offset(-4, -2, -4), center.offset(4, 2, 4))) {
-            if (level.getBlockState(candidate).is(CampBlocks.CAMP_CORE)) {
-                return Optional.of(candidate.immutable());
-            }
-        }
-        return Optional.empty();
     }
 
     private static boolean has(ServerPlayer player, Item item, int amount) {
