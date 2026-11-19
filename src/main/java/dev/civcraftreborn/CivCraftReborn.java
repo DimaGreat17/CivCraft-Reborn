@@ -5,7 +5,6 @@ import dev.civcraftreborn.foundation.FoundationServerBootstrap;
 import dev.civcraftreborn.foundation.FoundationCommands;
 import dev.civcraftreborn.settlement.CampBlocks;
 import dev.civcraftreborn.settlement.BlueprintNetworking;
-import dev.civcraftreborn.settlement.CampWorkerTicker;
 import dev.civcraftreborn.settlement.CampConstructionSystem;
 import dev.civcraftreborn.settlement.CampWorkerSystem;
 import org.slf4j.Logger;
@@ -24,7 +23,6 @@ public final class CivCraftReborn implements ModInitializer {
         FoundationCommands.register();
         CampBlocks.initialize();
         BlueprintNetworking.register();
-        CampWorkerTicker.register();
         CampConstructionSystem.register();
         CampWorkerSystem.register();
         LOGGER.info("CivCraft Reborn 0.1 Foundation entrypoint loaded");
