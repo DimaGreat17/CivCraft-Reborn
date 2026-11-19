@@ -33,6 +33,31 @@ public final class CampBlueprintCatalog {
 
     private CampBlueprintCatalog() {}
 
+    /** Explicit pack index; resources from worlds or remote clients are never executed. */
+    public static List<String> availableBundled() {
+        String path="/data/civcraft_reborn/blueprints/index.json";
+        try(InputStream stream=CampBlueprintCatalog.class.getResourceAsStream(path)) {
+            if(stream==null)return List.of("camp_heart_v1");
+            JsonObject json=JsonParser.parseReader(new InputStreamReader(
+                    stream,StandardCharsets.UTF_8)).getAsJsonObject();
+            if(!"civcraft_reborn:blueprint-index/v1".equals(
+                    json.get("schema").getAsString()))
+                throw new IllegalStateException("Invalid blueprint index schema");
+            List<String> ids=new ArrayList<>();
+            for(JsonElement value:json.getAsJsonArray("ids")) {
+                String id=value.getAsString();
+                if(!id.matches("[a-z0-9_/-]+")||id.contains("..")||ids.contains(id))
+                    throw new IllegalStateException("Invalid or duplicate blueprint ID: "+id);
+                ids.add(id);
+            }
+            if(!ids.contains("camp_heart_v1"))
+                throw new IllegalStateException("Legacy blueprint may not be removed");
+            return List.copyOf(ids);
+        } catch(java.io.IOException e) {
+            throw new IllegalStateException("Could not read blueprint index",e);
+        }
+    }
+
     public static Definition loadBundled(String id) {
         if(!id.matches("[a-z0-9_/-]+") || id.contains(".."))
             throw new IllegalArgumentException("Invalid blueprint ID: "+id);
