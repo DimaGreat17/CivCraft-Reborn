@@ -20,6 +20,8 @@ public final class BlueprintNetworking {
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacementResponse.TYPE, HeartPlacementResponse.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
+                HeartProgressResponse.TYPE, HeartProgressResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacedNotice.TYPE, HeartPlacedNotice.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartProjectCancelled.TYPE, HeartProjectCancelled.CODEC);
@@ -44,6 +46,11 @@ public final class BlueprintNetworking {
                         ServerPlayNetworking.send(player,new BlueprintStatusResponse(s.core(),stage));
                         ServerPlayNetworking.send(player,new HeartPlacementResponse(s.core(),
                                 s.shiftX(),s.shiftY(),s.shiftZ(),s.turns(),s.confirmed()));
+                        var progress=CampHeartTemplate.inspect(
+                                (net.minecraft.server.level.ServerLevel)player.level(),
+                                s.core(),s.shiftX(),s.shiftY(),s.shiftZ(),s.turns());
+                        ServerPlayNetworking.send(player,new HeartProgressResponse(s.core(),
+                                progress.matched(),progress.total(),progress.loaded()));
                     });
                 });
 
