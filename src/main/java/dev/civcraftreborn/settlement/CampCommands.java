@@ -60,20 +60,20 @@ public final class CampCommands {
                 return fail(source, "Confirm your Camp Heart placement before building.");
             }
             var finished = CampHeartTemplate.inspect((net.minecraft.server.level.ServerLevel)level,
-                    pos,site.shiftX(),site.shiftZ(),site.turns());
+                    pos,site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             if (!finished.complete()) {
                 return fail(source, "Complete the physical Camp Heart building first: "
                         + finished.matched() + "/" + finished.total()
                         + (finished.loaded() ? " blocks." : " (unloaded chunks)."));
             }
-            BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ())
+            BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ())
                     .offset(3,0,3);
             boolean withinBorder = level.getWorldBorder().isWithinBounds(buildingCenter);
             boolean supported = level.hasChunkAt(buildingCenter)
                     && level.getBlockState(buildingCenter.below()).isSolid();
             if (!CampRules.canFoundAt(store.all(), dimension,
-                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ()).getX()+3,
-                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ()).getZ()+3,
+                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ()).getX()+3,
+                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftY(),site.shiftZ()).getZ()+3,
                     withinBorder, supported)) {
                 return fail(source, "Invalid site: collision, border, terrain or nearby settlement.");
             }
