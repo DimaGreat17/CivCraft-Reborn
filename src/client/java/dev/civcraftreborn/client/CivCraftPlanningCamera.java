@@ -6,95 +6,122 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
 
 /**
- * Client-only city planning camera: a raised oblique view over the current
- * construction site. It neither teleports the player nor alters server rules.
- *
- * F7 toggles, arrow keys pan, plus/minus zoom, Z/X turn the view.
- * Minecraft's normal camera is restored automatically when disabled.
+ * Client-only oblique view over the current blueprint.
+ * A transparent Screen owns gameplay input while active, so planning never
+ * moves the actual player or sends interaction actions to the server.
  */
 public final class CivCraftPlanningCamera {
     private static boolean active;
     private static String world;
     private static double targetX, targetY, targetZ;
-    private static double distance=28;
-    private static int quarterTurns;
-    private static KeyMapping toggle, north, south, east, west, zoomIn, zoomOut, turnLeft, turnRight;
+    private static double distance = 28;
+    private static float yaw, wantedYaw;
+    private static KeyMapping toggle;
 
-    private CivCraftPlanningCamera(){}
+    private CivCraftPlanningCamera() {}
 
-    private static KeyMapping key(String id,int code,KeyMapping.Category category){
-        return KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.civcraft_reborn."+id,InputConstants.Type.KEYBOARD,code,category));
-    }
-
-    public static void register(KeyMapping.Category category){
-        toggle=key("planning_camera",InputConstants.KEY_F7,category);
-        north=key("planning_north",InputConstants.KEY_UP,category);
-        south=key("planning_south",InputConstants.KEY_DOWN,category);
-        west=key("planning_west",InputConstants.KEY_LEFT,category);
-        east=key("planning_east",InputConstants.KEY_RIGHT,category);
-        zoomIn=key("planning_zoom_in",61 /* GLFW_KEY_EQUAL; LWJGL class not on compile classpath */,category);
-        zoomOut=key("planning_zoom_out",InputConstants.KEY_MINUS,category);
-        turnLeft=key("planning_rotate_left",InputConstants.KEY_Z,category);
-        turnRight=key("planning_rotate_right",InputConstants.KEY_X,category);
+    public static void register(KeyMapping.Category category) {
+        toggle = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.civcraft_reborn.planning_camera", InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_F7,category));
         ClientTickEvents.END_CLIENT_TICK.register(CivCraftPlanningCamera::tick);
     }
 
-    public static boolean active(){return active;}
+    public static boolean active() { return active; }
+    public static double x() { return targetX; }
+    public static double y() { return targetY; }
+    public static double z() { return targetZ; }
+    public static double distance() { return distance; }
+    public static float yaw() { return yaw; }
 
-    public static boolean activate(Minecraft client){
-        if(client.level==null||client.player==null)return false;
-        if(CampBlueprintProjection.selected()==null||
-                !CampBlueprintProjection.unlocked(CampBlueprintProjection.selected()))
+    public static boolean activate(Minecraft client) {
+        if(client.player == null || client.level == null
+                || CampBlueprintProjection.selected() == null
+                || !CampBlueprintProjection.unlocked(CampBlueprintProjection.selected()))
             return false;
         BlockPos origin=CampBlueprintProjection.placedOrigin();
         if(origin==null)return false;
         targetX=origin.getX()+3.5;
         targetY=origin.getY()+2;
         targetZ=origin.getZ()+3.5;
-        quarterTurns=0;
         distance=28;
+        yaw=0;
+        wantedYaw=0;
         world=client.level.dimension().identifier().toString();
         active=true;
+        client.gui.setScreen(new CivCraftPlanningScreen());
         return true;
     }
 
-    public static void deactivate(){active=false;world=null;}
+    public static void deactivate() {
+        active=false;
+        world=null;
+    }
 
-    public static double x(){return targetX;}
-    public static double y(){return targetY;}
-    public static double z(){return targetZ;}
-    public static double distance(){return distance;}
-    public static int quarterTurns(){return quarterTurns;}
+    /** Rotate by small steps and ease toward the target in the render camera. */
+    public static void rotate(float delta) {
+        wantedYaw+=delta;
+    }
 
-    private static void tick(Minecraft client){
-        if(client.player==null||client.level==null){
-            deactivate();return;
+    public static void zoom(double delta) {
+        distance=Math.max(10,Math.min(80,distance+delta));
+    }
+
+    /** Screen up means away into the picture, screen right means visually right. */
+    public static void pan(double screenRight,double screenUp) {
+        double radians=Math.toRadians(yaw);
+        double forwardX=-Math.sin(radians), forwardZ=Math.cos(radians);
+        double rightX=-Math.cos(radians), rightZ=-Math.sin(radians);
+        targetX += forwardX*screenUp + rightX*screenRight;
+        targetZ += forwardZ*screenUp + rightZ*screenRight;
+        Minecraft client=Minecraft.getInstance();
+        if(client.player!=null) {
+            BlockPos player=client.player.blockPosition();
+            targetX=Math.max(player.getX()-110,Math.min(player.getX()+110,targetX));
+            targetZ=Math.max(player.getZ()-110,Math.min(player.getZ()+110,targetZ));
         }
-        if(active&&!client.level.dimension().identifier().toString().equals(world)){
-            deactivate();return;
-        }
-        while(toggle.consumeClick()){
+    }
+
+    /** Screen-pixel delta projected onto the ground plane; no actual blocks are moved. */
+    public static double[] dragToWorld(double pixelsRight,double pixelsDown) {
+        double blocksPerPixel=Math.max(0.02,distance/580.0);
+        double radians=Math.toRadians(yaw);
+        double forwardX=-Math.sin(radians), forwardZ=Math.cos(radians);
+        double rightX=-Math.cos(radians), rightZ=-Math.sin(radians);
+        double right=pixelsRight*blocksPerPixel;
+        double up=-pixelsDown*blocksPerPixel;
+        return new double[]{rightX*right+forwardX*up,rightZ*right+forwardZ*up};
+    }
+
+    private static void tick(Minecraft client) {
+        if(client.level==null||client.player==null) {
             if(active)deactivate();
-            else if(client.gui.screen()==null)activate(client);
+            return;
         }
-        if(!active||client.gui.screen()!=null)return;
-        double speed=Math.max(0.5,distance/32.0);
-        if(north.isDown())targetZ-=speed;
-        if(south.isDown())targetZ+=speed;
-        if(west.isDown())targetX-=speed;
-        if(east.isDown())targetX+=speed;
-        if(zoomIn.isDown())distance=Math.max(10,distance-0.6);
-        if(zoomOut.isDown())distance=Math.min(80,distance+0.6);
-        while(turnLeft.consumeClick())quarterTurns=Math.floorMod(quarterTurns-1,4);
-        while(turnRight.consumeClick())quarterTurns=Math.floorMod(quarterTurns+1,4);
-        // Do not let the camera drift arbitrarily far beyond the area loaded
-        // by the player; no remote chunk loading is ever initiated here.
-        var p=client.player.blockPosition();
-        targetX=Math.max(p.getX()-110,Math.min(p.getX()+110,targetX));
-        targetZ=Math.max(p.getZ()-110,Math.min(p.getZ()+110,targetZ));
+        if(active&&!client.level.dimension().identifier().toString().equals(world)) {
+            deactivate();
+            if(client.gui.screen() instanceof CivCraftPlanningScreen)
+                client.gui.setScreen(null);
+            return;
+        }
+        if(!active) {
+            while(toggle.consumeClick()) {
+                if(client.gui.screen()==null)activate(client);
+            }
+            return;
+        }
+        // If another screen replaces our overlay, restore vanilla camera
+        // instead of silently enabling movement while view is detached.
+        if(!(client.gui.screen() instanceof CivCraftPlanningScreen)) {
+            deactivate();
+            return;
+        }
+        float delta=(wantedYaw-yaw)%360f;
+        if(delta>180f)delta-=360f;
+        if(delta< -180f)delta+=360f;
+        if(Math.abs(delta)>0.02f)yaw+=delta*0.24f;
+        else yaw=wantedYaw;
     }
 }
