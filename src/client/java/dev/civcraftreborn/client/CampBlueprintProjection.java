@@ -19,6 +19,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -360,20 +362,32 @@ public final class CampBlueprintProjection {
         Map<String, int[]> amounts = new LinkedHashMap<>();
         Map<String, Count> materials = new LinkedHashMap<>();
         for (Step step : steps(plan)) {
-            // A vanilla door consumes one item but occupies two block states.
-            if(plan==Plan.HEART&&step.block()==Blocks.OAK_DOOR&&step.dy()==2)continue;
-            String key = step.anyBed() ? "ANY_BED" : step.block().getName().getString();
+            // A two-block door counts as one crafted/placed item, regardless
+            // of the y-coordinate chosen by the author of the NBT schematic.
+            BlockState expected=expectedState(plan,step);
+            boolean isDoor=plan==Plan.HEART && step.block() instanceof DoorBlock;
+            if(isDoor && expected.hasProperty(DoorBlock.HALF)
+                    && expected.getValue(DoorBlock.HALF)==DoubleBlockHalf.UPPER)continue;
+            String key=step.block()==Blocks.AIR?"CLEAR_AIR":
+                    step.anyBed()?"ANY_BED":step.block().getName().getString();
             amounts.computeIfAbsent(key, k -> new int[2])[0]++;
             materials.putIfAbsent(key, new Count(step.block(), step.anyBed(),
-                    step.anyBed() ? "Любая кровать"
+                    step.block()==Blocks.AIR ? "Расчистить участок"
+                    :step.anyBed() ? "Любая кровать"
                             : step.block() == Blocks.FARMLAND
                                     ? "Земля для грядок (мотыга)"
                                     : step.block() == Blocks.WATER
                                             ? "Ведро воды"
                                             : step.block().getName().getString()));
             boolean built=matches(plan,step);
-            if(plan==Plan.HEART&&step.block()==Blocks.OAK_DOOR&&step.dy()==1)
-                built=built&&matches(plan,new Step(step.dx(),2,step.dz(),Blocks.OAK_DOOR));
+            if(isDoor && expected.hasProperty(DoorBlock.HALF)
+                    && expected.getValue(DoorBlock.HALF)==DoubleBlockHalf.LOWER) {
+                var upper=steps(Plan.HEART).stream()
+                        .filter(s->s.dx()==step.dx()&&s.dz()==step.dz()
+                                &&s.dy()==step.dy()+1 &&s.block()==step.block())
+                        .findFirst();
+                built=built && upper.isPresent() && matches(plan,upper.get());
+            }
             if (built) amounts.get(key)[1]++;
         }
         Minecraft client = Minecraft.getInstance();
