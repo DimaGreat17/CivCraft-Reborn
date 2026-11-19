@@ -146,6 +146,9 @@ public final class CampConstructionSystem {
                                 storagePos.getZ()+0.5,new ItemStack(Items.BUCKET));
                     }else {
                         stack.shrink(1);
+                        // When dirt is placed and tilled in a single NPC work
+                        // action, the actual hoe must also lose durability.
+                        if(cell.block()==Blocks.FARMLAND)damageHoeOnce(container);
                     }
                     container.setChanged();
                     return; // Never create a structure in one instant.
