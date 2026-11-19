@@ -52,13 +52,13 @@ public final class CivCraftRebornClient implements ClientModInitializer {
     private static void prepareNearbyFoundation(Minecraft client) {
         BlockPos center=client.player.blockPosition();
         BlockPos nearest=null;
-        long distance=Long.MAX_VALUE;
+        double distance=Double.POSITIVE_INFINITY;
         // Local bounded scan; never request or force-load remote chunks.
         for(BlockPos pos:BlockPos.betweenClosed(
                 center.offset(-12,-5,-12),center.offset(12,5,12))) {
             if(!client.level.hasChunkAt(pos))continue;
             if(!client.level.getBlockState(pos).is(CampBlocks.CAMP_CORE))continue;
-            long d=pos.distSqr(center);
+            double d=pos.distSqr(center);
             if(d<distance) {nearest=pos.immutable();distance=d;}
         }
         if(nearest!=null){
