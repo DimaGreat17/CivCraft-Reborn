@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 
-/** Persistent placement of one first-camp foundation; core coordinates never move. */
+/** Persistent placement of one first-camp foundation; project foundation coordinates are retained separately from the actual building. */
 public record CampHeartSite(String id,String owner,String dimension,
         int x,int y,int z,int shiftX,int shiftZ,int turns,boolean confirmed) {
     public static final Codec<CampHeartSite> CODEC=RecordCodecBuilder.create(i->i.group(
@@ -29,7 +29,7 @@ public record CampHeartSite(String id,String owner,String dimension,
     }
     public static CampHeartSite placed(UUID owner,String dimension,BlockPos core) {
         return new CampHeartSite(UUID.randomUUID().toString(),owner.toString(),dimension,
-                core.getX(),core.getY(),core.getZ(),0,0,0,false);
+                core.getX(),core.getY(),core.getZ(),12,0,0,false);
     }
     public BlockPos core(){return new BlockPos(x,y,z);}
     public CampHeartSite withPlacement(int newX,int newZ,int newTurns) {
