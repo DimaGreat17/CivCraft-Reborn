@@ -7,6 +7,7 @@ import dev.civcraftreborn.settlement.CampBlocks;
 import dev.civcraftreborn.settlement.BlueprintNetworking;
 import dev.civcraftreborn.settlement.CampConstructionSystem;
 import dev.civcraftreborn.settlement.CampWorkerSystem;
+import dev.civcraftreborn.settlement.CampHeartProjectLifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ public final class CivCraftReborn implements ModInitializer {
         BlueprintNetworking.register();
         CampConstructionSystem.register();
         CampWorkerSystem.register();
+        CampHeartProjectLifecycle.register();
         LOGGER.info("CivCraft Reborn 0.1 Foundation entrypoint loaded");
     }
 }
