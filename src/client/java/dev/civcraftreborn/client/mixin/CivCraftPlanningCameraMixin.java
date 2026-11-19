@@ -21,7 +21,7 @@ public abstract class CivCraftPlanningCameraMixin {
     @Inject(method="alignWithEntity",at=@At("TAIL"))
     private void civcraft$obliquePlanningView(float tickProgress,CallbackInfo ci){
         if(!CivCraftPlanningCamera.active())return;
-        float yaw=-(CivCraftPlanningCamera.quarterTurns()*90.0f);
+        float yaw=CivCraftPlanningCamera.yaw();
         double radians=Math.toRadians(yaw);
         double horizontal=CivCraftPlanningCamera.distance()*0.72;
         double dx=-Math.sin(radians)*horizontal;
