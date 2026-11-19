@@ -1,6 +1,7 @@
 package dev.civcraftreborn.settlement;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,6 +24,10 @@ public final class CampHeartCommands {
         return Commands.literal("heart")
                 .then(Commands.literal("inspect").executes(c->inspect(c.getSource())))
                 .then(Commands.literal("confirm").executes(c->confirm(c.getSource())))
+                .then(Commands.literal("variant")
+                        .then(Commands.argument("id",StringArgumentType.word())
+                        .executes(c->selectBlueprint(c.getSource(),
+                                StringArgumentType.getString(c,"id")))))
                 .then(Commands.literal("move")
                         .then(Commands.argument("x",IntegerArgumentType.integer(-128,128))
                         .then(Commands.argument("z",IntegerArgumentType.integer(-128,128))
@@ -47,10 +52,46 @@ public final class CampHeartCommands {
                         .ownedBy(player.getUUID()).isEmpty()
                         || CampSavedData.get(player.level().getServer())
                         .ownedBy(player.getUUID())
-                        .map(c -> c.x()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftY(),s.shiftZ()).getX()+3
-                            && c.z()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftY(),s.shiftZ()).getZ()+3)
+                        .map(c -> {
+                            var center=buildingCenter(s);
+                            return c.x()==center.getX()&&c.z()==center.getZ();
+                        })
                         .orElse(false))
                 .findFirst().orElse(null);
+    }
+
+    private static BlockPos buildingCenter(CampHeartSite site) {
+        var def=CampHeartTemplate.definition(site.blueprintId());
+        var origin=CampHeartTemplate.origin(site.blueprintId(),site.core(),
+                site.shiftX(),site.shiftY(),site.shiftZ());
+        int w=site.turns()%2==0?def.width():def.depth();
+        int d=site.turns()%2==0?def.depth():def.width();
+        return origin.offset(w/2,0,d/2);
+    }
+
+    private static int selectBlueprint(CommandSourceStack source,String id) {
+        try {
+            ServerPlayer player=source.getPlayerOrException();
+            if(!validWorld(player))return fail(source,"Not a CivCraft world");
+            CampHeartSite site=current(player);
+            if(site==null)return fail(source,"Place a camp foundation first");
+            if(site.confirmed())return fail(source,"Cannot change a confirmed project");
+            CampHeartSite updated;
+            try {
+                updated=site.withBlueprint(id);
+            } catch(IllegalArgumentException|IllegalStateException error) {
+                return fail(source,"Blueprint not packaged or invalid: "+id);
+            }
+            if(!siteAvailable((ServerLevel)player.level(),updated))
+                return fail(source,"Blueprint would be unloaded, outside the world or overlap starter");
+            CampHeartSavedData.get(source.getServer()).replace(site,updated);
+            sync(player,updated);
+            source.sendSuccess(()->Component.literal(
+                    "Selected "+id+". The existing project has not been confirmed."),false);
+            return 1;
+        } catch(com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            return fail(source,"Players only");
+        }
     }
 
     private static boolean validWorld(ServerPlayer player){
@@ -70,8 +111,8 @@ public final class CampHeartCommands {
         BlockPos foundation=site.core();
         if(!level.hasChunkAt(foundation)
                 || !level.getBlockState(foundation).is(CampBlocks.CAMP_CORE))return false;
-        for(var cell:CampHeartTemplate.cells()) {
-            BlockPos pos=CampHeartTemplate.position(foundation,site.shiftX(),
+        for(var cell:CampHeartTemplate.cells(site.blueprintId())) {
+            BlockPos pos=CampHeartTemplate.position(site.blueprintId(),foundation,site.shiftX(),
                     site.shiftY(),site.shiftZ(),site.turns(),cell);
             if(level.isOutsideBuildHeight(pos)
                     || !level.hasChunkAt(pos)
@@ -117,7 +158,7 @@ public final class CampHeartCommands {
             if(!siteAvailable((ServerLevel)player.level(),site))
                 return fail(source,"Cannot confirm: site is unloaded, outside world border or overlaps starter");
             String dim=site.dimension();
-            BlockPos center=CampHeartTemplate.origin(site.core(),site.shiftX(),site.shiftY(),site.shiftZ()).offset(3,0,3);
+            BlockPos center=buildingCenter(site);
             if(!CampRules.canFoundAt(CampSavedData.get(source.getServer()).all(),dim,
                     center.getX(),center.getZ(),true,true))
                 return fail(source,"Too close to another settlement");
@@ -128,7 +169,8 @@ public final class CampHeartCommands {
             sync(player,site.confirm());
             source.sendSuccess(()->Component.literal(
                     "Camp Heart site confirmed. Existing blocks are NOT removed: clear or "
-                    +"replace obstacles as you build until all 162 blocks match. "
+                    +"replace obstacles as you build until all "
+                    +CampHeartTemplate.cells(site.blueprintId()).size()+" blocks match. "
                     +"Check /civcraft camp heart inspect before founding."),false);
             return 1;
         }catch(com.mojang.brigadier.exceptions.CommandSyntaxException e) {
@@ -144,7 +186,7 @@ public final class CampHeartCommands {
             if(!site.confirmed()&&(!player.level().hasChunkAt(site.core())||
                     !player.level().getBlockState(site.core()).is(CampBlocks.CAMP_CORE)))
                 return fail(source,"Camp Heart starter foundation is missing");
-            var progress=CampHeartTemplate.inspect((ServerLevel)player.level(),
+            var progress=CampHeartTemplate.inspect(site.blueprintId(),(ServerLevel)player.level(),
                     site.core(),site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             source.sendSuccess(()->Component.literal("Camp Heart: "+
                     progress.matched()+"/"+progress.total()+" blocks; "+
@@ -157,7 +199,7 @@ public final class CampHeartCommands {
                         "READY! The structure is complete. Open CivCraft -> Основать лагерь "
                         +"or use /civcraft camp found to register your camp."),false);
             } else {
-                var missing=CampHeartTemplate.firstMissing((ServerLevel)player.level(),
+                var missing=CampHeartTemplate.firstMissing(site.blueprintId(),(ServerLevel)player.level(),
                         site.core(),site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),8);
                 if(!missing.isEmpty()) {
                     source.sendSuccess(()->Component.literal(
