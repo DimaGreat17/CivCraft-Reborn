@@ -5,6 +5,7 @@ import dev.civcraftreborn.settlement.CampBlocks;
 import dev.civcraftreborn.settlement.BlueprintStatusRequest;
 import dev.civcraftreborn.settlement.BlueprintStatusResponse;
 import dev.civcraftreborn.settlement.HeartPlacementResponse;
+import dev.civcraftreborn.settlement.HeartPlacedNotice;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -36,6 +37,18 @@ public final class CivCraftRebornClient implements ClientModInitializer {
                         CampBlueprintProjection.setHeartPlacement(payload.core(),
                                 payload.shiftX(),payload.shiftZ(),payload.turns(),
                                 payload.confirmed())));
+
+        ClientPlayNetworking.registerGlobalReceiver(HeartPlacedNotice.TYPE,
+                (payload,context) -> context.client().execute(() -> {
+                    Minecraft client=context.client();
+                    if(client.level==null)return;
+                    CampBlueprintProjection.useCore(payload.core(),
+                            client.level.dimension().identifier().toString());
+                    CampBlueprintProjection.setServerStage(payload.core(),-1);
+                    CampBlueprintProjection.show(CampBlueprintProjection.Plan.HEART);
+                    // No screen intrusion: the world-space hologram appears
+                    // automatically and can be adjusted from the CivCraft menu.
+                }));
 
         openMenu=KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.civcraft_reborn.open_menu",InputConstants.Type.KEYBOARD,
