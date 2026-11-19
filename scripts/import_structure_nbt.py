@@ -114,7 +114,7 @@ def load_nbt(path: Path) -> dict:
     if path.stat().st_size > MAX_FILE_BYTES:
         raise InvalidStructure("NBT input file too large")
     data = path.read_bytes()
-    if data.startswith(b"\\x1f\\x8b"):
+    if data.startswith(b"\x1f\x8b"):
         try:
             with gzip.GzipFile(fileobj=__import__("io").BytesIO(data)) as stream:
                 data = stream.read(MAX_UNCOMPRESSED + 1)
@@ -234,7 +234,7 @@ def main() -> int:
     except (InvalidStructure, OSError, UnicodeDecodeError) as exc:
         p.error(str(exc))
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(blueprint, ensure_ascii=False, indent=2)+"\\n",
+    args.output.write_text(json.dumps(blueprint, ensure_ascii=False, indent=2)+"\n",
                            encoding="utf-8")
     print(f"Blueprint {args.id}: {blueprint['required_cells']} required cells, "
           f"{blueprint['ignored_air_cells']} ignored air cells -> {args.output}")
