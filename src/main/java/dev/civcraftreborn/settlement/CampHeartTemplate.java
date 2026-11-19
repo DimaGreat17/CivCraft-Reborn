@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 
 /**
  * The original 7x7x6 Camp Heart schematic, shared by authoritative server
- * validation and client projection. The manually placed core remains a fixed
- * physical anchor, while the footprint may move at most two blocks around it.
+ * validation and client projection. The foundation starts a construction project; it is NOT part of the finished building.
+ * The project stores a separately positioned and rotated structure footprint.
  * All position and facing transforms are deterministic.
  */
 public final class CampHeartTemplate {
@@ -26,8 +26,8 @@ public final class CampHeartTemplate {
     private CampHeartTemplate() {}
 
     // Each row is north (-Z) to south (+Z); columns west (-X) to east (+X).
-    // C is the default floor anchor. When a site is shifted, C becomes planks
-    // and the existing core replaces the floor cell at its real world position.
+    // C is a historical drafting marker, now treated as ordinary oak flooring.
+    // The physical foundation block is a construction starter only.
     private static final String[][] LAYERS = {
         {"SSSSSSS", "SPPPPPS", "SPPPPPS", "SPPCPPS", "SPPPPPS", "SPPPPPS", "SSSSSSS"},
         {"LPPPPPL", "P.....P", "P.....P", "P.....P", "P.....P", "P.....P", "LPPDPPL"},
@@ -92,7 +92,7 @@ public final class CampHeartTemplate {
             int turns,Cell cell) {
         BlockState state=cell.state();
         BlockPos target=position(core,shiftX,shiftZ,turns,cell);
-        if(target.equals(core)) return CampBlocks.CAMP_CORE.defaultBlockState();
+        // No requirement for the foundation block to occupy the building footprint.
         if(state.hasProperty(HorizontalDirectionalBlock.FACING)) {
             state=state.setValue(HorizontalDirectionalBlock.FACING,
                     rotate(state.getValue(HorizontalDirectionalBlock.FACING),turns));
@@ -130,6 +130,6 @@ public final class CampHeartTemplate {
     }
 
     public static boolean transformValid(int dx,int dz,int turns) {
-        return dx>=-2&&dx<=2&&dz>=-2&&dz<=2&&turns>=0&&turns<4;
+        return dx>=-128&&dx<=128&&dz>=-128&&dz<=128&&turns>=0&&turns<4;
     }
 }
