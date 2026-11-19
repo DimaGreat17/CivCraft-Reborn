@@ -41,7 +41,7 @@ public final class CampHeartProjectLifecycle {
                 // Completion belongs to the building, not to the player being
                 // online or standing in a particular dimension. SavedData
                 // therefore reflects the physical world even on a server.
-                var check=CampHeartTemplate.inspect(level,site.core(),site.shiftX(),
+                var check=CampHeartTemplate.inspect(site.blueprintId(),level,site.core(),site.shiftX(),
                         site.shiftY(),site.shiftZ(),site.turns());
                 if(!check.loaded())continue; // Never mark damaged because of unloaded chunks.
                 boolean complete=check.complete();
