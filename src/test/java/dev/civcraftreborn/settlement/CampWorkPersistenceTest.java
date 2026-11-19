@@ -3,6 +3,7 @@ package dev.civcraftreborn.settlement;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import com.mojang.serialization.JsonOps;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -46,4 +47,31 @@ final class CampWorkPersistenceTest {
         assertTrue(ResidentWorkRole.STOREKEEPER.compatible(FunctionalBuildingTemplates.Type.GRANARY));
         assertFalse(ResidentWorkRole.STOREKEEPER.compatible(FunctionalBuildingTemplates.Type.FARM));
     }
+    @Test
+    void jobAndOrderCodecsRoundTripWithoutChangingIdentities() {
+        String citizen=uuid(), camp=uuid(), orderId=uuid();
+        ResidentAssignment work=new ResidentAssignment(citizen,"",ResidentWorkRole.BUILDER);
+        ResidentWorkState jobs=new ResidentWorkState(1,List.of(work));
+        var jobsJson=ResidentWorkState.CODEC.encodeStart(JsonOps.INSTANCE,jobs).getOrThrow();
+        assertEquals(jobs,ResidentWorkState.CODEC.parse(JsonOps.INSTANCE,jobsJson).getOrThrow());
+
+        ConstructionOrder order=new ConstructionOrder(orderId,camp,citizen,
+                "minecraft:overworld",FunctionalBuildingTemplates.Type.WORKSHOP,
+                4,67,2,3,987);
+        ConstructionRegistryState state=new ConstructionRegistryState(1,List.of(order));
+        var saved=ConstructionRegistryState.CODEC.encodeStart(JsonOps.INSTANCE,state).getOrThrow();
+        assertEquals(state,ConstructionRegistryState.CODEC.parse(JsonOps.INSTANCE,saved).getOrThrow());
+        assertEquals(orderId,ConstructionRegistryState.CODEC.parse(
+                JsonOps.INSTANCE,saved).getOrThrow().orders().getFirst().id());
+    }
+
+    @Test
+    void completedBuildingCodecPreservesFacilityLocationAndRotation() {
+        BuildingRecord building=new BuildingRecord(uuid(),uuid(),"minecraft:overworld",
+                FunctionalBuildingTemplates.Type.FARM,10,63,11,2);
+        BuildingRegistryState registry=new BuildingRegistryState(1,List.of(building));
+        var encoded=BuildingRegistryState.CODEC.encodeStart(JsonOps.INSTANCE,registry).getOrThrow();
+        assertEquals(registry,BuildingRegistryState.CODEC.parse(JsonOps.INSTANCE,encoded).getOrThrow());
+    }
+
 }
