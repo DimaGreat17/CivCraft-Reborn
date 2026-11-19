@@ -30,24 +30,28 @@ def list_tag(key, element, payloads):
     return tagged(9,key,bytes([element])+integer(len(payloads))+b"".join(payloads))
 
 
+def compound_payload(fields):
+    return b"".join(fields)+bytes([0])
+
+
 def compound_tag(key, fields):
-    return tagged(10,key,b"".join(fields)+b"\x00")
+    return tagged(10,key,compound_payload(fields))
 
 
 def sample_nbt():
     # Minimal real Java Structure format, no third-party NBT dependencies.
     size=list_tag("size",3,[integer(3),integer(3),integer(3)])
     palette=list_tag("palette",10,[
-        compound_tag("",[tagged(8,"Name",name("minecraft:oak_stairs")),
+        compound_payload([tagged(8,"Name",name("minecraft:oak_stairs")),
                          compound_tag("Properties",[
                              tagged(8,"facing",name("north")),
                              tagged(8,"half",name("bottom"))])]),
-        compound_tag("",[tagged(8,"Name",name("minecraft:air"))])
+        compound_payload([tagged(8,"Name",name("minecraft:air"))])
     ])
     blocks=list_tag("blocks",10,[
-        compound_tag("",[list_tag("pos",3,[integer(1),integer(1),integer(1)]),
+        compound_payload([list_tag("pos",3,[integer(1),integer(1),integer(1)]),
                          tagged(3,"state",integer(0))]),
-        compound_tag("",[list_tag("pos",3,[integer(0),integer(0),integer(0)]),
+        compound_payload([list_tag("pos",3,[integer(0),integer(0),integer(0)]),
                          tagged(3,"state",integer(1))])
     ])
     return compound_tag("",[size,palette,blocks])
