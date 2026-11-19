@@ -17,6 +17,7 @@ public final class CivCraftManagementScreen extends Screen {
     private boolean civilizationTab;
     private Button foundingButton;
     private Button progressLabel;
+    private final Button[] overviewLabels=new Button[4];
     private int progressRefreshTicks;
 
     public CivCraftManagementScreen(Screen parent) {
@@ -27,6 +28,9 @@ public final class CivCraftManagementScreen extends Screen {
     @Override
     protected void init() {
         progressRefreshTicks=0;
+        foundingButton=null;
+        progressLabel=null;
+        java.util.Arrays.fill(overviewLabels,null);
         requestProgress();
         int left = width / 2 - 140;
         int top = Math.max(30, height / 2 - 100);
@@ -69,10 +73,19 @@ public final class CivCraftManagementScreen extends Screen {
                     b -> command("civcraft camp construction list"))
                     .bounds(left + 142, top + 160, 138, 20).build());
         } else {
-            Button future = addRenderableWidget(Button.builder(
-                    Component.literal("Цивилизации — в следующем этапе"),
-                    b -> {}).bounds(left, top + 55, 280, 20).build());
-            future.active = false;
+            // For now this is an honest, functional settlement overview.
+            // Independent AI civilizations and inter-state diplomacy remain P2.
+            String[] lines=overviewLines();
+            for(int i=0;i<overviewLabels.length;i++) {
+                overviewLabels[i]=addRenderableWidget(Button.builder(
+                        Component.literal(lines[i]),b -> {})
+                        .bounds(left,top+36+i*29,280,23).build());
+                overviewLabels[i].active=false;
+            }
+            addRenderableWidget(Button.builder(Component.literal(
+                    "Проверить условия следующего уровня"),
+                    b -> command("civcraft camp inspect"))
+                    .bounds(left,top+162,280,20).build());
         }
         addRenderableWidget(Button.builder(Component.literal("Закрыть"),
                 b -> onClose()).bounds(left, top + 192, 280, 20).build());
@@ -97,6 +110,19 @@ public final class CivCraftManagementScreen extends Screen {
         if(progressLabel!=null)
             progressLabel.setMessage(Component.literal(
                     CampBlueprintProjection.heartProgressLabel()));
+        String[] lines=overviewLines();
+        for(int i=0;i<overviewLabels.length;i++)
+            if(overviewLabels[i]!=null)
+                overviewLabels[i].setMessage(Component.literal(lines[i]));
+    }
+
+    private String[] overviewLines() {
+        return new String[]{
+                "Статус: "+CivCraftOverviewState.stageLabel(),
+                CivCraftOverviewState.resourceLabel(),
+                CivCraftOverviewState.buildingLabel(),
+                CivCraftOverviewState.readinessLabel()
+        };
     }
 
     private void command(String command) {
