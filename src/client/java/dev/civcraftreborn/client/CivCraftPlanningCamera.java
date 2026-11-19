@@ -26,10 +26,14 @@ public final class CivCraftPlanningCamera {
         toggle = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.civcraft_reborn.planning_camera", InputConstants.Type.KEYBOARD,
                 InputConstants.KEY_F7,category));
+        CivCraftPlanningKeys.register(category);
         ClientTickEvents.END_CLIENT_TICK.register(CivCraftPlanningCamera::tick);
     }
 
     public static boolean active() { return active; }
+    public static boolean matchesToggle(net.minecraft.client.input.KeyEvent event) {
+        return toggle.matches(event);
+    }
     public static double x() { return targetX; }
     public static double y() { return targetY; }
     public static double z() { return targetZ; }
