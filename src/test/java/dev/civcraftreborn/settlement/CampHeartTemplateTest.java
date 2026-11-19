@@ -35,6 +35,10 @@ final class CampHeartTemplateTest {
                 .filter(cell->cell.state().is(Blocks.OAK_LOG)).findFirst().orElseThrow();
         assertEquals(net.minecraft.core.Direction.Axis.X,
                 log.state().getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS));
+        var rotatedLog=CampHeartTemplate.expected("test_small",site.core(),
+                0,0,0,1,log);
+        assertEquals(net.minecraft.core.Direction.Axis.Z,
+                rotatedLog.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS));
         assertEquals(new BlockPos(99,70,98),
                 CampHeartTemplate.origin("test_small",site.core(),0,0,0));
         assertEquals(new BlockPos(99,71,100),
