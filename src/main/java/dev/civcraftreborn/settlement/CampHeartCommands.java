@@ -53,22 +53,25 @@ public final class CampHeartCommands {
         return WorldSettingsSavedData.get(player.level().getServer()).settings().civcraftWorld();
     }
 
-    private static boolean clear(ServerLevel level,CampHeartSite site){
-        BlockPos core=site.core();
-        if(!level.hasChunkAt(core)||
-                !level.getBlockState(core).is(CampBlocks.CAMP_CORE))return false;
-        for(var cell:CampHeartTemplate.cells()){
-            BlockPos pos=CampHeartTemplate.position(core,site.shiftX(),site.shiftZ(),
-                    site.turns(),cell);
-            if(!level.hasChunkAt(pos)||!level.getWorldBorder().isWithinBounds(pos))
-                return false;
-            var state=level.getBlockState(pos);
-            var expected=CampHeartTemplate.expected(core,site.shiftX(),
+    /**
+     * A construction plan may intentionally overlap ordinary terrain, trees or
+     * other mismatched blocks. They must be removed/replaced DURING building,
+     * never silently destroyed at preview/confirmation time.
+     *
+     * Only objective constraints can reject a location: the starter still
+     * exists, no overlap with the starter itself, all plan cells are loaded
+     * and inside the world border. Settlement separation is checked on confirm.
+     */
+    private static boolean siteAvailable(ServerLevel level,CampHeartSite site) {
+        BlockPos foundation=site.core();
+        if(!level.hasChunkAt(foundation)
+                || !level.getBlockState(foundation).is(CampBlocks.CAMP_CORE))return false;
+        for(var cell:CampHeartTemplate.cells()) {
+            BlockPos pos=CampHeartTemplate.position(foundation,site.shiftX(),
                     site.shiftZ(),site.turns(),cell);
-            if(!CampHeartTemplate.matching(state,expected)&&!state.isAir())return false;
-            // The starter foundation must never be swallowed into the building.
-            if(pos.equals(core))return false;
-            if(cell.y()==0&&!level.getBlockState(pos.below()).isSolid())return false;
+            if(!level.hasChunkAt(pos)
+                    || !level.getWorldBorder().isWithinBounds(pos)
+                    || pos.equals(foundation))return false;
         }
         return true;
     }
@@ -84,9 +87,9 @@ public final class CampHeartCommands {
             int z=dz==null?old.shiftZ():dz;
             int turns=rotation==null?old.turns():rotation;
             CampHeartSite updated=old.withPlacement(x,z,turns);
-            if(!clear((ServerLevel)player.level(),updated)) {
+            if(!siteAvailable((ServerLevel)player.level(),updated)) {
                 sync(player,old);
-                return fail(source,"Blocked, unsupported or unloaded footprint; approach the proposed site and clear/level it");
+                return fail(source,"Site outside loaded chunks, world border or overlapping the starter; approach the site");
             }
             CampHeartSavedData.get(source.getServer()).replace(old,updated);
             sync(player,updated);
@@ -105,8 +108,8 @@ public final class CampHeartCommands {
             CampHeartSite site=current(player);
             if(site==null)return fail(source,"No active Camp Heart building project");
             if(site.confirmed())return fail(source,"Already confirmed");
-            if(!clear((ServerLevel)player.level(),site))
-                return fail(source,"Cannot confirm: footprint is obstructed/unsupported/unloaded");
+            if(!siteAvailable((ServerLevel)player.level(),site))
+                return fail(source,"Cannot confirm: site is unloaded, outside world border or overlaps starter");
             String dim=site.dimension();
             BlockPos center=CampHeartTemplate.origin(site.core(),site.shiftX(),site.shiftZ()).offset(3,0,3);
             if(!CampRules.canFoundAt(CampSavedData.get(source.getServer()).all(),dim,
@@ -118,8 +121,9 @@ public final class CampHeartCommands {
             player.level().removeBlock(site.core(),false);
             sync(player,site.confirm());
             source.sendSuccess(()->Component.literal(
-                    "Camp Heart construction site confirmed. Build the whole hologram manually; "
-                    +"check /civcraft camp heart inspect and then found the camp."),false);
+                    "Camp Heart site confirmed. Existing blocks are NOT removed: clear or "
+                    +"replace obstacles as you build until all 162 blocks match. "
+                    +"Check /civcraft camp heart inspect before founding."),false);
             return 1;
         }catch(com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source,"Players only");
