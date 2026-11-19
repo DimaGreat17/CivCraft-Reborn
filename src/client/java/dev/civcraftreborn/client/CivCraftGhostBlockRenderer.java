@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -66,9 +67,14 @@ public final class CivCraftGhostBlockRenderer {
             if(position==null||!client.level.hasChunkAt(position)
                     ||CampBlueprintProjection.matches(plan,step))continue;
             BlockState desired=CampBlueprintProjection.expectedState(plan,step);
+            // Authored blueprints may optionally REQUIRE empty air cells.
+            // Show an occupied required-air cell as a red translucent glass
+            // marker so the player knows exactly which block to remove.
+            BlockState visual=desired.isAir()
+                    ? Blocks.RED_STAINED_GLASS.defaultBlockState():desired;
             List<BlockStateModelPart> parts=new ArrayList<>();
-            models.get(desired).collectParts(
-                    RandomSource.create(desired.getSeed(position)),parts);
+            models.get(visual).collectParts(
+                    RandomSource.create(visual.getSeed(position)),parts);
 
             List<BakedQuad> quads=new ArrayList<>();
             for(BlockStateModelPart part:parts) {
