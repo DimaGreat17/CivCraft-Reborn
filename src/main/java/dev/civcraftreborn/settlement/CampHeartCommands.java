@@ -147,10 +147,29 @@ public final class CampHeartCommands {
             var progress=CampHeartTemplate.inspect((ServerLevel)player.level(),
                     site.core(),site.shiftX(),site.shiftY(),site.shiftZ(),site.turns());
             source.sendSuccess(()->Component.literal("Camp Heart: "+
-                    progress.matched()+"/"+progress.total()+" required block positions, "
-                    +(site.confirmed()?"site confirmed":"position not confirmed")+
-                    (progress.loaded()?"":" (chunks not loaded)")+
-                    ". Missing cells must be built manually."),false);
+                    progress.matched()+"/"+progress.total()+" blocks; "+
+                    (site.confirmed()?"site confirmed":"site not yet confirmed")+
+                    (progress.loaded()?"":"; some chunks are NOT loaded")),false);
+            if(progress.complete() && site.confirmed()) {
+                source.sendSuccess(()->Component.literal(
+                        "READY! The structure is complete. Open CivCraft -> Основать лагерь "
+                        +"or use /civcraft camp found to register your camp."),false);
+            } else {
+                var missing=CampHeartTemplate.firstMissing((ServerLevel)player.level(),
+                        site.core(),site.shiftX(),site.shiftY(),site.shiftZ(),site.turns(),8);
+                if(!missing.isEmpty()) {
+                    source.sendSuccess(()->Component.literal(
+                            "First "+missing.size()+" mismatched block positions (world coordinates):"),false);
+                    for(var entry:missing) {
+                        source.sendSuccess(()->Component.literal(
+                                entry.pos().toShortString()+" expected="+
+                                entry.expected().toString()+" actual="+entry.actual().toString()),false);
+                    }
+                }
+                if(!site.confirmed())
+                    source.sendSuccess(()->Component.literal(
+                            "Confirm the blueprint site before founding your camp."),false);
+            }
             return 1;
         }catch(com.mojang.brigadier.exceptions.CommandSyntaxException e) {
             return fail(source,"Players only");
