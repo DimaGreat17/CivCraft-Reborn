@@ -151,6 +151,19 @@ public final class CampBlueprintProjection {
     }
 
     public static void hide() { activePlan = null; }
+    /** Forget an invalidated construction project, not merely its visible ghost. */
+    public static void clearProject(BlockPos foundation) {
+        if(coreAnchor==null || (!BlockPos.ZERO.equals(foundation)
+                && !coreAnchor.equals(foundation)))return;
+        coreAnchor=null;
+        dimension=null;
+        activePlan=null;
+        serverStage=-2;
+        offsetX=12;
+        offsetZ=0;
+        rotation=0;
+        heartConfirmed=false;
+    }
     public static Plan selected() { return activePlan; }
     public static BlockPos anchor() { return coreAnchor; }
     public static int rotationDegrees() { return rotation * 90; }
