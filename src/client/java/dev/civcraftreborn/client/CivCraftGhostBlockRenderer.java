@@ -45,7 +45,8 @@ public final class CivCraftGhostBlockRenderer {
         BlockPos anchor = CampBlueprintProjection.anchor();
         if (plan == null || anchor == null || client.level == null
                 || client.player == null || !CampBlueprintProjection.unlocked(plan)
-                || client.player.blockPosition().distSqr(anchor) > 28 * 28) {
+                || (plan != CampBlueprintProjection.Plan.HEART
+                    && client.player.blockPosition().distSqr(anchor) > 28 * 28)) {
             return;
         }
 
