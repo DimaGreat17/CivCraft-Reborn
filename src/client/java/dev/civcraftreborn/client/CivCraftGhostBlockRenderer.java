@@ -27,8 +27,10 @@ import net.minecraft.world.phys.Vec3;
 public final class CivCraftGhostBlockRenderer {
     private static final int MAX_GHOST_BLOCKS=256;
     private static final int LIGHT=0x00F000F0;
-    private static final int[] NORMAL_TINT={0x66FFFFFF,0x66FFFFFF,0x66FFFFFF,0x66FFFFFF};
-    private static final int[] OBSTRUCTED_TINT={0x88FF6666,0x88FF6666,0x88FF6666,0x88FF6666};
+    // 60% opacity: blueprint blocks are easier to identify against the world.
+    private static final int[] NORMAL_TINT={0x99FFFFFF,0x99FFFFFF,0x99FFFFFF,0x99FFFFFF};
+    // 70% opacity: occupied incorrect cells must remain clearly distinguishable.
+    private static final int[] OBSTRUCTED_TINT={0xB3FF6666,0xB3FF6666,0xB3FF6666,0xB3FF6666};
 
     private record Ghost(BlockPos pos,BlockState expected,boolean obstructed) {}
     private CivCraftGhostBlockRenderer(){}
