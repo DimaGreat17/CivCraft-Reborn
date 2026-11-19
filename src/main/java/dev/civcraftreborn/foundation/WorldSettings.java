@@ -3,8 +3,12 @@ package dev.civcraftreborn.foundation;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-/** Versioned, per-world immutable foundation settings. */
-public record WorldSettings(int schemaVersion, WorldPreset preset, SessionMode mode) {
+/**
+ * Immutable settings for one world. Older saved worlds (before the CivCraft
+ * opt-in checkbox) are interpreted as CivCraft worlds to preserve their border.
+ */
+public record WorldSettings(int schemaVersion, WorldPreset preset, SessionMode mode,
+                            boolean civcraftWorld) {
     public static final int CURRENT_SCHEMA = 1;
     private static final Codec<WorldPreset> PRESET_CODEC =
             Codec.INT.xmap(WorldPreset::fromSide, WorldPreset::sideBlocks);
@@ -15,9 +19,17 @@ public record WorldSettings(int schemaVersion, WorldPreset preset, SessionMode m
             instance.group(
                     Codec.INT.fieldOf("schema_version").forGetter(WorldSettings::schemaVersion),
                     PRESET_CODEC.fieldOf("overworld_side_blocks").forGetter(WorldSettings::preset),
-                    MODE_CODEC.fieldOf("session_mode").forGetter(WorldSettings::mode)
+                    MODE_CODEC.fieldOf("session_mode").forGetter(WorldSettings::mode),
+                    // Missing on legacy worlds: they had CivCraft border enabled.
+                    Codec.BOOL.optionalFieldOf("civcraft_world", true)
+                            .forGetter(WorldSettings::civcraftWorld)
             ).apply(instance, WorldSettings::new)
     );
+
+    /** Compatibility for previous call sites and old P0 unit tests. */
+    public WorldSettings(int schemaVersion, WorldPreset preset, SessionMode mode) {
+        this(schemaVersion, preset, mode, true);
+    }
 
     public WorldSettings {
         if (schemaVersion != CURRENT_SCHEMA) {
@@ -30,12 +42,13 @@ public record WorldSettings(int schemaVersion, WorldPreset preset, SessionMode m
         }
     }
 
+    /** New vanilla worlds are not CivCraft worlds until explicitly selected. */
     public static WorldSettings defaults() {
-        return new WorldSettings(CURRENT_SCHEMA, WorldPreset.SMALL, SessionMode.ENDLESS_SANDBOX);
+        return new WorldSettings(CURRENT_SCHEMA, WorldPreset.SMALL,
+                SessionMode.ENDLESS_SANDBOX, false);
     }
 
     public boolean isVictoryEvaluatorAvailable() {
-        // FINITE_VICTORY is persisted as an intention only in the P0 Foundation patch.
         return false;
     }
 }

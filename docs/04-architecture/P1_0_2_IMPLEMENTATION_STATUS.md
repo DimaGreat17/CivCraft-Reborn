@@ -1,0 +1,164 @@
+# P1 / 0.2 Living Settlement — implementation status
+
+**2026-11-18 | DEVELOPMENT BUILD, NOT A RELEASE | branch `feat/p1-living-settlement` | PR #7**
+
+This is a real source-code implementation on top of the unmerged P0 branch. It does **not** establish P0 owner acceptance, G4 release freeze, complete P1 scope, or Minecraft client/dedicated gameplay signoff.
+
+## Implemented (first vertical slice)
+
+| Feature | Code and observable behavior | Caveat |
+|---|---|---|
+| Physical core block | `CampBlocks` registers `civcraft_reborn:camp_core`, crafting recipe, blockstate/model, drop and RU/EN name | Uses vanilla texture, no final custom art |
+| Player-founded camp | `/civcraft camp found` near core, checks server WorldBorder, physical foundation, 96-block separation, one owner camp, and consumes **16 oak logs, 16 cobblestone, 8 bread** | Initial test balance, not frozen; future ACL/site and item tags needed |
+| World persistence | `CampSavedData` with versioned Codec, stable CampId/owner/dimension/anchor/stage | Real save/load and corruption injection pending |
+| Residents | `/civcraft camp recruit` registers **an existing nearby vanilla villager**, requires a reachable bed, free capacity and 4 bread; stable citizen and entity UUID in SavedData | Vanilla AI; no custom jobs/needs/loaded↔virtual yet |
+| Housing inspection | `HousingScanner` scans actual beds/solid supporting floor, headroom and nearby roof with bounded BFS; reports rooms, verified cells and D-056 provisional 4 cells/NPC | Conservative prototype: NOT full D-057 PHYSICAL collision/path evidence, nuanced corridors, rights/comfort, multi-floor safety |
+| Physical storage/structures | `CampStorageScanner` counts actual food in containers; `CampBuildingScanner` detects workshop (craft table+furnace), farm (farmland+composter), storage | Prototype modules only; no real production workflow or permission-safe shared inventory ledger |
+| Camp promotion | `/civcraft camp promote` needs **3 verified rooms, 3 registered citizens, 16 actual stored food, real storage/workshop/farm**; retains CampId, never spawns items/NPC | Provisional requirements; rights, jobs and NPC camp promotion require more work |
+| Diagnostics | `/civcraft camp status`, `inspect`; tests for sites, ID uniqueness, stage/identity and food conditions | Not yet graphical GUI |
+| CI artifact | `.github/workflows/p1-living-settlement.yml` builds Java tests, boots dedicated server and uploads **development JAR** | Passing compilation/server smoke != playable-feature validation |
+
+## User-requested creation and management UX update (2026-11-18)
+
+**Choice:** physically constructed camp, **not** auto-generated building and not abstract inventory-only camp. Player crafts/places a real `camp_core`, then gathers real materials and registers the camp; further construction is by ordinary Minecraft blocks and a modular checklist/schematic, not an automatic free prefab.
+
+- Right-clicking the physical camp core opens an **independent CivCraft management screen** with tabs **Лагерь** / **Цивилизация**. The camp section exposes **Основать**, **Проверить**, **Схема строительства**, **Принять жителя**, **Повысить**, **Список поселений**.
+- The camp construction action opens a separate **CivCraftBlueprintScreen** with an ordered physical-build guide; its **Проверить построенное** button asks the server to report actual progress. Action buttons invoke **server-authoritative** `/civcraft camp ...` commands. There is no client-trusted mutation of stocks, citizens or camp ownership.
+- `/civcraft camp plan` gives a progress-aware construction checklist: 3 actual sheltered bedrooms, 3 citizens, food in real storage, workshop, farm. The player constructs blocks physically. **A native translucent whole-block preview is now implemented in the development branch; exact block textures/model fidelity and snapping are not yet implemented**.
+- The **Цивилизация** tab is intentionally disabled and explicitly labelled future: actual civ government features belong to a later patch, not a fake functional 0.2 menu.
+- The old floating Create World widgets are removed. CivCraft world options are now a dedicated screen entered from the vanilla World tab, with an explicit enable switch; a vanilla new world no longer receives the CivCraft border automatically. Existing 0.1 saves remain opt-in by legacy decode.
+- Client tab mixin is `environment=client` in `fabric.mod.json`, so dedicated-server launch must not require client GUI resource.
+
+**Acceptance still open:** verify the World tab placement and camp screen interactively on Minecraft 26.3, packet/command execution and permission checks on dedicated servers; CI Java compilation and server startup alone are insufficient.
+
+## Starter rare materials — issued after EVERY physical Camp Core placement (2026-11-18)
+
+**Owner clarification:** the game awards rare materials every time a player physically places a Camp Core in a CivCraft-enabled world. No grant on world creation, login, reconnect or merely holding the item. The prior once-per-player grant limit was incorrect and has been removed.
+
+- `CampCoreBlock.setPlacedBy` awards **4 physical obsidian** each time a player places a Camp Core, from the authoritative server.
+- The player places four obsidian north/south/east/west of the core before `/civcraft camp found` succeeds. This does not require an early-game obsidian mining tool.
+- If the inventory lacks space, any remaining items drop at the camp location.
+- The old receipt SavedData/state/test files were removed as unused.
+- **Balance/exploit risk:** breaking and re-placing a Camp Core yields another 4 obsidian, as explicitly requested. A later crafting-cost and abuse review is required; do not claim the starter economy is finalized.
+- A first **3D world-space blueprint preview** has now been coded: the player opens the Camp Core management UI → construction schematic → selects a HEART, STORAGE, WORKSHOP, FARM or BEDROOM template. Missing block locations are indicated by cyan client-side dust particles, and their locations disappear when matching real blocks are placed. The construction menu shows per-block progress. This is a particle-based holographic outline, **not yet a solid semi-transparent block mesh**, and has not been interactively client-tested. No snapping/auto-placement or client-authoritative construction is added.
+
+## 3D blueprint preview (development, 2026-11-18)
+
+- `CampBlueprintProjection` maintains a client-only active template bound to the last physical Camp Core clicked. The preview automatically hides on changing dimensions or walking farther than 28 blocks.
+- `CampBlueprintProjection.Plan`: HEART (4 obsidian N/S/E/W), STORAGE (chest+barrel), WORKSHOP (craft table+furnace), FARM (4 farmland+composter), BEDROOM (optional 3×3 oak room, roof and any bed).
+- `CivCraftBlueprintScreen` selects and hides templates and shows `completed / total` based on **real currently loaded client world block states**. The visual overlay uses cyan dust corner particles for missing cells. **Block correctness, resources, claim permission and promotion still belong to the server** and are checked by existing `/civcraft camp ...` commands, not by the client visual preview.
+- Rendering is throttled every five client ticks and limited to 80 step locations per sample. No chunk force-load; preview does not work without a clicked core.
+- The BEDROOM geometry is an **optional** example; under D-050/D-053 ordinary houses remain freeform and are validated by actual physical ROOM criteria. Exact template shape must not be misrepresented as mandatory.
+- Pending G3 follow-up: fully translucent quads/solid block ghosts, correct rendering through/behind blocks, HUD progress without leaving the world, client multiplayer testing, localization and performance verification for large templates.
+- **Acceptance test:** right-click core → choose HEART → see four cyan outlined cells → put obsidian one by one → each correctly placed cell disappears → remove obsidian → corresponding cell reappears → select workshop/farm/bedroom → walk >28 blocks or switch dimension, projection stops → dedicated-server restart and world rights remain unaffected.
+
+## Native translucent blocks + Litematica required test profile (2026-11-18)
+
+- Previous dot particle prototype has been replaced by `CivCraftGhostBlockRenderer`, which emits **six alpha-tinted faces for every missing whole-block cell** into Minecraft 26.3's client-only Renderpearl pipeline. The plan selector, per-cell progress and server validation remain independent.
+- This is a **full-volume translucent voxel preview**, not a Minecraft-textured baked BlockState model renderer. Accurate bed, stair, slab, facing/orientation, textured faces, rotate/move/flip controls and an interactive in-game graphical acceptance test are NOT yet complete.
+- `gradle runClient -PschematicTest=true` explicitly requires the **Litematica 0.29.1 + MaLiLib 0.30.2** reference-mod pair, pinned from Modrinth. Their dependencies are scoped to the reference test profile; **do not** put them in CivCraft production fabric.mod.json. The build is not reliant on their Java APIs.
+- Separate acceptance and licensing notes: [P1_SCHEMATIC_RENDER_REFERENCE_TEST.md](P1_SCHEMATIC_RENDER_REFERENCE_TEST.md). No source from Litematica or MaLiLib is copied into CivCraft; reuse/compliance requires separate review.
+- **API caveat:** Minecraft 26.3 migrated GPU interfaces from Blaze3D to Renderpearl; the renderer must pass real 26.3 compilation, server bootstrap, and manual client rendering tests before it can be called finished.
+
+## CI evidence for first native Renderpearl ghost renderer (2026-11-18)
+
+- [Run 44307466269](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44307466269): **PASS** Java compilation, unit tests, dedicated-server smoke and development JAR; this confirms no immediate dedicated-side classloading failure for the native renderer.
+- [Run 44307466275](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44307466275): **PASS** P0 compatibility pipeline on the same head.
+- Native rendering was adapted to the **Renderpearl** API of Minecraft 26.3. Compilation is evidence of API linkage only; it **does not** prove GPU draw works visually on the user's client.
+- Mandatory Litematica/MaLiLib **reference-test profile** remains separate from release. The explicit `verifySchematicTestProfile -PschematicTest=true` task is designed to download both exact Modrinth artifacts, and a separate CI workflow has been added; no successful resolution/client comparison run has yet been verified by this document.
+- The preview draws translucent whole-block volumes, **not yet per-block Minecraft textures/models**. No claim of final Litematica parity or full 0.2 release.
+
+## Subsequent schematic-profile CI evidence (2026-11-18)
+
+- [Run 44307976724](https://github.com/DimaGreat17/CivCraft-Reborn/actions/runs/44307976724) **PASS**: normal CivCraft 0.2 development build, JUnit and dedicated server smoke, with the separately optional Modrinth test-profile Gradle declarations present. Includes a downloadable development JAR.
+- The dedicated-server build does **not** require Litematica/MaLiLib. Their separate resolution task `verifySchematicTestProfile -PschematicTest=true` is checked by its own workflow; this run alone does **not** prove the reference-mod test has passed.
+- Visual client GPU test and correct color/alpha behavior still require actual Minecraft runtime confirmation.
+
+## Stage-gated blueprints, manual placement and resource bill (2026-11-18)
+
+**Implementation branch:** `feat/p1-living-settlement`, pending CI and in-client acceptance.
+
+- On every right-click of a physical Camp Core the client asks the server for the **stage of that exact core** via `BlueprintStatusRequest`. The server verifies actual core block, near-player distance, CivCraft world flag, registration and owner, then replies with `BlueprintStatusResponse`. Unknown/invalid responses keep the catalog fail-closed. A client cannot grant itself a real settlement stage by picking an advanced menu item.
+- Unlocks: **before founding:** only HEART. **CAMP:** HEART, STORAGE, WORKSHOP, FARM, BEDROOM, SMALL_HOUSE. **SETTLEMENT:** all six base + BARRACKS, GRANARY, SMITHY, WATCHTOWER, WELL. The initial CAMP tier does **not** offer the developed storage, forge, longhouse or tower.
+- `CivCraftBlueprintScreen` shows only allowed plans, with async waiting text until the server responds. Other vanilla building remains possible; restricting the blueprint catalog does not magically prohibit all physical blocks in the vanilla game.
+- `CivCraftPlacementScreen` allows the selected plan to **move one block N/S/E/W**, **rotate ±90°**, and then render it into the game. Every position is transformed around its normalised footprint and checked against the actual camp radius. HEART does not move away from the physical core. The player chooses placement before manually laying any blocks.
+- `CivCraftMaterialsScreen` lists each material's **total required / already placed / inventory stock / still to obtain**. Inventory is an advisory local snapshot, not a resource reservation, and `FARMLAND` reports dirt + need for hoe; bed matches any vanilla bed block. There is no automatic crafting, free grant or automatic construction.
+- `BlueprintTransform` has independent JUnit tests for 90°/180°/270° footprints and boundary conditions; `BlueprintAccessTest` covers pre-camp/CAMP/SETTLEMENT unlocks. Interaction/screen layout still requires graphical Minecraft testing.
+- These are development-level stage tiers, **not final technology tree**. Gameplay benefits and the legitimacy of physical structures continue to be server-validated, irrespective of the client ghost preview.
+
+**Known limits:** client holograms are whole translucent cubes, not textured actual BlockState shapes. Item material estimate ignores crafting recipes, block orientation and items in public warehouse containers. Selected move/rotation currently lasts until the client hides or changes the core, not a persisted/server-owned construction order. The catalog stage is refreshed on clicking the center core; it does not dynamically push a promotion event to currently open menus.
+
+## Client crash report — schematic storage selection (2026-11-18)
+
+**Reported by owner:** an older development JAR crashed Minecraft when selecting/placing the storage blueprint. The owner provided `crash-2026-11-18_17.01.54-client.txt`: **root cause confirmed**. The render thread threw `IllegalStateException: Close the existing render pass before performing additional commands` at `CivCraftGhostBlockRenderer.render(CivCraftGhostBlockRenderer.java:116)` during `StagedVertexBuffer.upload()`. This is an illegal upload inside Fabric `AFTER_TRANSLUCENT_TERRAIN`'s already active render pass. It is not a missing storage schematic, unsupported GPU or RAM allocation failure.
+
+The failure is definitively in the custom Minecraft 26.3 Renderpearl GPU pass when the first ghost is drawn. GitHub Actions runs compile/boot dedicated server but **do not perform client GPU rendering**, so prior PASS must not be interpreted as GPU safety.
+
+**Containment hotfix (not root-cause fix):**
+- **Completely unregister** `CivCraftGhostBlockRenderer` for development builds, including removing the unsafe JVM override. Its upload/draw lifecycle must be redesigned and visually tested before re-enabling.
+- Restore bounded Minecraft-native `DustParticleOptions` 3D cube-corner markers; only unloaded/missing cells are shown; correct block placement hides them.
+- Limit the fallback to 36 missing cells × 8 particles every 6 client ticks; use no forced chunk loads or unsafe GPU buffer calls.
+- This temporarily changes the preview from full translucent faces back to 3D outline points. Owner's ultimate requirement for accurate solid block ghosts remains **unresolved** until GPU failure is reproduced and corrected.
+- The crash report now establishes the root cause. Next, redesign GPU buffer upload to occur outside any active render pass (and verify with graphical integration tests), then restore real translucent voxel surfaces. Tests: select STORAGE/WORKSHOP/HEART, switch templates, render on a dedicated multiplayer world, exit/rejoin and test with/without Litematica.
+
+Do **not** advise reusing the pre-hotfix 3D GPU JAR for construction testing, and do **not** claim this workaround has been visually validated on the user's computer.
+
+## Reimplementation: translucent full-block ghosts via native submit collection (2026-11-18)
+
+**Confirmed cause in user report:** earlier `CivCraftGhostBlockRenderer.render():116` called `StagedVertexBuffer.upload()` from `AFTER_TRANSLUCENT_TERRAIN` during an already-open render pass. That is forbidden in Minecraft 26.3 Renderpearl.
+
+**Implemented correction:** new `CivCraftGhostBlockRenderer` registers `LevelRenderEvents.COLLECT_SUBMITS`, gathers up to 256 currently missing world positions, and uses `context.submitNodeCollector().submitCustomGeometry(poseStack, RenderTypes.debugFilledBox(), callback)`. Minecraft's own feature renderer now owns buffer uploads and render pass ordering. CivCraft owns no GPU buffers, opens no RenderPass, and calls no StagedVertexBuffer.upload. Existing closing mixin now invokes a no-op for backward compatibility.
+
+- A missing block is represented by six complete, cyan-tinted full faces with 0.30 alpha; correctly placed blocks are not submitted. This restores volumetric holograms without the old raw GPU path.
+- The ghost respects the user's selected template, current rotation/translation, 24-block construction radius, 28-block viewer distance and existing server-authoritative unlocks.
+- `scripts/verify_ghost_renderer_lifecycle.py` guards against accidental reintroduction of the previous illegal call pattern in CI.
+- The particle-only stopgap is removed when the new submit-based renderer is enabled.
+- **Evidence pending:** compilation and dedicated server smoke + artifact, then actual graphics-client acceptance on Minecraft 26.3 (open STORAGE, move, rotate, place/remove blocks, changing worlds, improved transparency ON/OFF). A successful headless server run alone CANNOT establish graphics stability or exact visual appearance.
+- Still not exact block textures/mesh topology; stairs, beds, walls and slabs remain translucent cube bounding volumes. This is the full-block geometric hologram milestone, not full Litematica mesh parity.
+
+## Playable settlement work-loop integration, 2026-11-19
+
+**Development code — not yet a fully tested gameplay release.** Implemented and reconciled a single construction/profession subsystem; obsolete duplicate SavedData types and competing tickers were removed to prevent duplicate work or conflicting saves.
+
+**Full physical structures**: `FunctionalBuildingTemplates` is now the one authoritative 10-building model (STORAGE, WORKSHOP, FARM, BEDROOM, SMALL_HOUSE, BARRACKS, GRANARY, SMITHY, WATCHTOWER, WELL), shared between the server's actual blueprint matching, both manual registration and NPC work, and the client's 3D ghosts. The old divergent `CampBuildingTemplates` file was removed. A chest or furnace alone does not register a full CivCraft facility; `CampBuildingScanner` checks actual registered and still-intact structures. **Settlement promotion now also requires completed, registered storage**, alongside workshop and farm, 3 rooms/citizens, and food.
+
+**Residents and professions**: `CampResidentJobCommands` and `ResidentWorkSavedData` assign real recruited villagers to verified compatible buildings. Profession visual changes are attempted through vanilla villager data; work is not a free resource generator. Physical jobs in `CampWorkerSystem`: farmer harvests/replants only mature wheat using real stored seeds; craftsman loads actual raw ore/coal into a real furnace; storekeeper carries its finished metal through persistent NPC inventory to an actual chest; watchman warns of nearby real hostile mobs; water-carrier uses a real source and buckets. `CampConstructionSystem` builds one real cell at a time while loaded, navigates to it, withdraws only physical stocked items, handles beds/water/farmland and registers the completed building. Construction orders and resident jobs persist through world SavedData. Incomplete/destroyed/unloaded buildings do not perform their facility tasks.
+
+**New user-facing path:** crafted `Camp Core` via an existing shapeless? **No: the actual recipe is SHAPED** `LIL / SCS / LIL` (4 oak logs, 2 iron ingots, 2 cobblestone, 1 campfire). Placing a Core grants 4 obsidian each time, which must then be placed physically around the core. Player spends founding resources, builds manually through 3D layouts OR uses a recruited builder and stock in nearby chests. `/civcraft camp building register TYPE ROTATION X Y Z` accepts only fully matched structures; owner can also use the placement GUI. `/civcraft camp job assign ROLE` assigns a real villager in range; `/civcraft camp construction order TYPE ROTATION X Y Z` binds it to a worksite. Separate resident screen was condensed to pages to avoid off-screen controls.
+
+**Corrections/tests:** Minecraft 26.3 migrant API changed to `EntityTypes.VILLAGER` / `setPos`. A duplicate builder system added during parallel integration was removed, leaving only `CampConstructionSystem` and `CampWorkerSystem`. `CampWorkPersistenceTest` covers role compatibility, unique assigned identities and order schema constraints. Tilling a real DIRT block no longer consumes a duplicate dirt item and wears a physical hoe. Visual materials panel now recognises the required water bucket.
+
+**Outstanding (major):** real Minecraft client graphics and full work loop E2E testing, crash-safe multi-step inventory transactions, autonomous NPC-founded rival camps, advanced AI tasks and priorities, long-range simulation, load/performance benchmarks, villager death/bed reassignment, flexible freeform building MODULES and full authoritative housing regions. This is an implemented **development slice**, not a complete 0.2 release. See [practical player test guide](../05-roadmap/P1_0_2_GAMEPLAY_TEST_GUIDE.md).
+
+## NOT implemented; release blockers
+
+1. NPC-founded group→camp with actual shared gathering/construction costs, NPC autonomous search and migration. NPCs currently cannot independently found camps.
+2. **Starter physical work exists** (builder, farmer, craftsman, storekeeper, watchman, water-carrier). Still missing: complete work-ticket priority planner, exclusive inventory reservations, crash-safe journal/commit/reconciliation, complex multi-step crafting, NPC skill progression and loaded/virtual parity. This is not the final CivCraft job system.
+3. Persistent food/REST/SAFETY/HOUSING need transitions and citizen satisfaction, happiness diagnostics.
+4. Verified room segmentation, exclusive cell ownership, fully physical slabs/stairs collision, private-only transit, comfort, safe split/merge/reassignment.
+5. Proper multiplayer ACL/claims, final recipe balance, **freeform** MODULES recognition beyond the 10 fixed full structural templates, and production-grade camp/civilization UI. The existing UI/commands and fixed templates are development-grade.
+6. Loaded↔Virtual identity and job/resource parity, crash resilience, comprehensive hostility/defense; current prototype already avoids forcing unloaded chunks and has a basic loaded-only watchman alert.
+7. Real NPC camp and player camp coexistence/integration, client & dedicated tests, full 0.2 acceptance suite, performance/profile and persistence migration.
+8. Finalize and accept P0; branch P1 is based on **unmerged** PR #6 and not ready for deployment over existing worlds without backup.
+
+## Design invariants honored in this slice
+
+- No free items on founding or promotion, no free villagers on recruitment.
+- Server-side checks before spending; world-scoped saved identity.
+- Same permanent CampId on promotion.
+- Provisional density 4 validated cells/NPC; COMBINED bed+floor rule.
+- Full NPC world simulation and complete housing code **cannot** be claimed by this proof of concept.
+
+## Player testing once CI is green
+
+1. Back up old saves; use a disposable world and matching Minecraft 26.3/Fabric dependencies.
+2. Craft a physical Camp Core from the included shaped recipe; placing it grants four obsidian **each time**. Physically place four obsidian around the core. Found with real oak logs, cobblestone and bread.
+3. Select a **full** blueprint from the separate CivCraft management UI. Build all structural blocks (walls/roof/floor/function blocks) yourself or assign a recruited builder with real resources in nearby chests/barrels.
+4. Register fully built facilities with the placement UI or `/civcraft camp building register TYPE ROTATION X Y Z`; a standalone chest, crop plot or furnace does **not** qualify.
+5. Recruit actual villagers (or invite a paid migrant with free verified bed), then assign roles via the residents screen. Verify actual farmer, crafting, storage and construction actions, plus resource consumption.
+6. Restart the disposable world and verify CampId, CitizenId, BuildingId, work order identity and inventory — no duplication after restart.
+7. Complete the server-verified storage, workshop, farm, three rooms, three citizens and food requirements before promoting the camp.
+
+**Full player testing instructions:** [P1_0_2_GAMEPLAY_TEST_GUIDE.md](../05-roadmap/P1_0_2_GAMEPLAY_TEST_GUIDE.md).
+
+**NO RELEASE 0.2:** the codebase is only a first implemented slice. Do not merge or tag as released until all P1 gates are objectively satisfied.

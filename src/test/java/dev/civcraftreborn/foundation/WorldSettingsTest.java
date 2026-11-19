@@ -150,4 +150,35 @@ final class WorldSettingsTest {
     }
 
 
+    @Test
+    void newWorldDefaultsRemainVanillaUnlessCivCraftSelected() {
+        assertFalse(WorldSettings.defaults().civcraftWorld());
+    }
+
+    @Test
+    void explicitCivCraftChoiceIsSavedAndReloaded() {
+        Path file = temporaryDirectory.resolve("civcraft-selection.properties");
+        WorldSettings civcraft = new WorldSettings(WorldSettings.CURRENT_SCHEMA,
+                WorldPreset.LARGE, SessionMode.FINITE_VICTORY, true);
+        FoundationDefaults.toFile(file, civcraft);
+        assertEquals(civcraft, FoundationDefaults.fromFile(file));
+
+        WorldSettings vanilla = new WorldSettings(WorldSettings.CURRENT_SCHEMA,
+                WorldPreset.SMALL, SessionMode.ENDLESS_SANDBOX, false);
+        FoundationDefaults.toFile(file, vanilla);
+        assertEquals(vanilla, FoundationDefaults.fromFile(file));
+    }
+
+    @Test
+    void preOptInSaveWithoutFieldKeepsItsOriginalCivCraftWorld() {
+        var legacy = new com.google.gson.JsonObject();
+        legacy.addProperty("schema_version", 1);
+        legacy.addProperty("overworld_side_blocks", 15000);
+        legacy.addProperty("session_mode", "ENDLESS_SANDBOX");
+        var restored = WorldSettings.CODEC.parse(JsonOps.INSTANCE, legacy).getOrThrow();
+        assertTrue(restored.civcraftWorld());
+        assertEquals(WorldPreset.MEDIUM, restored.preset());
+    }
+
+
 }

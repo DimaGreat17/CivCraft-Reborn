@@ -41,6 +41,7 @@ public final class FoundationDefaults {
         Properties properties = new Properties();
         properties.setProperty("overworld_side_blocks", Integer.toString(settings.preset().sideBlocks()));
         properties.setProperty("session_mode", settings.mode().name());
+        properties.setProperty("civcraft_world", Boolean.toString(settings.civcraftWorld()));
 
         try {
             Files.createDirectories(path.toAbsolutePath().getParent());
@@ -79,7 +80,12 @@ public final class FoundationDefaults {
             int size = Integer.parseInt(properties.getProperty("overworld_side_blocks", "10000").trim());
             SessionMode mode = SessionMode.valueOf(
                     properties.getProperty("session_mode", "ENDLESS_SANDBOX").trim());
-            return new WorldSettings(WorldSettings.CURRENT_SCHEMA, WorldPreset.fromSide(size), mode);
+            String enabledValue = properties.getProperty("civcraft_world", "false").trim();
+            if (!enabledValue.equalsIgnoreCase("true") && !enabledValue.equalsIgnoreCase("false")) {
+                throw new IllegalArgumentException("civcraft_world must be true or false");
+            }
+            return new WorldSettings(WorldSettings.CURRENT_SCHEMA, WorldPreset.fromSide(size),
+                    mode, Boolean.parseBoolean(enabledValue));
         } catch (IllegalArgumentException e) {
             throw new IllegalStateException(
                     "Invalid CivCraft Reborn world defaults at " + path

@@ -5,6 +5,12 @@
   "name": "CivCraft Reborn",
   "description": "Server-authoritative civilization simulation mod. Technical compatibility milestone.",
   "environment": "*",
+  "mixins": [
+    {
+      "config": "civcraft_reborn.client.mixins.json",
+      "environment": "client"
+    }
+  ],
   "entrypoints": {
     "main": [
       "dev.civcraftreborn.CivCraftReborn"

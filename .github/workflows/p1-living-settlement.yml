@@ -1,0 +1,77 @@
+name: P1 Living Settlement development validation
+
+on:
+  push:
+    branches:
+      - feat/p1-living-settlement
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'gradle.properties'
+      - '.github/workflows/p1-living-settlement.yml'
+      - 'scripts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-and-server:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.8.0'
+      - name: Render-pass crash regression guard
+        run: python3 scripts/verify_ghost_renderer_lifecycle.py
+      - name: Build and unit tests
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            set +e
+            gradle build --no-daemon --stacktrace > /tmp/civcraft-gradle-build.log 2>&1
+            status=$?
+            set -e
+            tail -n 120 /tmp/civcraft-gradle-build.log
+            if [[ "$status" -eq 0 ]]; then exit 0; fi
+            # Retry only upstream Maven/Fabric metadata failures, not Java/test failures.
+            if ! grep -Eq "Could not resolve all artifacts|Received status code 429|Could not find com.google.code.gson|Could not find org.jetbrains.kotlin" /tmp/civcraft-gradle-build.log; then
+              exit "$status"
+            fi
+            if [[ "$attempt" -eq 3 ]]; then exit "$status"; fi
+            echo "Upstream Gradle dependency repository unavailable; retry $attempt/3"
+            sleep $((attempt * 30))
+          done
+      - name: Dedicated server smoke (registration + SavedData bootstrap)
+        shell: bash
+        run: |
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout --signal=INT 110s gradle runServer --no-daemon > /tmp/p1-development-server.log 2>&1
+          code=$?
+          set -e
+          tail -n 150 /tmp/p1-development-server.log
+          if [[ "$code" -ne 0 && "$code" -ne 124 ]]; then exit "$code"; fi
+          grep -F "CivCraft Reborn 0.1 Foundation entrypoint loaded" /tmp/p1-development-server.log
+          grep -E "Done \(" /tmp/p1-development-server.log
+      - name: Upload DEVELOPMENT JAR (not a release)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: civcraft-reborn-0.2-development
+          path: build/libs/*.jar
+      - name: Upload startup log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-dedicated-server-log
+          path: /tmp/p1-development-server.log
+          if-no-files-found: warn

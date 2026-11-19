@@ -1,0 +1,1390 @@
+{
+  "schemaVersion": 1,
+  "id": "civcraft_reborn:camp_heart_starter_v1",
+  "description": "Original CivCraft 7x7x6 block-level camp founding prototype; not imported from third-party schematic",
+  "bounds": {
+    "min": {
+      "x": -3,
+      "y": 0,
+      "z": -3
+    },
+    "max": {
+      "x": 3,
+      "y": 5,
+      "z": 3
+    }
+  },
+  "anchor": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "defaultFront": "south",
+  "phaseOrder": [
+    "floor",
+    "walls",
+    "gable",
+    "roof"
+  ],
+  "blockPositions": [
+    {
+      "x": -3,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -2,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -1,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 0,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 0,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "block": "civcraft_reborn:camp_core",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 2,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 3,
+      "block": "minecraft:cobblestone",
+      "phase": "floor"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 0,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_door",
+      "properties": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "open": "false"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:glass_pane",
+      "phase": "walls"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": -3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": -2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": -1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 0,
+      "block": "minecraft:glass_pane",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "block": "minecraft:glass_pane",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 1,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 2,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_door",
+      "properties": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "open": "false"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "walls"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 3,
+      "block": "minecraft:oak_log",
+      "properties": {
+        "axis": "y"
+      },
+      "phase": "walls"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": -3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": 3,
+      "block": "minecraft:oak_planks",
+      "phase": "gable"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": -3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": -3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": -3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -3,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": -2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": -2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": -2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": -2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -2,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": -1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": -1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": -1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": -1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -1,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 0,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 0,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 0,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 0,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 0,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 0,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 0,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 1,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 1,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 2,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 2,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "west",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 3,
+      "block": "minecraft:spruce_stairs",
+      "properties": {
+        "facing": "east",
+        "half": "bottom"
+      },
+      "phase": "roof"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 3,
+      "block": "minecraft:spruce_slab",
+      "properties": {
+        "type": "top"
+      },
+      "phase": "roof"
+    }
+  ]
+}

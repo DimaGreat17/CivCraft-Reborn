@@ -21,19 +21,21 @@ public final class FoundationServerBootstrap {
         WorldSettings settings = WorldSettingsSavedData.get(server).settings();
         FoundationWorldIdentitySavedData identity = FoundationWorldIdentitySavedData.get(server);
         // A side length is not a radius. Pin center so all presets span [-side/2, +side/2].
-        server.overworld().getWorldBorder().setCenter(0.0, 0.0);
-        server.overworld().getWorldBorder().setSize(settings.preset().sideBlocks());
+        if (settings.civcraftWorld()) {
+            server.overworld().getWorldBorder().setCenter(0.0, 0.0);
+            server.overworld().getWorldBorder().setSize(settings.preset().sideBlocks());
+        }
 
         CivCraftReborn.LOGGER.info(
-                "Foundation world settings: Overworld {}x{} blocks, mode {} (border center 0,0)",
+                "Foundation world settings: Overworld {}x{} blocks, mode {} (CivCraft enabled={})",
                 settings.preset().sideBlocks(),
                 settings.preset().sideBlocks(),
-                settings.mode());
+                settings.mode(), settings.civcraftWorld());
 
         CivCraftReborn.LOGGER.info("Foundation world identity: id={}, seed={}",
                 identity.worldId(), identity.seed());
 
-        if (settings.mode() == SessionMode.FINITE_VICTORY) {
+        if (settings.civcraftWorld() && settings.mode() == SessionMode.FINITE_VICTORY) {
             CivCraftReborn.LOGGER.warn(
                     "FINITE_VICTORY is saved as world intent only. "
                     + "No CivCraft victory evaluator exists in patch 0.1.");
