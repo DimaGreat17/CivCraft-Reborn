@@ -64,6 +64,17 @@ final class CampHeartTemplateTest {
     }
 
     @Test
+    void mismatchedTerrainMustBeClearedBeforeCompletion() {
+        var required=Blocks.OAK_PLANKS.defaultBlockState();
+        // Occupied terrain is legal at planning time, but does not complete
+        // the physical structure until the correct block is installed.
+        assertFalse(CampHeartTemplate.matching(Blocks.DIRT.defaultBlockState(),required));
+        assertFalse(CampHeartTemplate.matching(Blocks.OAK_LOG.defaultBlockState(),required));
+        assertFalse(CampHeartTemplate.matching(Blocks.AIR.defaultBlockState(),required));
+        assertTrue(CampHeartTemplate.matching(Blocks.OAK_PLANKS.defaultBlockState(),required));
+    }
+
+    @Test
     void doorOccupiesTwoPhysicalCellsWithCorrectHalves(){
         var door=CampHeartTemplate.cells().stream()
                 .filter(c->c.state().is(Blocks.OAK_DOOR)).toList();
