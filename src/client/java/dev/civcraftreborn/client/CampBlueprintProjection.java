@@ -154,51 +154,20 @@ public final class CampBlueprintProjection {
     }
 
     private static List<Step> buildSteps(Plan plan) {
-        // Full structural layouts for starter functional facilities are shared
-        // with the server. No decorative two-block fake facility previews.
-        if (plan != Plan.HEART) {
-            FunctionalBuildingTemplates.Type type =
-                    FunctionalBuildingTemplates.Type.valueOf(plan.name());
-            return FunctionalBuildingTemplates.cells(type).stream()
-                    .map(c -> new Step(c.x(),c.y(),c.z(),c.block(),c.anyBed()))
-                    .toList();
-        }
-        List<Step> parts = new ArrayList<>();
         if (plan == Plan.HEART) {
-            parts.add(new Step(0, 0, -1, Blocks.OBSIDIAN));
-            parts.add(new Step(0, 0, 1, Blocks.OBSIDIAN));
-            parts.add(new Step(-1, 0, 0, Blocks.OBSIDIAN));
-            parts.add(new Step(1, 0, 0, Blocks.OBSIDIAN));
-        } else if (plan == Plan.STORAGE) {
-            parts.add(new Step(4, 0, 0, Blocks.CHEST));
-            parts.add(new Step(4, 0, 1, Blocks.BARREL));
-        } else if (plan == Plan.WORKSHOP) {
-            parts.add(new Step(-4, 0, 0, Blocks.CRAFTING_TABLE));
-            parts.add(new Step(-4, 0, 1, Blocks.FURNACE));
-        } else if (plan == Plan.FARM) {
-            for (int x = -1; x <= 0; x++)
-                for (int z = 5; z <= 6; z++)
-                    parts.add(new Step(x, -1, z, Blocks.FARMLAND));
-            parts.add(new Step(1, 0, 5, Blocks.COMPOSTER));
-        } else if (plan == Plan.BEDROOM) {
-            for (int x = 4; x <= 6; x++) for (int z = 4; z <= 6; z++) {
-                parts.add(new Step(x, -1, z, Blocks.OAK_PLANKS));
-                parts.add(new Step(x, 3, z, Blocks.OAK_PLANKS));
-            }
-            for (int y = 0; y <= 2; y++) for (int t = 4; t <= 6; t++) {
-                if (!(y == 0 && t == 5)) parts.add(new Step(t, y, 4, Blocks.OAK_PLANKS));
-                parts.add(new Step(t, y, 6, Blocks.OAK_PLANKS));
-                parts.add(new Step(4, y, t, Blocks.OAK_PLANKS));
-                parts.add(new Step(6, y, t, Blocks.OAK_PLANKS));
-            }
-            parts.add(new Step(5, 0, 5, Blocks.AIR, true));
-        } else {
-            return CampBuildingTemplates.forPlan(plan);
+            return List.of(
+                    new Step(0,0,-1,Blocks.OBSIDIAN),
+                    new Step(0,0, 1,Blocks.OBSIDIAN),
+                    new Step(-1,0,0,Blocks.OBSIDIAN),
+                    new Step( 1,0,0,Blocks.OBSIDIAN));
         }
-        Map<String, Step> unique = new LinkedHashMap<>();
-        for (Step step : parts)
-            unique.put(step.dx() + ":" + step.dy() + ":" + step.dz(), step);
-        return List.copyOf(unique.values());
+        // All other 10 structures use the SAME full blueprint model for
+        // client rendering, server validation and actual NPC construction.
+        FunctionalBuildingTemplates.Type type =
+                FunctionalBuildingTemplates.Type.valueOf(plan.name());
+        return FunctionalBuildingTemplates.cells(type).stream()
+                .map(c -> new Step(c.x(),c.y(),c.z(),c.block(),c.anyBed()))
+                .toList();
     }
 
     /**
@@ -270,7 +239,9 @@ public final class CampBlueprintProjection {
                     step.anyBed() ? "Любая кровать"
                             : step.block() == Blocks.FARMLAND
                                     ? "Земля для грядок (мотыга)"
-                                    : step.block().getName().getString()));
+                                    : step.block() == Blocks.WATER
+                                            ? "Ведро воды"
+                                            : step.block().getName().getString()));
             if (matches(plan, step)) amounts.get(key)[1]++;
         }
         Minecraft client = Minecraft.getInstance();
@@ -288,7 +259,9 @@ public final class CampBlueprintProjection {
                                 && blockItem.getBlock() instanceof BedBlock)
                             inventory += stack.getCount();
                     } else if (stack.is(material.block() == Blocks.FARMLAND
-                            ? Blocks.DIRT.asItem() : material.block().asItem())) {
+                            ? Blocks.DIRT.asItem() : material.block() == Blocks.WATER
+                                    ? net.minecraft.world.item.Items.WATER_BUCKET
+                                    : material.block().asItem())) {
                         inventory += stack.getCount();
                     }
                 }
