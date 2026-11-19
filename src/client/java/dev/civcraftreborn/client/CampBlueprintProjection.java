@@ -94,6 +94,7 @@ public final class CampBlueprintProjection {
     private static int offsetY = 0;
     private static int offsetZ = 0;
     private static boolean heartConfirmed;
+    private static String heartBlueprintId=CampHeartTemplate.LEGACY_BLUEPRINT_ID;
     private static int heartMatched=-1;
     private static int heartTotal=0;
     private static boolean heartChunksLoaded=false;
@@ -116,13 +117,31 @@ public final class CampBlueprintProjection {
         offsetZ = 0;
         rotation = 0;
         heartConfirmed = false;
+        heartBlueprintId=CampHeartTemplate.LEGACY_BLUEPRINT_ID;
+        TEMPLATE_CACHE.remove(Plan.HEART);
+        BOUNDS_CACHE.remove(Plan.HEART);
         clearHeartProgress();
     }
 
     public static void setHeartPlacement(BlockPos core,int shiftX,int shiftY,int shiftZ,
-            int turns,boolean confirmed) {
+            int turns,boolean confirmed,String blueprintId) {
         if(coreAnchor==null||!coreAnchor.equals(core))return;
         if(!CampHeartTemplate.transformValid(shiftX,shiftY,shiftZ,turns))return;
+        try {
+            CampHeartTemplate.definition(blueprintId);
+        } catch(RuntimeException missingResource) {
+            Minecraft.getInstance().player.sendSystemMessage(
+                    net.minecraft.network.chat.Component.literal(
+                        "CivCraft: blueprint "+blueprintId+" is not installed in this client."));
+            return;
+        }
+        if(!heartBlueprintId.equals(blueprintId)) {
+            heartBlueprintId=blueprintId;
+            TEMPLATE_CACHE.remove(Plan.HEART);
+            BOUNDS_CACHE.remove(Plan.HEART);
+            activePlan=null;
+            clearHeartProgress();
+        }
         offsetX=shiftX;
         offsetY=shiftY;
         offsetZ=shiftZ;
@@ -156,6 +175,7 @@ public final class CampBlueprintProjection {
     }
 
     public static boolean heartConfirmed(){return heartConfirmed;}
+    public static String heartBlueprintId(){return heartBlueprintId;}
 
     public static void setServerStage(BlockPos core, int stage) {
         if (coreAnchor == null || !coreAnchor.equals(core)) return;
@@ -199,6 +219,9 @@ public final class CampBlueprintProjection {
         offsetZ=0;
         rotation=0;
         heartConfirmed=false;
+        heartBlueprintId=CampHeartTemplate.LEGACY_BLUEPRINT_ID;
+        TEMPLATE_CACHE.remove(Plan.HEART);
+        BOUNDS_CACHE.remove(Plan.HEART);
         clearHeartProgress();
     }
     public static Plan selected() { return activePlan; }
@@ -208,7 +231,10 @@ public final class CampBlueprintProjection {
     public static int offsetY() { return offsetY; }
     /** NW floor-level origin used by server construction and acceptance. */
     public static BlockPos placedOrigin() {
-        return coreAnchor == null ? null : coreAnchor.offset(offsetX,offsetY,offsetZ);
+        if(coreAnchor==null)return null;
+        return activePlan==Plan.HEART
+                ?CampHeartTemplate.origin(heartBlueprintId,coreAnchor,offsetX,offsetY,offsetZ)
+                :coreAnchor.offset(offsetX,offsetY,offsetZ);
     }
 
     public static int offsetZ() { return offsetZ; }
@@ -220,7 +246,7 @@ public final class CampBlueprintProjection {
 
     private static List<Step> buildSteps(Plan plan) {
         if (plan == Plan.HEART) {
-            return CampHeartTemplate.cells().stream()
+            return CampHeartTemplate.cells(heartBlueprintId).stream()
                     .map(cell -> new Step(cell.x(),cell.y(),cell.z(),
                             cell.state().getBlock())).toList();
         }
@@ -240,8 +266,12 @@ public final class CampBlueprintProjection {
     public static BlockPos worldPosition(Plan plan, Step step) {
         if (coreAnchor == null) return null;
         if (plan == Plan.HEART) {
-            var p=BlueprintTransform.rotate(step.dx(),step.dz(),7,7,rotation);
-            return coreAnchor.offset(-3+offsetX+p.x(),offsetY+step.dy(),-3+offsetZ+p.z());
+            var def=CampHeartTemplate.definition(heartBlueprintId);
+            var p=BlueprintTransform.rotate(step.dx(),step.dz(),
+                    def.width(),def.depth(),rotation);
+            var origin=CampHeartTemplate.origin(heartBlueprintId,coreAnchor,
+                    offsetX,offsetY,offsetZ);
+            return origin.offset(p.x(),step.dy(),p.z());
         }
         Bounds bounds = bounds(plan);
         int x=step.dx()-bounds.minX(), z=step.dz()-bounds.minZ();
@@ -300,9 +330,10 @@ public final class CampBlueprintProjection {
      */
     public static BlockState expectedState(Plan plan,Step step) {
         if(plan==Plan.HEART && coreAnchor!=null) {
-            for(var cell:CampHeartTemplate.cells()) {
+            for(var cell:CampHeartTemplate.cells(heartBlueprintId)) {
                 if(cell.x()==step.dx() && cell.y()==step.dy() && cell.z()==step.dz())
-                    return CampHeartTemplate.expected(coreAnchor,offsetX,offsetZ,rotation,cell);
+                    return CampHeartTemplate.expected(heartBlueprintId,coreAnchor,
+                            offsetX,offsetY,offsetZ,rotation,cell);
             }
         }
         return step.block().defaultBlockState();
