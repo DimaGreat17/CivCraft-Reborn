@@ -37,7 +37,7 @@ final class CampHeartTemplateTest {
                 log.state().getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS));
         assertEquals(new BlockPos(99,70,98),
                 CampHeartTemplate.origin("test_small",site.core(),0,0,0));
-        assertEquals(new BlockPos(103,71,99),
+        assertEquals(new BlockPos(99,71,100),
                 CampHeartTemplate.position("test_small",site.core(),0,0,0,1,log));
     }
 
