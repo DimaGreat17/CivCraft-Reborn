@@ -41,6 +41,17 @@ jobs:
             set -e
             echo '=== Compiler/test errors ==='
             grep -n -C 4 -E 'error:|cannot find symbol|FAILURE:|What went wrong|Execution failed for task|There were failing tests' /tmp/civcraft-gradle-build.log | head -n 180 || true
+            echo '=== JUnit failures (if any) ==='
+            python3 - <<'PY'
+            import glob,xml.etree.ElementTree as ET
+            for file in glob.glob('build/test-results/test/*.xml'):
+                root=ET.parse(file).getroot()
+                for test in root.iter('testcase'):
+                    for result in test:
+                        if result.tag in ('failure','error'):
+                            print(file, test.attrib.get('name'), result.attrib.get('message'))
+                            print((result.text or '')[:2500])
+            PY
             echo '=== Final build lines ==='
             tail -n 70 /tmp/civcraft-gradle-build.log
             if [[ "$status" -eq 0 ]]; then exit 0; fi
@@ -85,4 +96,12 @@ jobs:
         with:
           name: p1-gradle-build-log
           path: /tmp/civcraft-gradle-build.log
+          if-no-files-found: warn
+
+      - name: Upload JUnit XML results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-junit-results
+          path: build/test-results/test/*.xml
           if-no-files-found: warn
