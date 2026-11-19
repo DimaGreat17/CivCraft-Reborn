@@ -22,6 +22,8 @@ public final class BlueprintNetworking {
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartProgressResponse.TYPE, HeartProgressResponse.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
+                CampOverviewResponse.TYPE, CampOverviewResponse.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
                 HeartPlacedNotice.TYPE, HeartPlacedNotice.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(
                 HeartProjectCancelled.TYPE, HeartProjectCancelled.CODEC);
@@ -31,6 +33,7 @@ public final class BlueprintNetworking {
                     ServerPlayer player=context.player();
                     if(!WorldSettingsSavedData.get(context.server()).settings().civcraftWorld())return;
                     String dimension=player.level().dimension().identifier().toString();
+                    ServerPlayNetworking.send(player,campOverview(player,dimension));
                     var site=CampHeartSavedData.get(context.server())
                             .ownedBy(player.getUUID(),dimension).stream().findFirst();
                     if(site.isEmpty()) {
@@ -81,4 +84,22 @@ public final class BlueprintNetworking {
                                             site.shiftZ(),site.turns(),site.confirmed(),site.blueprintId())));
                 });
     }
+    private static CampOverviewResponse campOverview(ServerPlayer player,String dimension) {
+        var server=player.level().getServer();
+        var camp=CampSavedData.get(server).ownedBy(player.getUUID()).orElse(null);
+        if(camp==null)return CampOverviewResponse.absent();
+        int stage=camp.stage()==SettlementStage.SETTLEMENT?1:0;
+        int residents=CitizenSavedData.get(server).atCamp(camp).size();
+        if(!camp.dimension().equals(dimension))
+            return new CampOverviewResponse(true,stage,residents,0,0,0,0,
+                    false,false,false);
+        var housing=HousingScanner.scan(player.level(),camp);
+        var stock=CampStorageScanner.scan(player.level(),camp);
+        var facilities=CampBuildingScanner.scan(player.level(),camp);
+        return new CampOverviewResponse(true,stage,residents,
+                housing.roomCount(),housing.bedCount(),stock.food(),
+                stock.storageBlocks(),facilities.workshop(),facilities.farm(),
+                housing.complete()&&stock.complete()&&facilities.complete());
+    }
+
 }
