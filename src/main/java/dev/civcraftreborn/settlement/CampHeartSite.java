@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 
 /** Persistent placement of one first-camp foundation; project foundation coordinates are retained separately from the actual building. */
 public record CampHeartSite(String id,String owner,String dimension,
-        int x,int y,int z,int shiftX,int shiftY,int shiftZ,int turns,boolean confirmed,boolean completed) {
+        int x,int y,int z,int shiftX,int shiftY,int shiftZ,int turns,boolean confirmed,boolean completed,String blueprintId) {
     public static final Codec<CampHeartSite> CODEC=RecordCodecBuilder.create(i->i.group(
             Codec.STRING.fieldOf("id").forGetter(CampHeartSite::id),
             Codec.STRING.fieldOf("owner").forGetter(CampHeartSite::owner),
@@ -20,18 +20,22 @@ public record CampHeartSite(String id,String owner,String dimension,
             Codec.INT.fieldOf("shift_z").forGetter(CampHeartSite::shiftZ),
             Codec.INT.fieldOf("turns").forGetter(CampHeartSite::turns),
             Codec.BOOL.fieldOf("confirmed").forGetter(CampHeartSite::confirmed),
-            Codec.BOOL.optionalFieldOf("completed",false).forGetter(CampHeartSite::completed)
+            Codec.BOOL.optionalFieldOf("completed",false).forGetter(CampHeartSite::completed),
+            Codec.STRING.optionalFieldOf("blueprint_id",CampHeartTemplate.LEGACY_BLUEPRINT_ID)
+                    .forGetter(CampHeartSite::blueprintId)
     ).apply(i,CampHeartSite::new));
     public CampHeartSite {
         UUID.fromString(id);
         UUID.fromString(owner);
         if(dimension==null||dimension.isBlank()||
-                !CampHeartTemplate.transformValid(shiftX,shiftY,shiftZ,turns))
+                !CampHeartTemplate.transformValid(shiftX,shiftY,shiftZ,turns)
+                ||blueprintId==null||!blueprintId.matches("[a-z0-9_/-]+"))
             throw new IllegalArgumentException("Invalid Camp Heart site");
     }
     public static CampHeartSite placed(UUID owner,String dimension,BlockPos core) {
         return new CampHeartSite(UUID.randomUUID().toString(),owner.toString(),dimension,
-                core.getX(),core.getY(),core.getZ(),12,0,0,0,false,false);
+                core.getX(),core.getY(),core.getZ(),12,0,0,0,false,false,
+                CampHeartTemplate.LEGACY_BLUEPRINT_ID);
     }
     public BlockPos core(){return new BlockPos(x,y,z);}
     public CampHeartSite withPlacement(int newX,int newZ,int newTurns) {
@@ -39,14 +43,21 @@ public record CampHeartSite(String id,String owner,String dimension,
     }
     public CampHeartSite withPlacement(int newX,int newY,int newZ,int newTurns) {
         if(confirmed)throw new IllegalStateException("Construction site is already confirmed");
-        return new CampHeartSite(id,owner,dimension,x,y,z,newX,newY,newZ,newTurns,false,false);
+        return new CampHeartSite(id,owner,dimension,x,y,z,newX,newY,newZ,newTurns,false,false,blueprintId);
     }
     /** Authoritative dynamic completion state; persisted and revoked if a block breaks. */
     public CampHeartSite withCompletion(boolean value) {
         if(value && !confirmed)throw new IllegalStateException("Cannot complete an unconfirmed site");
-        return new CampHeartSite(id,owner,dimension,x,y,z,shiftX,shiftY,shiftZ,turns,confirmed,value);
+        return new CampHeartSite(id,owner,dimension,x,y,z,shiftX,shiftY,shiftZ,turns,confirmed,value,blueprintId);
+    }
+    /** Choose a packaged, versioned authored schematic before committing the site. */
+    public CampHeartSite withBlueprint(String newBlueprint) {
+        if(confirmed)throw new IllegalStateException("Cannot change a confirmed blueprint");
+        CampHeartTemplate.definition(newBlueprint); // Explicitly reject missing or malformed definitions.
+        return new CampHeartSite(id,owner,dimension,x,y,z,shiftX,shiftY,shiftZ,
+                turns,false,false,newBlueprint);
     }
     public CampHeartSite confirm() {
-        return new CampHeartSite(id,owner,dimension,x,y,z,shiftX,shiftY,shiftZ,turns,true,false);
+        return new CampHeartSite(id,owner,dimension,x,y,z,shiftX,shiftY,shiftZ,turns,true,false,blueprintId);
     }
 }
