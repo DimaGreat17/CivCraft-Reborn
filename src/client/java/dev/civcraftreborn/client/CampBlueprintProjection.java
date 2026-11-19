@@ -89,7 +89,7 @@ public final class CampBlueprintProjection {
     private static Plan activePlan;
     // -2 pending response, -1 no owned camp, 0 CAMP, 1 SETTLEMENT.
     private static int serverStage = -2;
-    private static int offsetX = 0;
+    private static int offsetX = 12;
     private static int offsetZ = 0;
     private static boolean heartConfirmed;
     private static int rotation = 0;
@@ -106,7 +106,7 @@ public final class CampBlueprintProjection {
         dimension = dimensionId;
         activePlan = null;
         serverStage = -2;
-        offsetX = 0;
+        offsetX = 12;
         offsetZ = 0;
         rotation = 0;
         heartConfirmed = false;
@@ -171,7 +171,7 @@ public final class CampBlueprintProjection {
         if (plan == Plan.HEART) {
             return CampHeartTemplate.cells().stream()
                     .map(cell -> new Step(cell.x(),cell.y(),cell.z(),
-                            cell.coreMarker() ? dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE : cell.state().getBlock())).toList();
+                            cell.state().getBlock())).toList();
         }
         // All other 10 structures use the SAME full blueprint model for
         // client rendering, server validation and actual NPC construction.
@@ -201,6 +201,8 @@ public final class CampBlueprintProjection {
 
     private static boolean validPlacement() {
         if (activePlan == null || coreAnchor == null) return false;
+        if(activePlan==Plan.HEART)
+            return CampHeartTemplate.transformValid(offsetX,offsetZ,rotation);
         for (Step step : steps(activePlan)) {
             BlockPos pos = worldPosition(activePlan, step);
             if (!BlueprintTransform.inCampRadius(pos.getX()-coreAnchor.getX(),
@@ -237,10 +239,7 @@ public final class CampBlueprintProjection {
         if(pos==null||!client.level.hasChunkAt(pos))return false;
         if(plan==Plan.HEART) {
             var real=client.level.getBlockState(pos);
-            // The physical core remains fixed, even if the house is shifted.
-            if(pos.equals(coreAnchor))return real.is(dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE);
-            if(step.block()==dev.civcraftreborn.settlement.CampBlocks.CAMP_CORE)
-                return real.is(Blocks.OAK_PLANKS);
+            // The construction starter is never a physical cell of the house.
             if(step.block()==Blocks.OAK_DOOR) {
                 return real.is(Blocks.OAK_DOOR)
                         && real.getValue(net.minecraft.world.level.block.DoorBlock.HALF)
@@ -329,8 +328,7 @@ public final class CampBlueprintProjection {
             serverStage = -2;
             return;
         }
-        if (activePlan != null && (client.player.blockPosition().distSqr(coreAnchor) > 28*28
-                || !unlocked(activePlan))) hide();
+        if (activePlan != null && !unlocked(activePlan)) hide();
 
     }
 }
