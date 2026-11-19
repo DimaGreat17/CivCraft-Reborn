@@ -35,6 +35,12 @@ public final class CampCoreBlock extends Block {
             return;
         }
 
+        String dimension = player.level().dimension().identifier().toString();
+        var sites = CampHeartSavedData.get(player.level().getServer());
+        // Replacing a removed core at the same coordinates starts a new site;
+        // never carry a former player's ownership or completed placement forward.
+        sites.remove(dimension,pos);
+        sites.add(CampHeartSite.placed(player.getUUID(),dimension,pos));
         ItemStack obsidian = new ItemStack(Items.OBSIDIAN, STARTER_OBSIDIAN);
         if (!player.getInventory().add(obsidian) && !obsidian.isEmpty()) {
             // Inventory insertion can be partial; only drop the remainder.
@@ -42,7 +48,8 @@ public final class CampCoreBlock extends Block {
                     pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, obsidian);
         }
         player.sendSystemMessage(Component.literal(
-                "CivCraft: Camp Core placed. Received 4 obsidian "
-                + "to build its physical camp heart. Each placement provides a new kit."));
+                "CivCraft: Camp Heart foundation placed. Open CivCraft with G, "
+                + "position and confirm the complete 7x7 schematic, then build by hand. "
+                + "Legacy placement bonus: 4 obsidian."));
     }
 }
