@@ -50,7 +50,8 @@ public final class CampCommands {
 
             String dimension = level.dimension().identifier().toString();
             CampHeartSite site = CampHeartSavedData.get(source.getServer())
-                    .nearby(player.getUUID(),dimension,player.blockPosition(),24).orElse(null);
+                    .ownedBy(player.getUUID(),dimension).stream().filter(CampHeartSite::confirmed)
+                    .findFirst().orElse(null);
             if(site == null) {
                 return fail(source, "Place your own Camp Heart foundation and confirm its site.");
             }
@@ -70,14 +71,18 @@ public final class CampCommands {
             }
             boolean withinBorder = level.getWorldBorder().isWithinBounds(pos);
             boolean supported = level.getBlockState(pos.below()).isSolid();
-            if (!CampRules.canFoundAt(store.all(), dimension, pos.getX(), pos.getZ(),
+            if (!CampRules.canFoundAt(store.all(), dimension,
+                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ()).getX()+3,
+                    CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ()).getZ()+3,
                     withinBorder, supported)) {
                 return fail(source, "Invalid site: collision, border, terrain or nearby settlement.");
             }
             // Materials have already been placed into the complete Heart by hand.
             // Never charge the player for the same wood and stone twice.
+            BlockPos buildingCenter=CampHeartTemplate.origin(pos,site.shiftX(),site.shiftZ())
+                    .offset(3,0,3);
             CampRecord camp = CampRules.found(player.getUUID(), dimension,
-                    pos.getX(), pos.getY(), pos.getZ(),
+                    buildingCenter.getX(),buildingCenter.getY(),buildingCenter.getZ(),
                     player.getName().getString() + "'s Camp", level.getGameTime());
             store.add(camp);
             source.sendSuccess(() -> Component.literal(
