@@ -75,9 +75,12 @@ public final class CivCraftPlacementScreen extends Screen {
                 b -> Minecraft.getInstance().gui.setScreen(new CivCraftMaterialsScreen(this)))
                 .bounds(x,y+150,310,20).build());
 
-        addRenderableWidget(Button.builder(Component.literal("Показать проекцию в мире"),
-                b -> Minecraft.getInstance().gui.setScreen(null))
-                .bounds(x,y+175,310,20).build());
+        addRenderableWidget(Button.builder(Component.literal("Камера градостроительства (F7)"),
+                b -> {
+                    Minecraft client=Minecraft.getInstance();
+                    if(CivCraftPlanningCamera.activate(client))
+                        client.gui.setScreen(null);
+                }).bounds(x,y+175,310,20).build());
         if(plan == CampBlueprintProjection.Plan.HEART) {
             Button confirm = addRenderableWidget(Button.builder(
                     Component.literal(CampBlueprintProjection.heartConfirmed()
