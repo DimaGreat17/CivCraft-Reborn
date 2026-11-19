@@ -12,8 +12,8 @@ import dev.civcraftreborn.foundation.WorldSettingsSavedData;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 /**
- * Authoritative player construction-site positioning. All commands require a
- * real owned Camp Heart block and a loaded site. The foundation only authorizes starting a project. The finished building may
+ * Authoritative construction-site positioning. Pending placement requires a real
+ * foundation block. Confirmed construction is independent of the starter. The foundation only authorizes starting a project. The finished building may
  * stand separately at any valid loaded site in a bounded 128-block preview area.
  */
 public final class CampHeartCommands {
@@ -25,7 +25,7 @@ public final class CampHeartCommands {
                 .then(Commands.literal("confirm").executes(c->confirm(c.getSource())))
                 .then(Commands.literal("move")
                         .then(Commands.argument("x",IntegerArgumentType.integer(-128,128))
-                        .then(Commands.argument("z",IntegerArgumentType.integer(-2,2))
+                        .then(Commands.argument("z",IntegerArgumentType.integer(-128,128))
                         .executes(c->change(c.getSource(),
                                 IntegerArgumentType.getInteger(c,"x"),
                                 IntegerArgumentType.getInteger(c,"z"),null)))))
@@ -38,10 +38,15 @@ public final class CampHeartCommands {
     private static CampHeartSite current(ServerPlayer player){
         String dim=player.level().dimension().identifier().toString();
         return CampHeartSavedData.get(player.level().getServer())
-                .ownedBy(player.getUUID(),dim).stream().filter(s ->
-                        CampSavedData.get(player.level().getServer()).ownedBy(player.getUUID()).isEmpty()
-                        || CampSavedData.get(player.level().getServer()).at(dim,s.x(),s.y(),s.z()).isPresent())
-                        .findFirst().orElse(null);
+                .ownedBy(player.getUUID(),dim).stream()
+                .filter(s -> CampSavedData.get(player.level().getServer())
+                        .ownedBy(player.getUUID()).isEmpty()
+                        || CampSavedData.get(player.level().getServer())
+                        .ownedBy(player.getUUID())
+                        .map(c -> c.x()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftZ()).getX()+3
+                            && c.z()==CampHeartTemplate.origin(s.core(),s.shiftX(),s.shiftZ()).getZ()+3)
+                        .orElse(false))
+                .findFirst().orElse(null);
     }
 
     private static boolean validWorld(ServerPlayer player){
@@ -80,7 +85,7 @@ public final class CampHeartCommands {
             int turns=rotation==null?old.turns():rotation;
             CampHeartSite updated=old.withPlacement(x,z,turns);
             if(!clear((ServerLevel)player.level(),updated))
-                return fail(source,"Blocked or unsupported footprint; clear/level the area first");
+                return fail(source,"Blocked, unsupported or unloaded footprint; approach the proposed site and clear/level it");
             CampHeartSavedData.get(source.getServer()).replace(old,updated);
             sync(player,updated);
             source.sendSuccess(()->Component.literal("Camp Heart preview: shift ("
@@ -96,7 +101,7 @@ public final class CampHeartCommands {
             ServerPlayer player=source.getPlayerOrException();
             if(!validWorld(player))return fail(source,"Not a CivCraft-enabled world");
             CampHeartSite site=current(player);
-            if(site==null)return fail(source,"No nearby owned Camp Heart foundation");
+            if(site==null)return fail(source,"No active Camp Heart building project");
             if(site.confirmed())return fail(source,"Already confirmed");
             if(!clear((ServerLevel)player.level(),site))
                 return fail(source,"Cannot confirm: footprint is obstructed/unsupported/unloaded");
@@ -106,6 +111,9 @@ public final class CampHeartCommands {
                     center.getX(),center.getZ(),true,true))
                 return fail(source,"Too close to another settlement");
             CampHeartSavedData.get(source.getServer()).replace(site,site.confirm());
+            // Construction starter is consumed once its task is confirmed.
+            // The future building neither contains nor depends on this block.
+            player.level().removeBlock(site.core(),false);
             sync(player,site.confirm());
             source.sendSuccess(()->Component.literal(
                     "Camp Heart construction site confirmed. Build the whole hologram manually; "
@@ -121,9 +129,9 @@ public final class CampHeartCommands {
             ServerPlayer player=source.getPlayerOrException();
             CampHeartSite site=current(player);
             if(site==null)return fail(source,"Place a Camp Heart foundation nearby");
-            if(!player.level().hasChunkAt(site.core())||
-                    !player.level().getBlockState(site.core()).is(CampBlocks.CAMP_CORE))
-                return fail(source,"Camp Heart foundation missing: repair before proceeding");
+            if(!site.confirmed()&&(!player.level().hasChunkAt(site.core())||
+                    !player.level().getBlockState(site.core()).is(CampBlocks.CAMP_CORE)))
+                return fail(source,"Camp Heart starter foundation is missing");
             var progress=CampHeartTemplate.inspect((ServerLevel)player.level(),
                     site.core(),site.shiftX(),site.shiftZ(),site.turns());
             source.sendSuccess(()->Component.literal("Camp Heart: "+
