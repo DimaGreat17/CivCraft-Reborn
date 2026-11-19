@@ -31,14 +31,14 @@ final class CampHeartTemplateTest {
             assertTrue(c.x()>=0&&c.x()<7&&c.y()>=0&&c.y()<6
                     &&c.z()>=0&&c.z()<7);
         }
-        assertEquals(1,cells.stream().filter(c->c.state().is(CampBlocks.CAMP_CORE)).count());
+        assertEquals(1,cells.stream().filter(CampHeartTemplate.Cell::coreMarker).count());
     }
 
     @Test
     void quarterTurnsKeepCoreAnchoredAndRotateDirectionalBlocks(){
         BlockPos anchor=new BlockPos(50,70,50);
         var coreCell=CampHeartTemplate.cells().stream()
-                .filter(c->c.state().is(CampBlocks.CAMP_CORE)).findFirst().orElseThrow();
+                .filter(CampHeartTemplate.Cell::coreMarker).findFirst().orElseThrow();
         var stair=CampHeartTemplate.cells().stream()
                 .filter(c->c.state().is(Blocks.SPRUCE_STAIRS)).findFirst().orElseThrow();
         for(int turn=0;turn<4;turn++){
@@ -54,14 +54,14 @@ final class CampHeartTemplateTest {
     void movingFootprintKeepsPhysicalCoreAndReplacesOriginalCoreFloorCell(){
         BlockPos anchor=new BlockPos(0,64,0);
         var coreCell=CampHeartTemplate.cells().stream()
-                .filter(c->c.state().is(CampBlocks.CAMP_CORE)).findFirst().orElseThrow();
+                .filter(CampHeartTemplate.Cell::coreMarker).findFirst().orElseThrow();
         assertEquals(Blocks.OAK_PLANKS,
                 CampHeartTemplate.expected(anchor,1,0,0,coreCell).getBlock());
         var replaced=CampHeartTemplate.cells().stream()
                 .filter(c->CampHeartTemplate.position(anchor,1,0,0,c).equals(anchor))
                 .findFirst().orElseThrow();
-        assertEquals(CampBlocks.CAMP_CORE,
-                CampHeartTemplate.expected(anchor,1,0,0,replaced).getBlock());
+        assertFalse(replaced.coreMarker());
+        assertEquals(anchor,CampHeartTemplate.position(anchor,1,0,0,replaced));
     }
 
     @Test
