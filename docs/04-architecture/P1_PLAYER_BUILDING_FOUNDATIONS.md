@@ -28,7 +28,7 @@
 - Existing tiers are provisional: pre-camp HEART only; CAMP basic tier; SETTLEMENT advanced tier. Do not unlock high-tier foundations through client state.
 - Every structure uses the identical construction protocol, with different schematic, footprint, workstations, activation conditions and foundation item identity.
 - A building may be placed in an unfinished state but produces no functionality until activated. Server checks prevent using a pending foundation to bypass tier requirements.
-- The existing player design decision (real Minecraft block construction, no free prefab spawning) is preserved.
+- Before the first Camp Heart is finished, the player builds manually with real Minecraft blocks. Later builder-assisted construction combines **real resource requirements** with a separate **numeric hammer-progress requirement**; the exact way builder progress becomes a physical block structure is to be specified before code implementation. The no-free-resources principle remains binding.
 
 ## State and data model
 
@@ -53,8 +53,15 @@
 7. Wrong world / forged packets / wrong owner / missing foundation: no privilege or stage bypass.
 8. Reload unfinished construction, unload chunk, restart server, switch clients: stable ID and geometry, no silent complete or duplication.
 9. Remove required structural component from ACTIVE building: state invalidates and functional effects stop safely.
-10. Run real Minecraft 26.3 client visual acceptance: prior render-pass crash selecting STORAGE must not recur; CI dedicated smoke is not graphical evidence.
+10. Verify hammer progress against independent material availability: 700 required / 400 per hour = 1 hour 45 minutes; no resource bypass or progress duplication.
+11. Run real Minecraft 26.3 client visual acceptance: prior render-pass crash selecting STORAGE must not recur; CI dedicated smoke is not graphical evidence.
 
 ## Explicit non-goals
 
 No automatic free prefab construction, no instant construction on placing foundation, no client-owned progress, no full NPC construction or civilizations in this slice. Later NPC building should reuse the same persisted construction orders and material transaction checks.
+
+## Clarification: numeric hammers and builder-assisted completion (2026-11-19)
+
+The earlier description of NPCs using better **physical hammer tools** is superseded. **Hammers (молоточки) are numerical construction work points**, akin to science/culture yield, NOT inventory items. A building has both a real material bill and `hammerRequired`. Once the physical Camp Heart has been built manually and a builder/workforce has been assigned, the settlement produces `hammers/hour` to advance its project(s). Example: a storage building requiring 700 hammer points at 400 points/hour takes 1.75 hours = 1h45m, provided material requirements are satisfied. The exact stacking of builders, allocation across simultaneous projects, offline progress and visuals of auto-build are not yet fixed.
+
+The initial Camp Heart remains manual. Physical resources and the full structure requirement are not replaced by numeric hammer points: a finished construction order must still resolve to a valid real-world building. Whether blocks appear progressively during work or only upon hammer completion requires a separate design choice. Avoid implementing NPC pathfinding/hammer-in-hand equipment as the hammer-resource mechanic.
