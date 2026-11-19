@@ -93,6 +93,13 @@ public final class CivCraftPlanningScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(MouseButtonEvent event,boolean doubleClick) {
+        // Consume mouse presses in the overlay instead of mining/placing
+        // Minecraft blocks with the detached construction camera.
+        return true;
+    }
+
+    @Override
     public boolean mouseDragged(MouseButtonEvent event,double dragX,double dragY) {
         if(event.button()==1) { // SDL3 left button
             double[] delta=CivCraftPlanningCamera.dragToWorld(dragX,dragY);
