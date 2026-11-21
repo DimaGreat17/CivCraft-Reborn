@@ -1,0 +1,6 @@
+# Copy this file to <Minecraft instance>/config/civcraft-reborn-world-defaults.properties
+# BEFORE first creation/start of the world.
+# Provisional server-side setup until the P0 world-creation GUI is implemented.
+# Changes do not override the configuration already persisted in a world.
+overworld_side_blocks=10000
+session_mode=ENDLESS_SANDBOX

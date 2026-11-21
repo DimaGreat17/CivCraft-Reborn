@@ -2,7 +2,26 @@
 
 A Minecraft Java Edition civilization simulation mod inspired by the historical CivCraft Bukkit plugin.
 
-> **Status:** Pre-production / design. No gameplay code implemented. Minecraft version, loader, and dependencies are not yet pinned.
+> **Status:** P0 / 0.1 Foundation is implemented in part on a development branch; **NOT RELEASED**. Minecraft 26.3 / Java 25 / Fabric Loader 0.20.1 / Fabric API 0.166.2+26.3 are pinned for the P0 development build. A CI compile + initial dedicated-server smoke has passed, but the complete client/world-restart/recovery acceptance matrix has not.
+
+## P0 foundation development preview
+
+- Initial 10,000×10,000, 15,000×15,000 and 25,000×25,000 Overworld presets, enforced by the server border centered at (0,0).
+- Two recorded world session intentions: `ENDLESS_SANDBOX` and `FINITE_VICTORY`. **Finite victory is NOT implemented**; choosing FINITE cannot end a game.
+- Fabric client adds size and mode selectors to Minecraft's Create World screen; selected defaults are captured into per-world `SavedData` on first server access. A dedicated server uses `run/config/civcraft-reborn-world-defaults.properties`.
+- Read-only server command: `/civcraft worldinfo` to inspect saved mode, border and schema.
+- Gradle compile/Unit tests/one-server smoke: `.github/workflows/p0-compatibility.yml`. Optional six-case real-world restart matrix: `.github/workflows/p0-world-matrix.yml`.
+- **Limitations:** new UI has not been interactively client-tested; save/restart matrix and corruption/compatibility/edge tests must pass before merge or release.
+- No NPC, towns, economy, technology, claims, wars or victory mechanics are shipped.
+
+Run development code from `feat/p0-foundation-compatibility` with Java 25, Gradle 9.8:
+```sh
+gradle build
+gradle runClient
+gradle runServer
+```
+
+On dedicated servers set `overworld_side_blocks=10000|15000|25000` and `session_mode=ENDLESS_SANDBOX|FINITE_VICTORY` **before creating a new world**. Changing this file must not be treated as a way to rewrite a previously saved world's settings.
 
 ## Vision
 

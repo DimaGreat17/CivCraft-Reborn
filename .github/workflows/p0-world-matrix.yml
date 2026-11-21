@@ -1,0 +1,51 @@
+name: P0 real world create/restart verification
+
+# Explicit opt-in because each case starts Minecraft twice. Not a substitute
+# for a real graphical singleplayer test or crash recovery injection.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/p0-world-matrix.yml'
+      - 'scripts/p0_world_restart_smoke.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  world-restart:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      # Avoid Maven Central 429 rate limits from six cold Gradle downloads at once.
+      max-parallel: 2
+      matrix:
+        size: [10000, 15000, 25000]
+        mode: [ENDLESS_SANDBOX, FINITE_VICTORY]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.8.0'
+      - name: Compile P0 (retry transient dependency rate limits)
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if gradle build --no-daemon; then exit 0; fi
+            if [[ "$attempt" == 3 ]]; then exit 1; fi
+            sleep $((attempt * 30))
+          done
+      - name: Two boots of one real world with changed defaults
+        run: python3 scripts/p0_world_restart_smoke.py --size ${{ matrix.size }} --mode ${{ matrix.mode }}
+      - name: Upload logs even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-world-${{ matrix.size }}-${{ matrix.mode }}
+          path: build/p0-world-smoke/*.log
+          if-no-files-found: warn

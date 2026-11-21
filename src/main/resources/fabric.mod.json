@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "civcraft_reborn",
+  "version": "${version}",
+  "name": "CivCraft Reborn",
+  "description": "Server-authoritative civilization simulation mod. Technical compatibility milestone.",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.civcraftreborn.CivCraftReborn"
+    ],
+    "client": [
+      "dev.civcraftreborn.client.CivCraftRebornClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
